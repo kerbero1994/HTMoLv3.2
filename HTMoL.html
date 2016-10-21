@@ -337,6 +337,9 @@ Copyright (C) 2014  Alvarez Rivera Leonardo,Becerra Toledo Francisco Javier, Veg
 
     var ChainIndexB=[]; //para los enlaces
    
+   var colorBndDif =[];
+
+   var ColorDifBuffer = [];
 
 /////////////////////////////////////////////////////////////////////////////////
 
@@ -835,6 +838,10 @@ Copyright (C) 2014  Alvarez Rivera Leonardo,Becerra Toledo Francisco Javier, Veg
                     gl.vertexAttribPointer(currentProgram.textureCoordAttribute, colorVertexBuffer.itemSize, gl.FLOAT, false, 0, 0);
                     gl.bindBuffer(gl.ARRAY_BUFFER, null);
 
+                    gl.bindBuffer(gl.ARRAY_BUFFER, ColorDifBuffer);
+                    gl.vertexAttribPointer(currentProgram.ColorDif, ColorDifBuffer.itemSize, gl.FLOAT, false, 0, 0);
+                    gl.bindBuffer(gl.ARRAY_BUFFER, null);
+                    
                     gl.bindBuffer(gl.ARRAY_BUFFER, ChainBufferB);
                     gl.vertexAttribPointer(currentProgram.Opcion, ChainBufferB.itemSize, gl.FLOAT, false, 0, 0);
                     gl.bindBuffer(gl.ARRAY_BUFFER, null);

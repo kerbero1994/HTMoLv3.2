@@ -1172,6 +1172,7 @@ function initBuffersBonds()
     gl.bindBuffer(gl.ARRAY_BUFFER, lineVertexPositionBuffer);
     var linesNormals=[];
     colores=[];
+    colorBndDif=[];
     for(var t in molecule.LstBonds)
     {
         var o = molecule.LstBonds[t];
@@ -1210,6 +1211,14 @@ function initBuffersBonds()
             ChainIndexB.push( 0.5 );
             ChainIndexB.push( 0.5 );
         }
+        colorBndDif.push(0);
+        colorBndDif.push(0);
+        colorBndDif.push(0);
+        colorBndDif.push(0);
+        colorBndDif.push(0);
+        colorBndDif.push(0);
+        colorBndDif.push(0);
+        colorBndDif.push(0);
 
     }
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(verticesLineas), gl.DYNAMIC_DRAW);
@@ -1234,7 +1243,12 @@ function initBuffersBonds()
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(ChainIndexB), gl.DYNAMIC_DRAW);
     ChainBufferB.itemSize=2;
     ChainBufferB.numItems=ChainIndexB.length/2;   
- 
+    
+    ColorDifBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, ColorDifBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colorBndDif), gl.DYNAMIC_DRAW);
+    ColorDifBuffer.itemSize=4;
+    ColorDifBuffer.numItems=colorBndDif.length/4;   
 
 }
 

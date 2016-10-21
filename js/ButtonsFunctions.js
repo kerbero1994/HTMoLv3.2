@@ -106,6 +106,7 @@ function ByColor(mol, color) {
 function ProcesarSeleccion() 
 {
     console.time("procesarSeleccion");
+    var ArrCont=[];
     for (var t = 0; t < AtomosSeleccionados.length; t++) 
     {
         var atom = AtomosSeleccionados[t];
@@ -115,28 +116,45 @@ function ProcesarSeleccion()
             atom.Seleccionado = true;
             haySeleccionado = true;
             var mul=(atom.PositionBSolid-1) * nColor;
-                            for (var z = 0; z < nColor;) 
-                            {
-                                ColorTotal[atom.BloqueSolid-1][mul + z]   = 0;  //va a ser el color de la selección
-                                ColorTotal[atom.BloqueSolid-1][mul + z + 1]=1;
-                                ColorTotal[atom.BloqueSolid-1][mul + z + 2]=0;
-                                ColorTotal[atom.BloqueSolid-1][mul + z + 3]=1;                                
-                                z = z + 4;
-                            }
-                            gl.bindBuffer(gl.ARRAY_BUFFER, sphereVertexColorBuffer[atom.BloqueSolid-1]);
-                            gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(ColorTotal[atom.BloqueSolid-1]), gl.DYNAMIC_DRAW);
-                            sphereVertexColorBuffer[atom.BloqueSolid-1].numItems = ColorTotal[atom.BloqueSolid-1].length / 4;
-                            gl.bindBuffer(gl.ARRAY_BUFFER, null);    
-          
-            
+            for (var z = 0; z < nColor;) 
+            {
+                ColorTotal[atom.BloqueSolid-1][mul + z]   = 0;  //va a ser el color de la selección
+                ColorTotal[atom.BloqueSolid-1][mul + z + 1]=1;
+                ColorTotal[atom.BloqueSolid-1][mul + z + 2]=0;
+                ColorTotal[atom.BloqueSolid-1][mul + z + 3]=1;                                
+                 z = z + 4;
+            }
+
+            var agregar=true;
+            for(var i=0; i < ArrCont.length; i++)
+            {
+                if ((atom.BloqueSolid-1)==ArrCont[i]) 
+                {
+                    agregar=false;
+                    break;
+                }
+            }
+            if (agregar==true) 
+            {
+                ArrCont.push(atom.BloqueSolid-1);
+            }                             
 
         } 
         else 
         {
             //No hacer nada xq ya está seleccionado
 
-        }
+        }        
     }
+
+        for(var i=0; i < ArrCont.length; i++)
+        {
+            gl.bindBuffer(gl.ARRAY_BUFFER, sphereVertexColorBuffer[i]);
+            gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(ColorTotal[i]), gl.DYNAMIC_DRAW);
+            sphereVertexColorBuffer[i].numItems = ColorTotal[i].length / 4;
+            gl.bindBuffer(gl.ARRAY_BUFFER, null);   
+            
+        }
     
 
     console.timeEnd("procesarSeleccion");

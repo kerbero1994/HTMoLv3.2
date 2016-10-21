@@ -21,13 +21,26 @@ function handleMouseDown(event)
 
         gl.uniform1i(u_Clicked, 1);
         drawScene(1);
-        //alert(3);
+
+        var pixels = new Uint8Array(4);
+        var pixelsUp = new Uint8Array(4);
+        var pixelsDown = new Uint8Array(4);
+        var pixelsLeft = new Uint8Array(4);
+        var pixelsRight = new Uint8Array(4);
+        
         var pixels = new Uint8Array(4);
 
         gl.readPixels(lastMouseX - rect.left, rect.bottom - lastMouseY, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
 
         if (pixels[0] > 0 || pixels[1] > 0 || pixels[2] > 0) 
         {
+            gl.readPixels(lastMouseX - rect.left, rect.bottom - lastMouseY + 2, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, pixelsUp);
+            gl.readPixels(lastMouseX - rect.left, rect.bottom - lastMouseY - 2, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, pixelsDown);
+            gl.readPixels(lastMouseX - rect.left - 2, rect.bottom - lastMouseY, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, pixelsLeft);
+            gl.readPixels(lastMouseX - rect.left + 2, rect.bottom - lastMouseY, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, pixelsRight);
+
+            if ((pixelsUp[0] == pixelsDown[0] && pixelsUp[1] == pixelsDown[1] && pixelsUp[2] == pixelsDown[2]) || (pixelsLeft[0] == pixelsRight[0] && pixelsLeft[1] == pixelsRight[1] && pixelsLeft[2] == pixelsRight[2])) {
+
 
                var atom = GetAtom(pixels);
                 if (atom.State == 'Active') 
@@ -190,6 +203,8 @@ function handleMouseDown(event)
 
 
                 }
+
+            }
 
             //document.getElementById('data').innerHTML=(lastMouseX-rect.left)+' '+(rect.bottom-lastMouseY);
 
