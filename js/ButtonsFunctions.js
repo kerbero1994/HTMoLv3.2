@@ -229,7 +229,9 @@ function ProcesarCadena(index, button) {
 
 function CambiarRepresentacion(Repre) //Representacion es en lo que se va a cambiar
 {
-    if (Repre == 'Cpk') {
+    if (Repre == 'Cpk') 
+    {
+        var ArrCont=[];
         for (var o in AtomosSeleccionados) //son los objetos seleccionados 
         {
             //primero encontrar con el átomo "o" la posición en el bloque y en el array, y hacerle un splice ahí
@@ -238,7 +240,8 @@ function CambiarRepresentacion(Repre) //Representacion es en lo que se va a camb
 
             var mul=( ato.PositionBSolid - 1 ) * nVertices;
 
-            if (ato.NameAtom == 'H') {
+            if (ato.NameAtom == 'H') 
+            {
                 //alert("H");
                 //ingresar los nuevos vértices                
                 for (var z = 0; z < nVertices;) //vertices para esfera de 16 latitudes y longitudes
@@ -250,7 +253,9 @@ function CambiarRepresentacion(Repre) //Representacion es en lo que se va a camb
                     z = z + 3;
                 }
 
-            } else if (ato.NameAtom == 'C') {
+            } 
+            else if (ato.NameAtom == 'C') 
+            {
                 //alert("C");
                 for (var z = 0; z < nVertices;) {
                     vertexPositionData[ato.BloqueSolid - 1][mul + z] = verArrayC_PB_TI_CA[z] + ato.X - Cx;
@@ -261,7 +266,9 @@ function CambiarRepresentacion(Repre) //Representacion es en lo que se va a camb
                 }
 
                 //alert("saleC"); 
-            } else if (ato.NameAtom == 'PB') {
+            } 
+            else if (ato.NameAtom == 'PB') 
+            {
                 //alert("PB");
                 //ingresar los nuevos vértices
                 for (var z = 0; z < nVertices;) {
@@ -361,20 +368,37 @@ function CambiarRepresentacion(Repre) //Representacion es en lo que se va a camb
             }
             ato.Representation = "CPK";
 
-            gl.bindBuffer(gl.ARRAY_BUFFER, sphereVertexPositionBuffer[ato.BloqueSolid - 1]);
-            gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertexPositionData[ato.BloqueSolid - 1]), gl.DYNAMIC_DRAW);
-            sphereVertexPositionBuffer[ato.BloqueSolid - 1].itemSize = 3;
-            sphereVertexPositionBuffer[ato.BloqueSolid - 1].numItems = vertexPositionData[ato.BloqueSolid - 1].length / 3;
+            var agregar=true;
+            for(var i=0; i < ArrCont.length; i++)
+            {
+                if ((ato.BloqueSolid-1)==ArrCont[i]) 
+                {
+                    agregar=false;
+                    break;
+                }
+            }
+            if (agregar==true) 
+            {
+                ArrCont.push(ato.BloqueSolid-1);
+            }                    
+           
+        }
+
+        for(var i=0; i < ArrCont.length; i++)
+        {
+            gl.bindBuffer(gl.ARRAY_BUFFER, sphereVertexPositionBuffer[i]);
+            gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertexPositionData[i]), gl.DYNAMIC_DRAW);
+            sphereVertexPositionBuffer[i].itemSize = 3;
+            sphereVertexPositionBuffer[i].numItems = vertexPositionData[i].length / 3;
             gl.bindBuffer(gl.ARRAY_BUFFER, null);
 
-            //gl.bindBuffer(gl.ARRAY_BUFFER, sphereWirePositionBuffer[bloques]);
-            //gl.bufferSubData(gl.ARRAY_BUFFER,0,new Float32Array(wirePositionData[bloques]));   
-
-            //gl.bindBuffer(gl.ARRAY_BUFFER, sphereDifufusePositionBuffer[bloques]);
-            //gl.bufferSubData(gl.ARRAY_BUFFER,0,new Float32Array(vertexPositionDataD[bloques]));   
-
         }
-    } else if (Repre == 'SB') {
+            
+
+
+    } 
+    else if (Repre == 'SB') 
+    {
         //alert(88);
         for (var o in AtomosSeleccionados) //son los objetos seleccionados 
         {
