@@ -1,0 +1,1534 @@
+<!--Licensed under the MIT license.
+http://www.opensource.org/licenses/mit-license.php
+
+this file is part of HTMoL:
+Copyright (C) 2014  Alvarez Rivera Leonardo,Becerra Toledo Francisco Javier, Vega Ramirez Adan -->
+<!DOCTYPE html> 
+<html>
+<head>
+    <title>HTMOL</title>
+    
+
+    <script src="http://code.jquery.com/jquery-1.9.0.js"></script>
+    <script src="js/TrackballControls.js"></script>
+    <script src="http://code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+    <script src="js/Process.js"></script>
+    <script src="js/Tools.js"></script>
+    <script src="js/Support.js"></script>
+    <script src="js/Main.js"> </script>
+    <script src='js/Menu.js'></script>
+    <script src='js/config.js'></script>
+    <script src='js/camera.js'></script>
+
+    <script src='js/Shaders.js'></script> 
+    <script src='js/plantilla_esfera.js'></script>
+    <script src='js/Buffers.js'></script>
+    <script src='js/Picking.js'></script>
+    <script src="js/glMatrix.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/ButtonsFunctions.js"></script>  
+
+    <link rel='stylesheet' href='styles/sizeHTMol.css' media='screen'>  
+
+    <script id="shader-fs" type="x-shader/x-fragment">
+    #ifdef GL_ES
+    precision highp float;
+    #endif
+
+    varying vec3 vTransformedNormal;
+    varying vec4 vPosition;
+
+    uniform vec3 uAmbientColor;
+
+    uniform bool uOffscreen;
+
+    uniform vec3 uPointLightingLocation;
+    uniform vec3 uPointLightingColor;
+   
+    varying vec4 vColor;
+
+    void main(void) {
+
+        if (uOffscreen) 
+        {
+            gl_FragColor = vColor;
+        }   
+        else
+        {
+           if (vColor.a==0.0) 
+            {
+                gl_FragColor = vec4(1,1,1,0);
+            }
+            else
+            {
+                vec3 lightWeighting;
+                vec3 lightDirection = normalize(uPointLightingLocation - vPosition.xyz);
+
+                float directionalLightWeighting = max(dot(normalize(vTransformedNormal), lightDirection), 0.0);
+                lightWeighting = uAmbientColor + uPointLightingColor * directionalLightWeighting;
+                //gl_FragColor = vColor;
+                gl_FragColor = vec4(vColor.rgb * lightWeighting, vColor.a);
+
+            }
+           
+        }
+    }
+</script>
+
+<script id="shader-vs" type="x-shader/x-vertex">
+    attribute vec3 aVertexPosition;
+    attribute vec3 aVertexNormal;
+    attribute vec4 aVertexColor;
+    attribute vec4 aVertexColorDif;
+    attribute vec2 aVertexOption;
+
+    uniform mat4 uMVMatrix;
+    uniform mat4 uPMatrix;
+    uniform mat3 uNMatrix;
+
+    uniform bool uOffscreen;
+
+    uniform float uIntArray[12];
+    bool vPaint=true;
+
+    varying vec4 vColor;
+    varying vec3 vTransformedNormal;
+    varying vec4 vPosition;
+
+    void main(void) 
+    {
+   
+            if (uOffscreen) 
+            {
+                vPosition = uMVMatrix * vec4(aVertexPosition, 1.0);
+                gl_Position = uPMatrix * vPosition;
+                vColor = aVertexColorDif;
+            }
+            else
+            {
+                if (aVertexColor.a==0.0) 
+                {
+                    return;
+                }
+                else
+                {  
+                    vPaint=true;
+
+                    for(int i=0;i<12;i++) //si es un número mayor a 12 de cadenas hay que modificar esto, por eso esta parte se va a hacer por script
+                    {
+                        if (uIntArray[i] == 0.0  ) 
+                        {
+                            break;
+                        }
+                        else
+                        {
+                            if(aVertexOption[1] == uIntArray[i] )
+                            {
+                                vPaint=false;
+                                break;
+                            }                    
+                        }
+                    }
+
+                    if (vPaint)
+                    {
+                        vPosition = uMVMatrix * vec4(aVertexPosition, 1.0);
+                        gl_Position = uPMatrix * vPosition;
+                        vColor = aVertexColor;        
+                        vTransformedNormal = uNMatrix * aVertexNormal;  
+                    }   
+                    else
+                    {
+                        return;
+                    }             
+                }
+
+            }       
+
+    }
+</script>
+
+
+
+
+    <script type="text/javascript">
+
+
+    var gl;
+    var NoBloques=0;
+    var program;
+    var Cx,Cy,Cz;
+    var y=0;
+    var x=0;
+    var CameraPosition;
+    var ZoomMotion;
+
+    var contadores=0;
+
+    var SeleccionadoNumber=0;
+    var habiaSeleccionado=false;
+    var haySeleccionado=false;
+
+    var AtomosSeleccionados=[];
+
+    var verArray=[];
+    var indexAlmacenado=[];
+     
+    var molecule;
+
+    var nVertices= 867;
+    //var nVertices= 48;
+    var nColor= 1156;
+    //var nColor= 64;
+    var nIndices= 1536; //se le suma 289 para hacer el offset 
+    //var nIndices= 54;
+    var nChain=578;
+
+    var LstBtnsChain = [] //es para los botones de las cadenas
+
+    ///////////////////////estos radios son para las esferas CPK dependiendo del elemento
+    var radiusH = 1.2;
+    var rC_PB_TI_CA= 1.7;
+    var radiusN = 1.6;
+    var radiusO = 1.5;
+    var radiusS = 1.8;
+    var radiusP = 1.9;
+    var rDefault = 1.7;
+
+    ///////////////en estos arreglos se guardan los vértices para las demás plantillas de esferas CPK
+    var verArrayH=[];
+    var verArrayC_PB_TI_CA=[];
+    var verArrayN=[];
+    var verArrayO=[];
+    var verArrayS=[];
+    var verArrayP=[];
+    var verArrayDefault=[];
+    /////////////////////////////////////////
+
+    /////////////////////////////////////////// PARA DIGITOS ///////////////////////////////////////////
+    var diPosition = [];
+    var diColor = [];
+    var diNormal = [];
+    var diIndex = [];
+    var chaIndex = [];
+
+    var diPosBuffer = [];
+    var diColorBuffer = [];
+    var diNorBuffer = [];
+    var diIndexBuffer = [];
+    var chaIndexBuffer = [];
+    /////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    function initGL(canvas) {
+        try { 
+            gl = canvas.getContext("experimental-webgl")||canvas.getContext("webgl")||canvas.getContext("webkit-3d")||canvas.getContext("moz-webgl");
+            gl.viewportWidth = canvas.width;
+            gl.viewportHeight = canvas.height;
+        } catch (e) {
+        }
+        if (!gl) {
+            alert("Su visualizador no tiene soporte para WebGL");
+        }
+    }  
+    
+
+    var mvMatrix = mat4.create();
+    var mvMatrixStack = [];
+    var pMatrix = mat4.create();
+
+    function mvPushMatrix() {
+        var copy = mat4.create();
+        mat4.set(mvMatrix, copy);
+        mvMatrixStack.push(copy);
+    }
+
+    function mvPopMatrix() {
+        if (mvMatrixStack.length == 0) {
+            throw "Invalid popMatrix!";
+        }
+        mvMatrix = mvMatrixStack.pop();
+    }
+
+    function setMatrixUniforms() {
+        gl.uniformMatrix4fv(currentProgram.pMatrixUniform, false, pMatrix);
+        gl.uniformMatrix4fv(currentProgram.mvMatrixUniform, false, mvMatrix);
+
+        var normalMatrix = mat3.create();
+        mat4.toInverseMat3(mvMatrix, normalMatrix);
+        mat3.transpose(normalMatrix);
+        gl.uniformMatrix3fv(currentProgram.nMatrixUniform, false, normalMatrix);
+    }
+
+    function degToRad(degrees) {
+        return degrees * Math.PI / 180;
+    }
+
+
+    var mouseDown = false;
+    var lastMouseX = null;
+    var lastMouseY = null;
+
+    var RotationMatrix = mat4.create();
+    mat4.identity(RotationMatrix);
+
+    
+    function GetAtom(pix)
+    {
+        var NumAtom = 0;
+        var atmS=null;
+
+        NumAtom= pix[2]*255*255 + pix[1]*255 + pix[0];
+        atmS= molecule.LstAtoms[NumAtom-1];
+
+        return atmS;
+    }
+
+
+    //////////////////////////////////////////////// VARIABLES GLOBALES PARA COLORES REALES //////////////////////////////
+
+    //Para los bloques Solid
+    var sphereVertexPositionBuffer=[[]];
+    var sphereVertexNormalBuffer=[[]];
+    var sphereVertexIndexBuffer=[];
+    var sphereVertexColorBuffer=[];
+
+    var ChainBuffer=[];  //es para asignarle a cáda vértice a qué cadena le corresponde
+
+    var vertexPositionData = [[]];
+    var ColorTotal = [[]];
+    var indexData = [[]];
+    var normalDataN = [[]];
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    //Para los bloques Wire
+    var sphereWirePositionBuffer=[[]];
+    var sphereWireNormalBuffer=[[]];
+    var sphereWireIndexBuffer=[];
+    var sphereWireColorBuffer=[];
+
+    var ChainBufferW=[];  //es para asignarle a cáda vértice a qué cadena le corresponde
+    var ChainIndexW=[];
+    ChainBufferW[0]=new Array();
+    ChainIndexW[0]=new Array();
+
+    var wirePositionData = [[]];
+    var wireColorTotal = [[]];
+    var wireindexData = [[]];
+    var wirenormalDataN = [[]];
+
+    //////////////////////////////////////////////// VARIABLES GLOBALES PARA COLORES DIFFUSOS //////////////////////////////
+    var sphereDifufusePositionBuffer=[];
+    var sphereDiffuseNormalBuffer=[];
+    var sphereDiffuseIndexBuffer=[];
+    var sphereVertexColorBufferDiffuse=[];
+
+    var ChainBufferDif=[];  //es para asignarle a cáda vértice a qué cadena le corresponde
+
+    var vertexPositionDataD = [[]];
+    var indexDataD = [[]];
+    var normalDataND= [[]];
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    ////////////////////////////////////////////// PARA LOS ENLACES /////////////////////////////////////////////7
+    var ChainBufferB=[];
+
+    var colorVertexBuffer= null; //es para el buffer de los enlaces
+
+    var ChainIndexB=[]; //para los enlaces
+   
+
+/////////////////////////////////////////////////////////////////////////////////
+
+    var normalData = [];
+
+    
+/////////////////////////////////////////////////
+
+    var latitudeBands = 16;
+    var longitudeBands =  16;
+    var radius = 0.2;
+
+    var NBW=0; 
+    var NBS=0;
+    var LstBW=[]; 
+    var LstBS=[];
+
+    var verticesLineas = [];
+    var colores=[];
+    var ChainIndex=[];
+
+    var ArrayIndx=[]; //variable para las cadenas que se apagan y prenden
+
+    var RegFrame=false;
+
+
+    function drawScene(diffuse) 
+    {
+       
+
+        gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
+        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+        mat4.perspective(45, gl.viewportWidth / gl.viewportHeight, 0.1, 1000.0, pMatrix);
+       
+        currentProgram = perFragmentProgram;
+        gl.useProgram(currentProgram);
+
+        gl.uniform1i(currentProgram.useLightingUniform, 1);        
+        gl.uniform3f(currentProgram.ambientColorUniform,0.2,0.2,0.2);
+        gl.uniform3f(currentProgram.pointLightingLocationUniform,0.0,0.0,0.0);
+        gl.uniform3f(currentProgram.pointLightingColorUniform,0.8,0.8,0.8);       
+
+        mat4.identity(mvMatrix);
+
+        mat4.translate(mvMatrix, [x, y, -CameraPosition]);
+
+        mat4.multiply(mvMatrix, RotationMatrix);
+        //mat4.multiplyVec4(mvMatrix, vec, vecResul);  //matriz por vector = vector
+        //mat4.multiplyVec4(pMatrix, vecResul, vecResul2);
+
+        //console.log("mvMatrix:["+mvMatrix[0]+"]["+mvMatrix[1]+"]["+mvMatrix[2]+"]["+mvMatrix[3]+"]  ["+mvMatrix[4]+"]["+mvMatrix[5]+"]["+mvMatrix[6]+"]["+mvMatrix[7]+"]  ["+mvMatrix[8]+"]["+mvMatrix[9]+"]["+mvMatrix[10]+"]["+mvMatrix[11]+"]  ["+mvMatrix[12]+"]["+mvMatrix[13]+"]["+mvMatrix[14]+"]["+mvMatrix[15]+"]");
+
+        //console.log("vecResul2:["+vecResul2[0]+"]["+vecResul2[1]+"]["+vecResul2[2]+"]["+vecResul2[3]+"]");
+
+         //console.log("pMatrix:["+pMatrix[0]+"]["+pMatrix[1]+"]["+pMatrix[2]+"]["+pMatrix[3]+"]  ["+pMatrix[4]+"]["+pMatrix[5]+"]["+pMatrix[6]+"]["+pMatrix[7]+"]  ["+pMatrix[8]+"]["+pMatrix[9]+"]["+pMatrix[10]+"]["+pMatrix[11]+"]  ["+pMatrix[12]+"]["+pMatrix[13]+"]["+pMatrix[14]+"]["+pMatrix[15]+"]");
+
+        if(trjbnd && autoplay) //trjbnd y autoplay están declaradas en el Main   
+        {
+            console.log("empieza play");
+            console.log("coordsX:"+coordsX.length);
+            console.log("pos:"+pos);
+            console.log("frame:"+numframe);
+            var apuntador=0;
+            var NoAtomos = molecule.LstAtoms.length;
+            var Restantes = NoAtomos - ((NoBloques-1) * NoPaso);
+            //alert(coordsX);
+            if((pos*molecule.LstAtoms.length)==coordsX.length && bndbuffer==0)
+            {
+                bndbuffer=1;
+                pos=0;
+            }
+            else if((pos*molecule.LstAtoms.length)==coordsX1.length && bndbuffer==1)
+            {
+                bndbuffer=0;
+                pos=0;
+            }
+            //alert(molecule.LstAtoms.length);
+            if (NoBloques==1) 
+            {
+
+                //para limpiarlos
+                vertexPositionData[0]=[];
+
+                for(var i=0; i<NoAtomos; i++)
+                {       
+
+                    //la molecula tiene la lista de átomos en orden, entonces lo recorro con los i
+                    var atom = molecule.LstAtoms[i];
+                    
+                    //lo unico que va a cambiar es el buffer de posiciones VertexPosition
+                    //alert(coordsX[molecule.LstAtoms.length*pos+i]);
+                    var s=molecule.LstAtoms.length*pos+i;
+
+                    if(bndbuffer==0)
+                    {   
+                        if (atom.Representation=='SB') 
+                        {
+                            ////////////si el átomo está en SB                
+                            for (var z=0; z<verArray.length;) 
+                            {    
+                            vertexPositionData[0].push(verArray[z]   + coordsX[s] -Cx);
+                            vertexPositionData[0].push(verArray[z+1] + coordsY[s] -Cy);
+                            vertexPositionData[0].push(verArray[z+2] + coordsZ[s] -Cz);    
+                                           
+                            z=z+3;
+                            }   
+
+                        }
+                        else if (atom.Representation=='Cpk')
+                        {
+                            ////////////si el átomo está en cpk                
+                            for (var z=0; z<verArray.length;) 
+                            {    
+                            vertexPositionData[0].push(verArrayH[z]   + coordsX[s] -Cx);
+                            vertexPositionData[0].push(verArrayH[z+1] + coordsY[s] -Cy);
+                            vertexPositionData[0].push(verArrayH[z+2] + coordsZ[s] -Cz);    
+                                           
+                            z=z+3;
+                            }  
+                            ///////////////////////////
+                            ///////////cambiar también los difusos 
+                        }
+                        else
+                        {
+
+
+                        }
+                        
+                        //alert("vertex"+vertexPositionData[atom.BloqueSolid-1].length);      
+                   
+                    }
+                    else
+                    {
+                        for (var z=0; z<verArray.length;) 
+                        {    
+                        vertexPositionData[0].push(verArray[z]   + coordsX1[s] -Cx);
+                        vertexPositionData[0].push(verArray[z+1] + coordsY1[s] -Cy);
+                        vertexPositionData[0].push(verArray[z+2] + coordsZ1[s] -Cz);  
+                                       
+                        z=z+3;
+                        }      
+                           
+                    }          
+           
+                    apuntador=apuntador+1;
+
+                //-----------------------------------------------------------------------------------------------------
+                }
+
+                ///////////////////////////////////////// COLORES REALES ///////////////////////////////////////////////
+
+                //sphereVertexPositionBuffer[0] = gl.createBuffer();
+                gl.bindBuffer(gl.ARRAY_BUFFER, sphereVertexPositionBuffer[0]);
+                gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertexPositionData[0]), gl.DYNAMIC_DRAW);
+                sphereVertexPositionBuffer[0].itemSize = 3;
+                sphereVertexPositionBuffer[0].numItems = vertexPositionData[0].length / 3;
+                gl.bindBuffer(gl.ARRAY_BUFFER, null);
+
+
+            }
+            else
+            {
+                for(var i=0; i<NoBloques; i++)
+                {           
+                  
+                    vertexPositionData[i]=[];
+
+                    if (i==NoBloques-1) //esto es que llegó al último
+                    {
+                        for(var j=0; j<Restantes; j++)
+                        {
+
+                           //la molecula tiene la lista de átomos en orden, entonces lo recorro con los i
+                            var atom = molecule.LstAtoms[apuntador];
+                            
+                            //lo unico que va a cambiar es el buffer de posiciones VertexPosition
+                            //alert(coordsX[molecule.LstAtoms.length*pos+i]);
+                            var s=molecule.LstAtoms.length*pos+apuntador;
+
+                            if(bndbuffer==0)
+                            {                   
+                                if (atom.Representation=='SB') 
+                                {
+                                    ////////////si el átomo está en SB                
+                                    for (var z=0; z<verArray.length;) 
+                                    {    
+                                    vertexPositionData[i].push(verArray[z]   + coordsX[s] -Cx);
+                                    vertexPositionData[i].push(verArray[z+1] + coordsY[s] -Cy);
+                                    vertexPositionData[i].push(verArray[z+2] + coordsZ[s] -Cz);    
+                                                   
+                                    z=z+3;
+                                    }   
+
+                                }
+                                else if (atom.Representation=='Cpk')
+                                {
+                                    ////////////si el átomo está en cpk                
+                                    for (var z=0; z<verArray.length;) 
+                                    {    
+                                    vertexPositionData[i].push(verArrayH[z]   + coordsX[s] -Cx);
+                                    vertexPositionData[i].push(verArrayH[z+1] + coordsY[s] -Cy);
+                                    vertexPositionData[i].push(verArrayH[z+2] + coordsZ[s] -Cz);    
+                                                   
+                                    z=z+3;
+                                    }  
+                                    ///////////////////////////
+                                    ///////////cambiar también los difusos
+
+
+                                     
+                                }
+                                else
+                                {
+
+
+                                }
+                           
+                            }
+                            else
+                            {
+                                alert("coordsX1");
+                                for (var z=0; z<verArray.length;) 
+                                {    
+                                vertexPositionData[i].push(verArray[z]   + coordsX1[s] -Cx);
+                                vertexPositionData[i].push(verArray[z+1] + coordsY1[s] -Cy);
+                                vertexPositionData[i].push(verArray[z+2] + coordsZ1[s] -Cz);  
+                                               
+                                z=z+3;
+                                }      
+                                   
+                            }          
+                               
+                                apuntador=apuntador+1;
+
+                                //---------------------------------------------------------------------------------------------------------
+                            }                         
+                         
+                    }
+                    else
+                    {
+                        for (var j=0; j <NoPaso; j++) 
+                        {
+                  
+                            //la molecula tiene la lista de átomos en orden, entonces lo recorro con los i
+                            var atom = molecule.LstAtoms[apuntador];
+                            
+                            //lo unico que va a cambiar es el buffer de posiciones VertexPosition
+                            //alert(coordsX[molecule.LstAtoms.length*pos+i]);
+                            var s=molecule.LstAtoms.length*pos+apuntador;
+
+                            if(bndbuffer==0)
+                            {                   
+                                if (atom.Representation=='SB') 
+                                {
+                                    ////////////si el átomo está en SB                
+                                    for (var z=0; z<verArray.length;) 
+                                    {    
+                                    vertexPositionData[i].push(verArray[z]   + coordsX[s] -Cx);
+                                    vertexPositionData[i].push(verArray[z+1] + coordsY[s] -Cy);
+                                    vertexPositionData[i].push(verArray[z+2] + coordsZ[s] -Cz);    
+                                                   
+                                    z=z+3;
+                                    }   
+
+                                }
+                                else if (atom.Representation=='Cpk')
+                                {
+                                    ////////////si el átomo está en cpk                
+                                    for (var z=0; z<verArray.length;) 
+                                    {    
+                                    vertexPositionData[i].push(verArrayH[z]   + coordsX[s] -Cx);
+                                    vertexPositionData[i].push(verArrayH[z+1] + coordsY[s] -Cy);
+                                    vertexPositionData[i].push(verArrayH[z+2] + coordsZ[s] -Cz);    
+                                                   
+                                    z=z+3;
+                                    }  
+                                    ///////////////////////////
+                                    ///////////cambiar también los difusos
+
+
+                                     
+                                }
+                                else
+                                {
+
+                                    
+                                }
+                   
+                            }
+                            else
+                            {
+                                for (var z=0; z<verArray.length;) 
+                                {    
+                                    vertexPositionData[i].push(verArray[z]   + coordsX1[s] -Cx);
+                                    vertexPositionData[i].push(verArray[z+1] + coordsY1[s] -Cy);
+                                    vertexPositionData[i].push(verArray[z+2] + coordsZ1[s] -Cz);  
+                                                   
+                                    z=z+3;
+                                }      
+                           
+                            }          
+                            apuntador=apuntador+1;
+
+                        //---------------------------------------------------------------------------------------------------
+                        }
+                    
+                    }
+                }
+
+                ////////////for para la tarjeta gráfica
+                for(var z=0; z<NBS; z++)
+                {
+                    gl.bindBuffer(gl.ARRAY_BUFFER, sphereVertexPositionBuffer[z]);
+                    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertexPositionData[z]), gl.DYNAMIC_DRAW);
+                    sphereVertexPositionBuffer[z].itemSize = 3;
+                    sphereVertexPositionBuffer[z].numItems = vertexPositionData[z].length / 3;
+                    gl.bindBuffer(gl.ARRAY_BUFFER, null);
+
+                }
+
+
+            }
+
+
+            //----------------------------------------  PARTE DE LOS ENLACES   ------------------------------------------------
+            //alert(verticesLineas);
+            verticesLineas = [];
+            for (var i=0; i<molecule.LstBonds.length;i++)
+            {
+                var atm1 = molecule.LstBonds[i].LstAtoms[0];  //checar lo de la continuidad de los PDB cómo aparecen los átomos
+                var atm2 = molecule.LstBonds[i].LstAtoms[1];
+               
+                var temp1 = molecule.LstAtoms.length*pos;
+                var temp2 = molecule.LstAtoms.length*pos;
+
+                //alert("entra");
+                //alert("Atm1:"+temp1 + atm1.NumberAtom);
+                //alert("Atm2:"+temp2 + atm2.NumberAtom);
+
+                if ( temp1 <= coordsX.length )  //ESTÁ DENTRO DEL BUFFER1
+                {
+                    //alert(temp1);
+                    //alert(atm1.NumberAtom);                                                       ///////////////////////////??????????? idAtom
+                    //alert(parseInt(temp1) + parseInt(atm1.NumberAtom));
+                    //alert(coordsX[parseInt(temp1) + parseInt(atm1.NumberAtom)]);
+                    verticesLineas.push(coordsX[parseInt(temp1) + parseInt(atm1.id) -1] -Cx); /////////////////////////////77
+                    verticesLineas.push(coordsY[parseInt(temp1) + parseInt(atm1.id) -1] -Cy);
+                    verticesLineas.push(coordsZ[parseInt(temp1) + parseInt(atm1.id) -1] -Cz);
+
+                }
+                else
+                {
+                    alert("no");
+
+                }
+                if ( temp2 <= coordsX.length )  //ESTÁ DENTRO DEL BUFFER1
+                {
+                    verticesLineas.push(coordsX[parseInt(temp2) + parseInt(atm2.id) -1] -Cx);
+                    verticesLineas.push(coordsY[parseInt(temp2) + parseInt(atm2.id) -1] -Cy);
+                    verticesLineas.push(coordsZ[parseInt(temp2) + parseInt(atm2.id) -1] -Cz);
+
+                }
+                else
+                {
+                    alert("no2");
+                }
+
+
+            }
+            //alert(verticesLineas);
+
+            gl.bindBuffer(gl.ARRAY_BUFFER, lineVertexPositionBuffer);
+            gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(verticesLineas), gl.DYNAMIC_DRAW);
+            lineVertexPositionBuffer.itemSize = 3;
+            lineVertexPositionBuffer.numItems = verticesLineas.length/3;
+            gl.bindBuffer(gl.ARRAY_BUFFER, null);
+
+
+            //console.log("sale");
+         
+            framecounter(numframe+1);
+
+            if(numframe<parseInt(totalframes)-1)
+            {
+                if (RegFrame==false) 
+                {
+                    numframe++;
+                    pos++;
+                }
+                
+            }
+            else
+            {
+                console.log("segunda parte");
+                var button=document.getElementById("playpause");
+                button.value="Play";
+                //agregado
+                autoplay=false;
+                totalframes=0;
+                bndfinal=false;
+                numframe=0;
+                pos=0;
+                console.log("segunda parte sale");
+            }
+       
+ 
+            for(var i=0; i<NBS; i++) //colores reales
+            {              
+                    gl.bindBuffer(gl.ARRAY_BUFFER, sphereVertexPositionBuffer[i]);
+                    gl.vertexAttribPointer(currentProgram.vertexPositionAttribute, sphereVertexPositionBuffer[i].itemSize, gl.FLOAT, false, 0, 0);
+                    gl.bindBuffer(gl.ARRAY_BUFFER, null);
+
+                    gl.bindBuffer(gl.ARRAY_BUFFER, sphereVertexColorBuffer[i]);
+                    gl.vertexAttribPointer(currentProgram.textureCoordAttribute, sphereVertexColorBuffer[i].itemSize, gl.FLOAT, false, 0, 0);
+                    gl.bindBuffer(gl.ARRAY_BUFFER, null);
+
+                    gl.bindBuffer(gl.ARRAY_BUFFER, sphereVertexColorBufferDiffuse[i]);
+                    gl.vertexAttribPointer(currentProgram.ColorDif, sphereVertexColorBufferDiffuse[i].itemSize, gl.FLOAT, false, 0, 0);
+                    gl.bindBuffer(gl.ARRAY_BUFFER, null);
+
+                    gl.bindBuffer(gl.ARRAY_BUFFER, ChainBuffer[i]);
+                    gl.vertexAttribPointer(currentProgram.Opcion, ChainBuffer[i].itemSize, gl.FLOAT, false, 0, 0);
+                    gl.bindBuffer(gl.ARRAY_BUFFER, null);
+                    
+                   
+                    gl.bindBuffer(gl.ARRAY_BUFFER, sphereVertexNormalBuffer[i]);
+                    gl.vertexAttribPointer(currentProgram.vertexNormalAttribute, sphereVertexNormalBuffer[i].itemSize, gl.FLOAT, false, 0, 0);
+                    gl.bindBuffer(gl.ARRAY_BUFFER, null);
+
+                    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, sphereVertexIndexBuffer[i]);                    
+                    gl.drawElements(gl.TRIANGLES, sphereVertexIndexBuffer[i].numItems, gl.UNSIGNED_SHORT, 0);
+                    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null); 
+                    setMatrixUniforms();
+                   
+            }
+
+            //////PARTE DE LOS ENLACES
+
+            gl.bindBuffer(gl.ARRAY_BUFFER, colorVertexBuffer);
+            gl.vertexAttribPointer(currentProgram.textureCoordAttribute, colorVertexBuffer.itemSize, gl.FLOAT, false, 0, 0);
+            gl.bindBuffer(gl.ARRAY_BUFFER, null);
+
+            gl.bindBuffer(gl.ARRAY_BUFFER, lineNormalBuffer);
+            gl.vertexAttribPointer(currentProgram.vertexNormalAttribute, 3, gl.FLOAT, false, 0, 0);
+            gl.bindBuffer(gl.ARRAY_BUFFER, null);
+
+            gl.bindBuffer(gl.ARRAY_BUFFER, ChainBufferB);
+            gl.vertexAttribPointer(currentProgram.Opcion, ChainBufferB.itemSize, gl.FLOAT, false, 0, 0);
+            gl.bindBuffer(gl.ARRAY_BUFFER, null);
+                    
+            gl.bindBuffer(gl.ARRAY_BUFFER, lineVertexPositionBuffer);
+            gl.vertexAttribPointer(currentProgram.vertexPositionAttribute, 3, gl.FLOAT, false, 0, 0);            
+            gl.drawArrays(gl.LINES, 0, lineVertexPositionBuffer.numItems);
+            gl.bindBuffer(gl.ARRAY_BUFFER, null);
+            setMatrixUniforms();
+
+
+        }
+
+        else       ///////////////////////////////////////////////////////------sin dinámica------------------------///////////////////////////////////////
+        {
+            
+                for(var i=0; i<NBS; i++) //colores reales
+                {              
+                    gl.bindBuffer(gl.ARRAY_BUFFER, sphereVertexPositionBuffer[i]);
+                    gl.vertexAttribPointer(currentProgram.vertexPositionAttribute, sphereVertexPositionBuffer[i].itemSize, gl.FLOAT, false, 0, 0);
+                    gl.bindBuffer(gl.ARRAY_BUFFER, null);
+
+                    gl.bindBuffer(gl.ARRAY_BUFFER, sphereVertexColorBuffer[i]);
+                    gl.vertexAttribPointer(currentProgram.textureCoordAttribute, sphereVertexColorBuffer[i].itemSize, gl.FLOAT, false, 0, 0);
+                    gl.bindBuffer(gl.ARRAY_BUFFER, null);
+
+                    gl.bindBuffer(gl.ARRAY_BUFFER, sphereVertexColorBufferDiffuse[i]);
+                    gl.vertexAttribPointer(currentProgram.ColorDif, sphereVertexColorBufferDiffuse[i].itemSize, gl.FLOAT, false, 0, 0);
+                    gl.bindBuffer(gl.ARRAY_BUFFER, null);
+
+                    gl.bindBuffer(gl.ARRAY_BUFFER, ChainBuffer[i]);
+                    gl.vertexAttribPointer(currentProgram.Opcion, ChainBuffer[i].itemSize, gl.FLOAT, false, 0, 0);
+                    gl.bindBuffer(gl.ARRAY_BUFFER, null);
+                   
+                    gl.bindBuffer(gl.ARRAY_BUFFER, sphereVertexNormalBuffer[i]);
+                    gl.vertexAttribPointer(currentProgram.vertexNormalAttribute, sphereVertexNormalBuffer[i].itemSize, gl.FLOAT, false, 0, 0);
+                    gl.bindBuffer(gl.ARRAY_BUFFER, null);
+
+                    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, sphereVertexIndexBuffer[i]);                    
+                    gl.drawElements(gl.TRIANGLES, sphereVertexIndexBuffer[i].numItems, gl.UNSIGNED_SHORT, 0);
+                    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
+                    setMatrixUniforms();
+                   
+                }
+                
+
+                 //////////////////////////////////////////////////////////////////lineas
+                    gl.bindBuffer(gl.ARRAY_BUFFER, colorVertexBuffer);
+                    gl.vertexAttribPointer(currentProgram.textureCoordAttribute, colorVertexBuffer.itemSize, gl.FLOAT, false, 0, 0);
+                    gl.bindBuffer(gl.ARRAY_BUFFER, null);
+
+                    gl.bindBuffer(gl.ARRAY_BUFFER, ChainBufferB);
+                    gl.vertexAttribPointer(currentProgram.Opcion, ChainBufferB.itemSize, gl.FLOAT, false, 0, 0);
+                    gl.bindBuffer(gl.ARRAY_BUFFER, null);
+
+                    gl.bindBuffer(gl.ARRAY_BUFFER, lineNormalBuffer);
+                    gl.vertexAttribPointer(currentProgram.vertexNormalAttribute, 3, gl.FLOAT, false, 0, 0);
+                    gl.bindBuffer(gl.ARRAY_BUFFER, null);
+                    
+                    gl.bindBuffer(gl.ARRAY_BUFFER, lineVertexPositionBuffer);
+                    gl.vertexAttribPointer(currentProgram.vertexPositionAttribute, 3, gl.FLOAT, false, 0, 0);                   
+                    gl.drawArrays(gl.LINES, 0, lineVertexPositionBuffer.numItems);
+                    gl.bindBuffer(gl.ARRAY_BUFFER, null);
+                    setMatrixUniforms();
+
+                ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        
+        }
+
+    }
+
+     function framecounter(frame)
+            {        
+                if(bndknowframe==true)
+                {
+                    totalframes=sizeglob/molecule.LstAtoms.length;
+                    data.innerHTML="frame " + (frame) + "(" + parseInt((frame*100)/totalframes1) +  "%) of " + parseInt(totalframes1);
+                }
+                else
+                {
+                    totalframes=sizeglob/molecule.LstAtoms.length;
+                    data.innerHTML="frame " + (frame) + " of " + parseInt(totalframes);
+                }        
+            }
+
+
+    function tick() {
+        requestAnimFrame(tick);
+     
+            drawScene(0);
+
+        
+    }
+
+
+    function zoomin() {
+        return function (event){
+        CameraPosition=CameraPosition-ZoomMotion;
+        y=y-.1;
+        drawScene(0);
+        }
+    }
+
+    function zoomout() {
+        return function (event){
+        CameraPosition=CameraPosition+ZoomMotion;
+        y=y+.1;
+        drawScene(0);
+        }
+    }
+
+
+    function PauseTraj()
+    {
+        return function (event)
+        {
+            var button=document.getElementById("playpause");
+            var reg=document.getElementById("Rew");
+            var forw=document.getElementById("Forw");
+            //alert("autoplay:"+autoplay + " trjbnd:"+trjbnd);
+           
+
+            if(!autoplay)
+            {
+                //alert(trjbnd);
+                autoplay=true;
+                button.value="Pause"; 
+                reg.style.display="none";
+                RegFrame=false;
+
+            }
+            else
+            {
+                trjbnd = !trjbnd;
+                
+                if (trjbnd) 
+                {
+                    //alert("Pause");
+                    button.value="Pause";    
+                    reg.style.display="none"; 
+                    forw.style.display="none";    
+                    RegFrame=false;
+
+                }
+                else
+                {
+                    //alert("Play");
+                    button.value="Play";
+                    reg.style.display="inline";
+                    forw.style.display="inline";
+                    pos--;
+                    numframe--;
+                }
+            }
+        }
+    }
+
+    function RewFor(op)
+    {
+        return function (event)
+        {
+            if (op==1) 
+            {
+                if (pos>0) 
+                {
+                    pos--;
+                    numframe--;
+                }
+
+            }
+            else
+            {
+                if(numframe<parseInt(totalframes)-1)
+                {
+                    pos++;
+                    numframe++;
+                }
+            }
+            
+            var apuntador=0;
+            var NoAtomos = molecule.LstAtoms.length;
+            var Restantes = NoAtomos - ((NoBloques-1) * NoPaso);
+            //alert(coordsX);
+            if((pos*molecule.LstAtoms.length)==coordsX.length && bndbuffer==0)
+            {
+                bndbuffer=1;
+                pos=0;
+            }
+            else if((pos*molecule.LstAtoms.length)==coordsX1.length && bndbuffer==1)
+            {
+                bndbuffer=0;
+                pos=0;
+            }
+            //alert(molecule.LstAtoms.length);
+            if (NoBloques==1) 
+            {
+
+                //para limpiarlos
+                vertexPositionData[0]=[];
+
+                for(var i=0; i<NoAtomos; i++)
+                {       
+
+                    //la molecula tiene la lista de átomos en orden, entonces lo recorro con los i
+                    var atom = molecule.LstAtoms[i];
+                    
+                    //lo unico que va a cambiar es el buffer de posiciones VertexPosition
+                    //alert(coordsX[molecule.LstAtoms.length*pos+i]);
+                    var s=molecule.LstAtoms.length*pos+i;
+
+                    if(bndbuffer==0)
+                    {   
+                        if (atom.Representation=='SB') 
+                        {
+                            ////////////si el átomo está en SB                
+                            for (var z=0; z<verArray.length;) 
+                            {    
+                            vertexPositionData[0].push(verArray[z]   + coordsX[s] -Cx);
+                            vertexPositionData[0].push(verArray[z+1] + coordsY[s] -Cy);
+                            vertexPositionData[0].push(verArray[z+2] + coordsZ[s] -Cz);    
+                                           
+                            z=z+3;
+                            }   
+
+                        }
+                        else if (atom.Representation=='Cpk')
+                        {
+                            ////////////si el átomo está en cpk                
+                            for (var z=0; z<verArray.length;) 
+                            {    
+                            vertexPositionData[0].push(verArrayH[z]   + coordsX[s] -Cx);
+                            vertexPositionData[0].push(verArrayH[z+1] + coordsY[s] -Cy);
+                            vertexPositionData[0].push(verArrayH[z+2] + coordsZ[s] -Cz);    
+                                           
+                            z=z+3;
+                            }  
+                            ///////////////////////////
+                            ///////////cambiar también los difusos 
+                        }
+                        else
+                        {
+
+
+                        }
+                        
+                        //alert("vertex"+vertexPositionData[atom.BloqueSolid-1].length);      
+                   
+                    }
+                    else
+                    {
+                        for (var z=0; z<verArray.length;) 
+                        {    
+                        vertexPositionData[0].push(verArray[z]   + coordsX1[s] -Cx);
+                        vertexPositionData[0].push(verArray[z+1] + coordsY1[s] -Cy);
+                        vertexPositionData[0].push(verArray[z+2] + coordsZ1[s] -Cz);  
+                                       
+                        z=z+3;
+                        }      
+                           
+                    }          
+           
+                    apuntador=apuntador+1;
+
+                //-----------------------------------------------------------------------------------------------------
+                }
+
+                ///////////////////////////////////////// COLORES REALES ///////////////////////////////////////////////
+
+                //sphereVertexPositionBuffer[0] = gl.createBuffer();
+                gl.bindBuffer(gl.ARRAY_BUFFER, sphereVertexPositionBuffer[0]);
+                gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertexPositionData[0]), gl.DYNAMIC_DRAW);
+                sphereVertexPositionBuffer[0].itemSize = 3;
+                sphereVertexPositionBuffer[0].numItems = vertexPositionData[0].length / 3;
+                gl.bindBuffer(gl.ARRAY_BUFFER, null);
+
+
+            }
+            else
+            {
+                for(var i=0; i<NoBloques; i++)
+                {           
+                  
+                    vertexPositionData[i]=[];
+
+                    if (i==NoBloques-1) //esto es que llegó al último
+                    {
+                        for(var j=0; j<Restantes; j++)
+                        {
+
+                           //la molecula tiene la lista de átomos en orden, entonces lo recorro con los i
+                            var atom = molecule.LstAtoms[apuntador];
+                            
+                            //lo unico que va a cambiar es el buffer de posiciones VertexPosition
+                            //alert(coordsX[molecule.LstAtoms.length*pos+i]);
+                            var s=molecule.LstAtoms.length*pos+apuntador;
+
+                            if(bndbuffer==0)
+                            {                   
+                                if (atom.Representation=='SB') 
+                                {
+                                    ////////////si el átomo está en SB                
+                                    for (var z=0; z<verArray.length;) 
+                                    {    
+                                    vertexPositionData[i].push(verArray[z]   + coordsX[s] -Cx);
+                                    vertexPositionData[i].push(verArray[z+1] + coordsY[s] -Cy);
+                                    vertexPositionData[i].push(verArray[z+2] + coordsZ[s] -Cz);    
+                                                   
+                                    z=z+3;
+                                    }   
+
+                                }
+                                else if (atom.Representation=='Cpk')
+                                {
+                                    ////////////si el átomo está en cpk                
+                                    for (var z=0; z<verArray.length;) 
+                                    {    
+                                    vertexPositionData[i].push(verArrayH[z]   + coordsX[s] -Cx);
+                                    vertexPositionData[i].push(verArrayH[z+1] + coordsY[s] -Cy);
+                                    vertexPositionData[i].push(verArrayH[z+2] + coordsZ[s] -Cz);    
+                                                   
+                                    z=z+3;
+                                    }  
+                                    ///////////////////////////
+                                    ///////////cambiar también los difusos
+
+
+                                     
+                                }
+                                else
+                                {
+
+
+                                }
+                           
+                            }
+                            else
+                            {
+                                alert("coordsX1");
+                                for (var z=0; z<verArray.length;) 
+                                {    
+                                vertexPositionData[i].push(verArray[z]   + coordsX1[s] -Cx);
+                                vertexPositionData[i].push(verArray[z+1] + coordsY1[s] -Cy);
+                                vertexPositionData[i].push(verArray[z+2] + coordsZ1[s] -Cz);  
+                                               
+                                z=z+3;
+                                }      
+                                   
+                            }          
+                               
+                                apuntador=apuntador+1;
+
+                                //---------------------------------------------------------------------------------------------------------
+                            }                         
+                         
+                    }
+                    else
+                    {
+                        for (var j=0; j <NoPaso; j++) 
+                        {
+                  
+                            //la molecula tiene la lista de átomos en orden, entonces lo recorro con los i
+                            var atom = molecule.LstAtoms[apuntador];
+                            
+                            //lo unico que va a cambiar es el buffer de posiciones VertexPosition
+                            //alert(coordsX[molecule.LstAtoms.length*pos+i]);
+                            var s=molecule.LstAtoms.length*pos+apuntador;
+
+                            if(bndbuffer==0)
+                            {                   
+                                if (atom.Representation=='SB') 
+                                {
+                                    ////////////si el átomo está en SB                
+                                    for (var z=0; z<verArray.length;) 
+                                    {    
+                                    vertexPositionData[i].push(verArray[z]   + coordsX[s] -Cx);
+                                    vertexPositionData[i].push(verArray[z+1] + coordsY[s] -Cy);
+                                    vertexPositionData[i].push(verArray[z+2] + coordsZ[s] -Cz);    
+                                                   
+                                    z=z+3;
+                                    }   
+
+                                }
+                                else if (atom.Representation=='Cpk')
+                                {
+                                    ////////////si el átomo está en cpk                
+                                    for (var z=0; z<verArray.length;) 
+                                    {    
+                                    vertexPositionData[i].push(verArrayH[z]   + coordsX[s] -Cx);
+                                    vertexPositionData[i].push(verArrayH[z+1] + coordsY[s] -Cy);
+                                    vertexPositionData[i].push(verArrayH[z+2] + coordsZ[s] -Cz);    
+                                                   
+                                    z=z+3;
+                                    }  
+                                    ///////////////////////////
+                                    ///////////cambiar también los difusos
+
+
+                                     
+                                }
+                                else
+                                {
+
+                                    
+                                }
+                   
+                            }
+                            else
+                            {
+                                for (var z=0; z<verArray.length;) 
+                                {    
+                                    vertexPositionData[i].push(verArray[z]   + coordsX1[s] -Cx);
+                                    vertexPositionData[i].push(verArray[z+1] + coordsY1[s] -Cy);
+                                    vertexPositionData[i].push(verArray[z+2] + coordsZ1[s] -Cz);  
+                                                   
+                                    z=z+3;
+                                }      
+                           
+                            }          
+                            apuntador=apuntador+1;
+
+                        //---------------------------------------------------------------------------------------------------
+                        }
+                    
+                    }
+                }
+
+                ////////////for para la tarjeta gráfica
+                for(var z=0; z<NBS; z++)
+                {
+                    gl.bindBuffer(gl.ARRAY_BUFFER, sphereVertexPositionBuffer[z]);
+                    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertexPositionData[z]), gl.DYNAMIC_DRAW);
+                    sphereVertexPositionBuffer[z].itemSize = 3;
+                    sphereVertexPositionBuffer[z].numItems = vertexPositionData[z].length / 3;
+                    gl.bindBuffer(gl.ARRAY_BUFFER, null);
+
+                }
+
+
+            }
+
+
+            //----------------------------------------  PARTE DE LOS ENLACES   ------------------------------------------------
+            //alert(verticesLineas);
+            verticesLineas = [];
+            for (var i=0; i<molecule.LstBonds.length;i++)
+            {
+                var atm1 = molecule.LstBonds[i].LstAtoms[0];  //checar lo de la continuidad de los PDB cómo aparecen los átomos
+                var atm2 = molecule.LstBonds[i].LstAtoms[1];
+               
+                var temp1 = molecule.LstAtoms.length*pos;
+                var temp2 = molecule.LstAtoms.length*pos;
+
+                //alert("entra");
+                //alert("Atm1:"+temp1 + atm1.NumberAtom);
+                //alert("Atm2:"+temp2 + atm2.NumberAtom);
+
+                if ( temp1 <= coordsX.length )  //ESTÁ DENTRO DEL BUFFER1
+                {
+                    //alert(temp1);
+                    //alert(atm1.NumberAtom);                                                       ///////////////////////////??????????? idAtom
+                    //alert(parseInt(temp1) + parseInt(atm1.NumberAtom));
+                    //alert(coordsX[parseInt(temp1) + parseInt(atm1.NumberAtom)]);
+                    verticesLineas.push(coordsX[parseInt(temp1) + parseInt(atm1.id) -1] -Cx); /////////////////////////////77
+                    verticesLineas.push(coordsY[parseInt(temp1) + parseInt(atm1.id) -1] -Cy);
+                    verticesLineas.push(coordsZ[parseInt(temp1) + parseInt(atm1.id) -1] -Cz);
+
+                }
+                else
+                {
+                    alert("no");
+
+                }
+                if ( temp2 <= coordsX.length )  //ESTÁ DENTRO DEL BUFFER1
+                {
+                    verticesLineas.push(coordsX[parseInt(temp2) + parseInt(atm2.id) -1] -Cx);
+                    verticesLineas.push(coordsY[parseInt(temp2) + parseInt(atm2.id) -1] -Cy);
+                    verticesLineas.push(coordsZ[parseInt(temp2) + parseInt(atm2.id) -1] -Cz);
+
+                }
+                else
+                {
+                    alert("no2");
+                }
+
+
+            }
+            //alert(verticesLineas);
+
+            gl.bindBuffer(gl.ARRAY_BUFFER, lineVertexPositionBuffer);
+            gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(verticesLineas), gl.DYNAMIC_DRAW);
+            lineVertexPositionBuffer.itemSize = 3;
+            lineVertexPositionBuffer.numItems = verticesLineas.length/3;
+            gl.bindBuffer(gl.ARRAY_BUFFER, null);
+
+
+            //console.log("sale");
+         
+            framecounter(numframe+1);               
+ 
+            for(var i=0; i<NBS; i++) //colores reales
+            {              
+                    gl.bindBuffer(gl.ARRAY_BUFFER, sphereVertexPositionBuffer[i]);
+                    gl.vertexAttribPointer(currentProgram.vertexPositionAttribute, sphereVertexPositionBuffer[i].itemSize, gl.FLOAT, false, 0, 0);
+                    gl.bindBuffer(gl.ARRAY_BUFFER, null);
+
+                    gl.bindBuffer(gl.ARRAY_BUFFER, sphereVertexColorBuffer[i]);
+                    gl.vertexAttribPointer(currentProgram.textureCoordAttribute, sphereVertexColorBuffer[i].itemSize, gl.FLOAT, false, 0, 0);
+                    gl.bindBuffer(gl.ARRAY_BUFFER, null);
+
+                    gl.bindBuffer(gl.ARRAY_BUFFER, sphereVertexColorBufferDiffuse[i]);
+                    gl.vertexAttribPointer(currentProgram.ColorDif, sphereVertexColorBufferDiffuse[i].itemSize, gl.FLOAT, false, 0, 0);
+                    gl.bindBuffer(gl.ARRAY_BUFFER, null);
+
+                    gl.bindBuffer(gl.ARRAY_BUFFER, ChainBuffer[i]);
+                    gl.vertexAttribPointer(currentProgram.Opcion, ChainBuffer[i].itemSize, gl.FLOAT, false, 0, 0);
+                    gl.bindBuffer(gl.ARRAY_BUFFER, null);
+                    
+                   
+                    gl.bindBuffer(gl.ARRAY_BUFFER, sphereVertexNormalBuffer[i]);
+                    gl.vertexAttribPointer(currentProgram.vertexNormalAttribute, sphereVertexNormalBuffer[i].itemSize, gl.FLOAT, false, 0, 0);
+                    gl.bindBuffer(gl.ARRAY_BUFFER, null);
+
+                    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, sphereVertexIndexBuffer[i]);                    
+                    gl.drawElements(gl.TRIANGLES, sphereVertexIndexBuffer[i].numItems, gl.UNSIGNED_SHORT, 0);
+                    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null); 
+                    setMatrixUniforms();
+                   
+            }
+
+            //////PARTE DE LOS ENLACES
+
+            gl.bindBuffer(gl.ARRAY_BUFFER, colorVertexBuffer);
+            gl.vertexAttribPointer(currentProgram.textureCoordAttribute, colorVertexBuffer.itemSize, gl.FLOAT, false, 0, 0);
+            gl.bindBuffer(gl.ARRAY_BUFFER, null);
+
+            gl.bindBuffer(gl.ARRAY_BUFFER, lineNormalBuffer);
+            gl.vertexAttribPointer(currentProgram.vertexNormalAttribute, 3, gl.FLOAT, false, 0, 0);
+            gl.bindBuffer(gl.ARRAY_BUFFER, null);
+
+            gl.bindBuffer(gl.ARRAY_BUFFER, ChainBufferB);
+            gl.vertexAttribPointer(currentProgram.Opcion, ChainBufferB.itemSize, gl.FLOAT, false, 0, 0);
+            gl.bindBuffer(gl.ARRAY_BUFFER, null);
+                    
+            gl.bindBuffer(gl.ARRAY_BUFFER, lineVertexPositionBuffer);
+            gl.vertexAttribPointer(currentProgram.vertexPositionAttribute, 3, gl.FLOAT, false, 0, 0);            
+            gl.drawArrays(gl.LINES, 0, lineVertexPositionBuffer.numItems);
+            gl.bindBuffer(gl.ARRAY_BUFFER, null);
+            setMatrixUniforms();
+          
+            
+        }
+
+    }
+
+
+    function webGLStart() {
+        var canvas = document.getElementById("canvas"); 
+        canvas.width=window.innerWidth;
+        canvas.height=window.innerHeight;
+        initGL(canvas);
+        initShaders();
+        initPlantillaEsfera();
+        if (RepresentacionInicial=='SpheresBonds') 
+        {
+            initBuffersSpheresSB();
+            initBuffersBonds();
+        }
+        else if(RepresentacionInicial=='Bonds')
+        {
+            initBuffersBonds();
+        }
+        else if(RepresentacionInicial=='CPK')
+        {
+            initBuffersSpheresCPK();   
+        }
+        
+
+        gl.clearColor(0.0, 0.0, 0.0, 1.0);
+
+        gl.clearDepth(1.0);
+
+        gl.enable(gl.DEPTH_TEST);
+        gl.depthFunc(gl.LESS);
+
+        gl.enable(gl.BLEND);
+        gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+
+        canvas.onmousedown = handleMouseDown;
+        document.onmouseup = handleMouseUp;
+        document.onmousemove = handleMouseMove;
+
+        var data=document.getElementById('zoom');
+        var button;
+
+        button = document.createElement( 'input' );
+        button.value = 'Pause';
+        button.type="button";
+        button.style.fontSize = "15px";
+        button.id="playpause";
+        button.style.display="none"
+        button.onclick=PauseTraj();
+        zoom.appendChild( button );
+
+        button = document.createElement( 'input' );
+        button.value = 'Rewind';
+        button.type="button";
+        button.style.fontSize = "15px";
+        button.id="Rew";
+        button.style.display="none"
+        button.onclick=RewFor(1);
+        zoom.appendChild( button );
+
+        button = document.createElement( 'input' );
+        button.value = 'Forward';
+        button.type="button";
+        button.style.fontSize = "15px";
+        button.id="Forw";
+        button.style.display="none"
+        button.onclick=RewFor(2);
+        zoom.appendChild( button );
+
+
+        button = document.createElement( 'input' );
+        button.value = '+';
+        button.type="button";
+        button.style.fontSize = "15px";
+        button.onclick=zoomin();
+        data.appendChild( button );
+
+        button = document.createElement( 'input' );
+        button.value = '-';
+        button.type="button";
+        button.style.fontSize = "15px";
+        button.onclick=zoomout();
+        data.appendChild( button );
+        document.getElementById("Console_input").focus();
+        
+        tick();
+    }
+
+
+
+        var coordsX= new Float32Array();
+        var coordsX1= new Float32Array();
+        var coordsY= new Float32Array();
+        var coordsY1=new Float32Array();
+    	var coordsZ= new Float32Array();
+    	var coordsZ1=new Float32Array();
+        var nav = navigator.userAgent.toLowerCase();
+        if(nav.indexOf("msie") != -1){
+        console.log("Estas visitandome desde IE");
+    } else if(nav.indexOf("firefox") != -1){
+        console.log("Estas visitandome desde Firefox");
+    } else if(nav.indexOf("opera") != -1){
+        console.log("Estas visitandome desde Opera");
+    } else if(nav.indexOf("chrome") != -1){
+        console.log("Estas visitandome desde Chrome");
+    } else {
+        console.log("Desconosco el navegador del que me visitas");
+    }
+      
+
+    function manejadorEventoWorker1(event){
+            if(event.data.cmd=="enviar"){
+                var anter=sizeglob;
+                var datanter;
+                sizeglob+=event.data.dato.length;
+                if(event.data.bndarray){
+                    var anter1=sizearrayp;
+                    sizearrayp+=event.data.dato.length;
+                    datanter=coordsX;
+                    coordsX = new Float32Array(sizearrayp); 
+                    coordsX.set(datanter,0);
+                    coordsX.set(event.data.dato,anter1);
+                    datanter=coordsY;
+                    coordsY = new Float32Array(sizearrayp); 
+                    coordsY.set(datanter,0);
+                    coordsY.set(event.data.dato1,anter1);
+                    datanter=coordsZ;
+                    coordsZ = new Float32Array(sizearrayp); 
+                    coordsZ.set(datanter,0);
+                    coordsZ.set(event.data.dato2,anter1);
+                }else{
+                    var anter1=sizearrayp;
+                    sizearrayp+=event.data.dato.length;
+                    datanter=coordsX1;
+                    coordsX1 = new Float32Array(sizearrayp);
+                    coordsX1.set(datanter,0);
+                    coordsX1.set(event.data.dato,anter1); 
+                    datanter=coordsY1;
+                    coordsY1 = new Float32Array(sizearrayp); 
+                    coordsY1.set(datanter,0);
+                    coordsY1.set(event.data.dato1,anter1);
+                    datanter=coordsZ1;
+                    coordsZ1 = new Float32Array(sizearrayp); 
+                    coordsZ1.set(datanter,0);
+                    coordsZ1.set(event.data.dato2,anter1);
+                }
+            }else if(event.data.cmd=="endfinal"){
+			bndfinal=true;
+            data.innerHTML="Trajectory Reading Succesful";
+	    }else{
+              requireddata=true;  
+              readstart=readend-event.data.wast; 
+              readend=readstart+20999999; 
+            }
+
+    }
+
+ 
+    </script>
+</head>
+<body   onload="webGLStart();">
+<div id="Console" class="Console" style="background-color:yellow;width:0;height:0;left:50px;top:300px;position:relative;">
+            <div id="console_title"></div>
+            <div id="label1"></div>
+            <div id="outputdiv" style="width:245px;height:110px;background-color:blue;left:20px;top:20px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;HTMoL output
+                <textarea id="Console_output" style="width:220px;height:80px;left:10px"></textarea>
+            </div>
+            <div id="console_inputdiv" style="width:245px;height:110px;background-color:white;left:20px;top:20px">&nbsp;&nbsp;&nbsp;Input HTMoL commands
+                <textarea id="Console_input" style="width:220px;height:80px;left:10px" onkeypress="main.onTestChange(event);"></textarea>
+            </div>
+        </div>
+<div id="Contenedor"> 
+
+    <div id="WebGL-Out"  style="height:0px;"> <!-- not change value -->
+        
+    </div>
+    <div id='data'>
+        
+    </div>
+    <canvas id="canvas" > <!-- not change value -->
+    
+    <div id='zoom'>
+        
+    </div>
+
+</div>
+
+</body>
+<script type="text/javascript">
+    var main= new Main();
+    var container = document.getElementById("Contenedor");
+    main.MakeMenu(container);
+</script>
+   
+</html> 
