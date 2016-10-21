@@ -149,9 +149,9 @@ function ProcesarSeleccion()
 
         for(var i=0; i < ArrCont.length; i++)
         {
-            gl.bindBuffer(gl.ARRAY_BUFFER, sphereVertexColorBuffer[i]);
-            gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(ColorTotal[i]), gl.DYNAMIC_DRAW);
-            sphereVertexColorBuffer[i].numItems = ColorTotal[i].length / 4;
+            gl.bindBuffer(gl.ARRAY_BUFFER, sphereVertexColorBuffer[ArrCont[i]]);
+            gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(ColorTotal[ArrCont[i]]), gl.DYNAMIC_DRAW);
+            sphereVertexColorBuffer[ArrCont[i]].numItems = ColorTotal[ArrCont[i]].length / 4;
             gl.bindBuffer(gl.ARRAY_BUFFER, null);   
             
         }
@@ -231,6 +231,7 @@ function CambiarRepresentacion(Repre) //Representacion es en lo que se va a camb
 {
     if (Repre == 'Cpk') 
     {
+        var primero=true;
         var ArrCont=[];
         for (var o in AtomosSeleccionados) //son los objetos seleccionados 
         {
@@ -367,6 +368,7 @@ function CambiarRepresentacion(Repre) //Representacion es en lo que se va a camb
                 //alert("eyyyyyyyyyytra aqui");
             }
             ato.Representation = "CPK";
+          
 
             var agregar=true;
             for(var i=0; i < ArrCont.length; i++)
@@ -381,15 +383,15 @@ function CambiarRepresentacion(Repre) //Representacion es en lo que se va a camb
             {
                 ArrCont.push(ato.BloqueSolid-1);
             }                    
-           
         }
+
 
         for(var i=0; i < ArrCont.length; i++)
         {
-            gl.bindBuffer(gl.ARRAY_BUFFER, sphereVertexPositionBuffer[i]);
-            gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertexPositionData[i]), gl.DYNAMIC_DRAW);
-            sphereVertexPositionBuffer[i].itemSize = 3;
-            sphereVertexPositionBuffer[i].numItems = vertexPositionData[i].length / 3;
+            gl.bindBuffer(gl.ARRAY_BUFFER, sphereVertexPositionBuffer[ArrCont[i]]);
+            gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertexPositionData[ArrCont[i]]), gl.DYNAMIC_DRAW);
+            sphereVertexPositionBuffer[ArrCont[i]].itemSize = 3;
+            sphereVertexPositionBuffer[i].numItems = vertexPositionData[ArrCont[i]].length / 3;
             gl.bindBuffer(gl.ARRAY_BUFFER, null);
 
         }
@@ -400,6 +402,7 @@ function CambiarRepresentacion(Repre) //Representacion es en lo que se va a camb
     else if (Repre == 'SB') 
     {
         //alert(88);
+        var ArrCont=[];
         for (var o in AtomosSeleccionados) //son los objetos seleccionados 
         {
             //primero encontrar con el átomo "o" la posición en el bloque y en el array, y hacerle un splice ahí
@@ -417,17 +420,34 @@ function CambiarRepresentacion(Repre) //Representacion es en lo que se va a camb
                 z = z + 3;
             }
 
-
-
             ato.Representation = "SB";
 
-            gl.bindBuffer(gl.ARRAY_BUFFER, sphereVertexPositionBuffer[ato.BloqueSolid - 1]);
-            gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertexPositionData[ato.BloqueSolid - 1]), gl.DYNAMIC_DRAW);
-            sphereVertexPositionBuffer[ato.BloqueSolid - 1].itemSize = 3;
-            sphereVertexPositionBuffer[ato.BloqueSolid - 1].numItems = vertexPositionData[ato.BloqueSolid - 1].length / 3;
-            gl.bindBuffer(gl.ARRAY_BUFFER, null);
-            
+            var agregar=true;
+            for(var i=0; i < ArrCont.length; i++)
+            {
+                if ((ato.BloqueSolid-1)==ArrCont[i]) 
+                {
+                    agregar=false;
+                    break;
+                }
+            }
+            if (agregar==true) 
+            {
+                ArrCont.push(ato.BloqueSolid-1);
+            }                        
         }
+
+        for(var i=0; i < ArrCont.length; i++)
+        {
+            gl.bindBuffer(gl.ARRAY_BUFFER, sphereVertexPositionBuffer[ArrCont[i]]);
+            gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertexPositionData[ArrCont[i]]), gl.DYNAMIC_DRAW);
+            sphereVertexPositionBuffer[ArrCont[i]].itemSize = 3;
+            sphereVertexPositionBuffer[i].numItems = vertexPositionData[ArrCont[i]].length / 3;
+            gl.bindBuffer(gl.ARRAY_BUFFER, null);
+
+        }
+
+
 
     } else if (Repre == 'B') {
 
