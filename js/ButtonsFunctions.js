@@ -364,8 +364,6 @@ function CambiarRepresentacion(Repre) //Representacion es en lo que se va a camb
 
                     z = z + 3;
                 }
-
-                //alert("eyyyyyyyyyytra aqui");
             }
             ato.Representation = "CPK";
           
@@ -391,7 +389,7 @@ function CambiarRepresentacion(Repre) //Representacion es en lo que se va a camb
             gl.bindBuffer(gl.ARRAY_BUFFER, sphereVertexPositionBuffer[ArrCont[i]]);
             gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertexPositionData[ArrCont[i]]), gl.DYNAMIC_DRAW);
             sphereVertexPositionBuffer[ArrCont[i]].itemSize = 3;
-            sphereVertexPositionBuffer[i].numItems = vertexPositionData[ArrCont[i]].length / 3;
+            sphereVertexPositionBuffer[ArrCont[i]].numItems = vertexPositionData[ArrCont[i]].length / 3;
             gl.bindBuffer(gl.ARRAY_BUFFER, null);
 
         }
@@ -442,7 +440,7 @@ function CambiarRepresentacion(Repre) //Representacion es en lo que se va a camb
             gl.bindBuffer(gl.ARRAY_BUFFER, sphereVertexPositionBuffer[ArrCont[i]]);
             gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertexPositionData[ArrCont[i]]), gl.DYNAMIC_DRAW);
             sphereVertexPositionBuffer[ArrCont[i]].itemSize = 3;
-            sphereVertexPositionBuffer[i].numItems = vertexPositionData[ArrCont[i]].length / 3;
+            sphereVertexPositionBuffer[ArrCont[i]].numItems = vertexPositionData[ArrCont[i]].length / 3;
             gl.bindBuffer(gl.ARRAY_BUFFER, null);
 
         }

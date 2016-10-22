@@ -21,8 +21,7 @@ function initBuffersSpheresSB()
     var ultimo=0;
 
     indexData = [[]];
-    var ColorTotalDiffuse = [[]];
-
+    
     
     var apuntador = 0;
 
@@ -95,10 +94,6 @@ function initBuffersSpheresSB()
 
 
             }
-            //ColorTotalDiffuse[0].push(molecule.LstAtoms[apuntador].ColorRGBDiffuse);
-            //ColorTotalDiffuse[0]=ColorTotalDiffuse[0].concat(Dif[i]);
-            //ColorTotal[0].push(molecule.LstAtoms[apuntador].ColorRGB);
-            //alert(ColorTotalDiffuse[0].length);
 
             for (var latNumber=0; latNumber < latitudeBands; latNumber++) 
             {
@@ -185,20 +180,10 @@ function initBuffersSpheresSB()
             ColorTotal[i]=new Array();  
             indexData[i]=new Array();
             ColorTotalDiffuse[i]=new Array();
-
-            vertexPositionDataD[i]=new Array();
-            normalDataND[i]=new Array();
-            indexDataD[i]=new Array();
+          
             LstBS[i]=new Array();
 
             ChainIndex[i]=new Array();
-
-       
-                /*
-                sphereVertexPositionBuffer[i]=new Array();
-                sphereVertexColorBuffer[i]=new Array();
-                sphereVertexIndexBuffer[i]=new Array();
-                sphereVertexNormalBuffer[i] =new Array();*/
 
             if (i==NoBloques-1) //esto es que llegó al último
             {
@@ -255,9 +240,6 @@ function initBuffersSpheresSB()
 
                         //ColorDiffuse=ColorDiffuse.concat(molecule.LstAtoms[apuntador].ColorRGBDiffuse);
                     }
-                    //alert("vertices: " + vertexPositionData[i].length);
-                    //ColorTotalDiffuse[i]=ColorTotalDiffuse[i].concat(molecule.LstAtoms[apuntador].ColorRGBDiffuse);
-                    //ColorTotal[i]=ColorTotal[i].concat(molecule.LstAtoms[apuntador].ColorRGB);
 
                     for (var latNumber=0; latNumber < latitudeBands; latNumber++) 
                     {
@@ -280,14 +262,6 @@ function initBuffersSpheresSB()
 
                     //---------------------------------------------------------------------------------------------------------
                 }
-                //alert(ColorTotalDiffuse[i].length);
-                //alert(ColorTotal[i].length);
-
-
-                //alert(vertexPositionData[i].length / 3);
-                //alert(ColorTotal[i]);
-                //alert(indexData[i]);
-
 
                 sphereVertexPositionBuffer[i] = gl.createBuffer();
                 gl.bindBuffer(gl.ARRAY_BUFFER, sphereVertexPositionBuffer[i]);
@@ -489,12 +463,7 @@ function initBuffersSpheresCPK() {
 
     var ultimo = 0;
 
-    indexData = [
-        []
-    ];
-    var ColorTotalDiffuse = [
-        []
-    ];
+    indexData = [[]];
 
 
     var apuntador = 0;
@@ -733,13 +702,6 @@ function initBuffersSpheresCPK() {
 
             ChainIndex[i] = new Array();
 
-
-            /*
-            sphereVertexPositionBuffer[i]=new Array();
-            sphereVertexColorBuffer[i]=new Array();
-            sphereVertexIndexBuffer[i]=new Array();
-            sphereVertexNormalBuffer[i] =new Array();*/
-
             if (i == NoBloques - 1) //esto es que llegó al último
             {
                 for (var j = 0; j < Restantes; j++) {
@@ -880,9 +842,6 @@ function initBuffersSpheresCPK() {
                         ChainIndex[i].push(molecule.LstAtoms[apuntador].idChain);
                         ChainIndex[i].push(molecule.LstAtoms[apuntador].idChain);
                     }
-                    //alert("vertices: " + vertexPositionData[i].length);
-                    //ColorTotalDiffuse[i]=ColorTotalDiffuse[i].concat(molecule.LstAtoms[apuntador].ColorRGBDiffuse);
-                    //ColorTotal[i]=ColorTotal[i].concat(molecule.LstAtoms[apuntador].ColorRGB);
 
                     for (var latNumber = 0; latNumber < latitudeBands; latNumber++) {
                         for (var longNumber = 0; longNumber < longitudeBands; longNumber++) {
@@ -903,14 +862,6 @@ function initBuffersSpheresCPK() {
 
                     //---------------------------------------------------------------------------------------------------------
                 }
-                //alert(ColorTotalDiffuse[i].length);
-                //alert(ColorTotal[i].length);
-
-
-                //alert(vertexPositionData[i].length / 3);
-                //alert(ColorTotal[i]);
-                //alert(indexData[i]);
-
 
                 sphereVertexPositionBuffer[i] = gl.createBuffer();
                 gl.bindBuffer(gl.ARRAY_BUFFER, sphereVertexPositionBuffer[i]);
@@ -1167,12 +1118,13 @@ function initBuffersBonds()
 {
     ///////////////////////////////////////////////////////// LINEAS DE ENLACES //////////////////////////////////////////////
     verticesLineas=[];
-    ChainIndexB=[];
-    lineVertexPositionBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, lineVertexPositionBuffer);
-    var linesNormals=[];
+    ChainIndexBnd=[];
     colores=[];
     colorBndDif=[];
+    linesNormals=[];
+
+    lineVertexPositionBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, lineVertexPositionBuffer);    
     for(var t in molecule.LstBonds)
     {
         var o = molecule.LstBonds[t];
@@ -1199,17 +1151,17 @@ function initBuffersBonds()
         /////////////////////////
         if ( o.LstAtoms[0].idChain ==  o.LstAtoms[1].idChain  ) 
         {
-            ChainIndexB.push( o.LstAtoms[0].idChain );
-            ChainIndexB.push( o.LstAtoms[0].idChain );
-            ChainIndexB.push( o.LstAtoms[0].idChain );
-            ChainIndexB.push( o.LstAtoms[0].idChain );
+            ChainIndexBnd.push( o.LstAtoms[0].idChain );
+            ChainIndexBnd.push( o.LstAtoms[0].idChain );
+            ChainIndexBnd.push( o.LstAtoms[0].idChain );
+            ChainIndexBnd.push( o.LstAtoms[0].idChain );
         }
         else
         {
-            ChainIndexB.push( 0.5 );
-            ChainIndexB.push( 0.5 );
-            ChainIndexB.push( 0.5 );
-            ChainIndexB.push( 0.5 );
+            ChainIndexBnd.push( 0.5 );
+            ChainIndexBnd.push( 0.5 );
+            ChainIndexBnd.push( 0.5 );
+            ChainIndexBnd.push( 0.5 );
         }
         colorBndDif.push(0);
         colorBndDif.push(0);
@@ -1238,11 +1190,11 @@ function initBuffersBonds()
     lineNormalBuffer.itemSize=3;
     lineNormalBuffer.numItems=linesNormals.length/3;
 
-    ChainBufferB = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, ChainBufferB); 
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(ChainIndexB), gl.DYNAMIC_DRAW);
-    ChainBufferB.itemSize=2;
-    ChainBufferB.numItems=ChainIndexB.length/2;   
+    ChainBufferBnd = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, ChainBufferBnd); 
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(ChainIndexBnd), gl.DYNAMIC_DRAW);
+    ChainBufferBnd.itemSize=2;
+    ChainBufferBnd.numItems=ChainIndexBnd.length/2;   
     
     ColorDifBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, ColorDifBuffer);

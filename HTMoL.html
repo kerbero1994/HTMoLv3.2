@@ -170,8 +170,7 @@ Copyright (C) 2014  Alvarez Rivera Leonardo,Becerra Toledo Francisco Javier, Veg
     var haySeleccionado=false;
 
     var AtomosSeleccionados=[];
-
-    var verArray=[];
+    
     var indexAlmacenado=[];
      
     var molecule;
@@ -284,84 +283,55 @@ Copyright (C) 2014  Alvarez Rivera Leonardo,Becerra Toledo Francisco Javier, Veg
         return atmS;
     }
 
+    var ArrayIndx=[]; //variable para las cadenas que se apagan y prenden
+    //es para la función de procesar cadena que afecta al fragment shader
 
-    //////////////////////////////////////////////// VARIABLES GLOBALES PARA COLORES REALES //////////////////////////////
+    //////////////////////////////////////////////// VARIABLES GLOBALES PARA ESFERAS //////////////////////////////
 
-    //Para los bloques Solid
+    //para la plantilla
+    var normalData = [];
+    var verArray=[];
+
+    //Para esferas
     var sphereVertexPositionBuffer=[[]];
     var sphereVertexNormalBuffer=[[]];
     var sphereVertexIndexBuffer=[];
     var sphereVertexColorBuffer=[];
-
     var ChainBuffer=[];  //es para asignarle a cáda vértice a qué cadena le corresponde
 
     var vertexPositionData = [[]];
     var ColorTotal = [[]];
     var indexData = [[]];
     var normalDataN = [[]];
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    var ChainIndex=[];
 
-    //Para los bloques Wire
-    var sphereWirePositionBuffer=[[]];
-    var sphereWireNormalBuffer=[[]];
-    var sphereWireIndexBuffer=[];
-    var sphereWireColorBuffer=[];
-
-    var ChainBufferW=[];  //es para asignarle a cáda vértice a qué cadena le corresponde
-    var ChainIndexW=[];
-    ChainBufferW[0]=new Array();
-    ChainIndexW[0]=new Array();
-
-    var wirePositionData = [[]];
-    var wireColorTotal = [[]];
-    var wireindexData = [[]];
-    var wirenormalDataN = [[]];
-
-    //////////////////////////////////////////////// VARIABLES GLOBALES PARA COLORES DIFFUSOS //////////////////////////////
-    var sphereDifufusePositionBuffer=[];
-    var sphereDiffuseNormalBuffer=[];
-    var sphereDiffuseIndexBuffer=[];
-    var sphereVertexColorBufferDiffuse=[];
-
-    var ChainBufferDif=[];  //es para asignarle a cáda vértice a qué cadena le corresponde
-
-    var vertexPositionDataD = [[]];
-    var indexDataD = [[]];
-    var normalDataND= [[]];
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    var sphereVertexColorBufferDiffuse=[];   ////para colores difusos
+    var ColorTotalDiffuse = [[]];
 
     ////////////////////////////////////////////// PARA LOS ENLACES /////////////////////////////////////////////7
-    var ChainBufferB=[];
-
+    var lineVertexPositionBuffer=[];    
     var colorVertexBuffer= null; //es para el buffer de los enlaces
+    var ColorDifBuffer = []; //buffer
+    var lineNormalBuffer=[];
+    var ChainBufferBnd=[]; //para el buffer del indice de la cadena
 
-    var ChainIndexB=[]; //para los enlaces
-   
-   var colorBndDif =[];
-
-   var ColorDifBuffer = [];
-
-/////////////////////////////////////////////////////////////////////////////////
-
-    var normalData = [];
+    var verticesLineas = [];    
+    var colores=[];
+    var colorBndDif =[]; //para el color diffuso, este se pone en 0 
+    var linesNormals=[]; //para el arreglo de js de las normales
+    var ChainIndexBnd=[]; //para el arreglo en javascript del indice de la cadena
 
     
-/////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////
 
     var latitudeBands = 16;
-    var longitudeBands =  16;
-    var radius = 0.2;
+    var longitudeBands =  16;    
 
     var NBW=0; 
     var NBS=0;
     var LstBW=[]; 
-    var LstBS=[];
-
-    var verticesLineas = [];
-    var colores=[];
-    var ChainIndex=[];
-
-    var ArrayIndx=[]; //variable para las cadenas que se apagan y prenden
+    var LstBS=[];    
+        
 
     var RegFrame=false;
 
@@ -449,7 +419,7 @@ Copyright (C) 2014  Alvarez Rivera Leonardo,Becerra Toledo Francisco Javier, Veg
                             }   
 
                         }
-                        else if (atom.Representation=='Cpk')
+                        else if (atom.Representation=='CPK')
                         {
                             ////////////si el átomo está en cpk                
                             for (var z=0; z<verArray.length;) 
@@ -535,7 +505,7 @@ Copyright (C) 2014  Alvarez Rivera Leonardo,Becerra Toledo Francisco Javier, Veg
                                     }   
 
                                 }
-                                else if (atom.Representation=='Cpk')
+                                else if (atom.Representation=='CPK')
                                 {
                                     ////////////si el átomo está en cpk                
                                     for (var z=0; z<verArray.length;) 
@@ -554,7 +524,7 @@ Copyright (C) 2014  Alvarez Rivera Leonardo,Becerra Toledo Francisco Javier, Veg
                                 }
                                 else
                                 {
-
+                                    
 
                                 }
                            
@@ -606,7 +576,7 @@ Copyright (C) 2014  Alvarez Rivera Leonardo,Becerra Toledo Francisco Javier, Veg
                                     }   
 
                                 }
-                                else if (atom.Representation=='Cpk')
+                                else if (atom.Representation=='CPK')
                                 {
                                     ////////////si el átomo está en cpk                
                                     for (var z=0; z<verArray.length;) 
@@ -769,11 +739,12 @@ Copyright (C) 2014  Alvarez Rivera Leonardo,Becerra Toledo Francisco Javier, Veg
                     gl.bindBuffer(gl.ARRAY_BUFFER, sphereVertexNormalBuffer[i]);
                     gl.vertexAttribPointer(currentProgram.vertexNormalAttribute, sphereVertexNormalBuffer[i].itemSize, gl.FLOAT, false, 0, 0);
                     gl.bindBuffer(gl.ARRAY_BUFFER, null);
+                    setMatrixUniforms();
 
                     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, sphereVertexIndexBuffer[i]);                    
                     gl.drawElements(gl.TRIANGLES, sphereVertexIndexBuffer[i].numItems, gl.UNSIGNED_SHORT, 0);
                     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null); 
-                    setMatrixUniforms();
+                    
                    
             }
 
@@ -787,16 +758,16 @@ Copyright (C) 2014  Alvarez Rivera Leonardo,Becerra Toledo Francisco Javier, Veg
             gl.vertexAttribPointer(currentProgram.vertexNormalAttribute, 3, gl.FLOAT, false, 0, 0);
             gl.bindBuffer(gl.ARRAY_BUFFER, null);
 
-            gl.bindBuffer(gl.ARRAY_BUFFER, ChainBufferB);
-            gl.vertexAttribPointer(currentProgram.Opcion, ChainBufferB.itemSize, gl.FLOAT, false, 0, 0);
+            gl.bindBuffer(gl.ARRAY_BUFFER, ChainBufferBnd);
+            gl.vertexAttribPointer(currentProgram.Opcion, ChainBufferBnd.itemSize, gl.FLOAT, false, 0, 0);
             gl.bindBuffer(gl.ARRAY_BUFFER, null);
+            setMatrixUniforms();
                     
             gl.bindBuffer(gl.ARRAY_BUFFER, lineVertexPositionBuffer);
             gl.vertexAttribPointer(currentProgram.vertexPositionAttribute, 3, gl.FLOAT, false, 0, 0);            
             gl.drawArrays(gl.LINES, 0, lineVertexPositionBuffer.numItems);
             gl.bindBuffer(gl.ARRAY_BUFFER, null);
-            setMatrixUniforms();
-
+            
 
         }
 
@@ -824,11 +795,12 @@ Copyright (C) 2014  Alvarez Rivera Leonardo,Becerra Toledo Francisco Javier, Veg
                     gl.bindBuffer(gl.ARRAY_BUFFER, sphereVertexNormalBuffer[i]);
                     gl.vertexAttribPointer(currentProgram.vertexNormalAttribute, sphereVertexNormalBuffer[i].itemSize, gl.FLOAT, false, 0, 0);
                     gl.bindBuffer(gl.ARRAY_BUFFER, null);
+                    setMatrixUniforms();
 
                     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, sphereVertexIndexBuffer[i]);                    
                     gl.drawElements(gl.TRIANGLES, sphereVertexIndexBuffer[i].numItems, gl.UNSIGNED_SHORT, 0);
                     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
-                    setMatrixUniforms();
+                    
                    
                 }
                 
@@ -842,19 +814,20 @@ Copyright (C) 2014  Alvarez Rivera Leonardo,Becerra Toledo Francisco Javier, Veg
                     gl.vertexAttribPointer(currentProgram.ColorDif, ColorDifBuffer.itemSize, gl.FLOAT, false, 0, 0);
                     gl.bindBuffer(gl.ARRAY_BUFFER, null);
                     
-                    gl.bindBuffer(gl.ARRAY_BUFFER, ChainBufferB);
-                    gl.vertexAttribPointer(currentProgram.Opcion, ChainBufferB.itemSize, gl.FLOAT, false, 0, 0);
+                    gl.bindBuffer(gl.ARRAY_BUFFER, ChainBufferBnd);
+                    gl.vertexAttribPointer(currentProgram.Opcion, ChainBufferBnd.itemSize, gl.FLOAT, false, 0, 0);
                     gl.bindBuffer(gl.ARRAY_BUFFER, null);
 
                     gl.bindBuffer(gl.ARRAY_BUFFER, lineNormalBuffer);
                     gl.vertexAttribPointer(currentProgram.vertexNormalAttribute, 3, gl.FLOAT, false, 0, 0);
                     gl.bindBuffer(gl.ARRAY_BUFFER, null);
+                    setMatrixUniforms();
                     
                     gl.bindBuffer(gl.ARRAY_BUFFER, lineVertexPositionBuffer);
                     gl.vertexAttribPointer(currentProgram.vertexPositionAttribute, 3, gl.FLOAT, false, 0, 0);                   
                     gl.drawArrays(gl.LINES, 0, lineVertexPositionBuffer.numItems);
                     gl.bindBuffer(gl.ARRAY_BUFFER, null);
-                    setMatrixUniforms();
+                    
 
                 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1017,7 +990,7 @@ Copyright (C) 2014  Alvarez Rivera Leonardo,Becerra Toledo Francisco Javier, Veg
                             }   
 
                         }
-                        else if (atom.Representation=='Cpk')
+                        else if (atom.Representation=='CPK')
                         {
                             ////////////si el átomo está en cpk                
                             for (var z=0; z<verArray.length;) 
@@ -1103,7 +1076,7 @@ Copyright (C) 2014  Alvarez Rivera Leonardo,Becerra Toledo Francisco Javier, Veg
                                     }   
 
                                 }
-                                else if (atom.Representation=='Cpk')
+                                else if (atom.Representation=='CPK')
                                 {
                                     ////////////si el átomo está en cpk                
                                     for (var z=0; z<verArray.length;) 
@@ -1174,7 +1147,7 @@ Copyright (C) 2014  Alvarez Rivera Leonardo,Becerra Toledo Francisco Javier, Veg
                                     }   
 
                                 }
-                                else if (atom.Representation=='Cpk')
+                                else if (atom.Representation=='CPK')
                                 {
                                     ////////////si el átomo está en cpk                
                                     for (var z=0; z<verArray.length;) 
@@ -1331,8 +1304,8 @@ Copyright (C) 2014  Alvarez Rivera Leonardo,Becerra Toledo Francisco Javier, Veg
             gl.vertexAttribPointer(currentProgram.vertexNormalAttribute, 3, gl.FLOAT, false, 0, 0);
             gl.bindBuffer(gl.ARRAY_BUFFER, null);
 
-            gl.bindBuffer(gl.ARRAY_BUFFER, ChainBufferB);
-            gl.vertexAttribPointer(currentProgram.Opcion, ChainBufferB.itemSize, gl.FLOAT, false, 0, 0);
+            gl.bindBuffer(gl.ARRAY_BUFFER, ChainBufferBnd);
+            gl.vertexAttribPointer(currentProgram.Opcion, ChainBufferBnd.itemSize, gl.FLOAT, false, 0, 0);
             gl.bindBuffer(gl.ARRAY_BUFFER, null);
                     
             gl.bindBuffer(gl.ARRAY_BUFFER, lineVertexPositionBuffer);

@@ -117,9 +117,10 @@ function handleMouseDown(event)
                     {
                         //alert("sin tecla crl");
                         //////////////////// EL ATOMO SELECCIONADO YA ESTABA SELECCIONADO ///////////////////////
-                        //------------------------------------------ poner todos en color normal ------------------------------------
+                        //----------------------------------- poner todos en color normal ------------------------------------
                         if (atom.Seleccionado == true) 
                         {
+                            var ArrCont=[];
                             //alert("ya estaba seleccionado")
                             /////////////////////////////////////////////////
                             for(var i=0; i < AtomosSeleccionados.length; i++ )
@@ -137,9 +138,27 @@ function handleMouseDown(event)
                                 }
                                 atomTemp.Seleccionado=false;
 
-                                gl.bindBuffer(gl.ARRAY_BUFFER, sphereVertexColorBuffer[atomTemp.BloqueSolid-1]);
-                                gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(ColorTotal[atomTemp.BloqueSolid-1]), gl.DYNAMIC_DRAW);
-                                sphereVertexColorBuffer[atomTemp.BloqueSolid-1].numItems = ColorTotal[atomTemp.BloqueSolid-1].length / 4;
+                                var agregar=true;
+                                for(var j=0; j < ArrCont.length; j++)
+                                {
+                                    if ((atomTemp.BloqueSolid-1)==ArrCont[j]) 
+                                    {
+                                        agregar=false;
+                                        break;
+                                    }
+                                }
+                                if (agregar==true) 
+                                {
+                                    ArrCont.push(atomTemp.BloqueSolid-1);
+                                }      
+                            }
+
+                            for(var i=0; i < ArrCont.length; i++)
+                            {
+                                gl.bindBuffer(gl.ARRAY_BUFFER, sphereVertexColorBuffer[ArrCont[i]]);
+                                gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(ColorTotal[ArrCont[i]]), gl.DYNAMIC_DRAW);
+                                sphereVertexColorBuffer[ArrCont[i]].itemSize = 4;
+                                sphereVertexColorBuffer[ArrCont[i]].numItems = ColorTotal[ArrCont[i]].length / 4;
                                 gl.bindBuffer(gl.ARRAY_BUFFER, null);
 
                             }
@@ -153,6 +172,7 @@ function handleMouseDown(event)
                         //------ poner todos en solid menos este
                         else 
                         {
+                            var ArrCont=[];
                             for(var i=0; i < AtomosSeleccionados.length; i++ )
                             {
                                 var atomTemp=AtomosSeleccionados[i];
@@ -168,9 +188,28 @@ function handleMouseDown(event)
                                 }
                                 atomTemp.Seleccionado=false;
 
-                                gl.bindBuffer(gl.ARRAY_BUFFER, sphereVertexColorBuffer[atomTemp.BloqueSolid-1]);
-                                gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(ColorTotal[atomTemp.BloqueSolid-1]), gl.DYNAMIC_DRAW);
-                                sphereVertexColorBuffer[atomTemp.BloqueSolid-1].numItems = ColorTotal[atomTemp.BloqueSolid-1].length / 4;
+                                var agregar=true;
+                                for(var j=0; j < ArrCont.length; j++)
+                                {
+                                    if ((atomTemp.BloqueSolid-1)==ArrCont[j]) 
+                                    {
+                                        agregar=false;
+                                        break;
+                                    }
+                                }
+                                if (agregar==true) 
+                                {
+                                    ArrCont.push(atomTemp.BloqueSolid-1);
+                                }     
+
+                            }
+
+                            for(var i=0; i < ArrCont.length; i++)
+                            {
+                                gl.bindBuffer(gl.ARRAY_BUFFER, sphereVertexColorBuffer[ArrCont[i]]);
+                                gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(ColorTotal[ArrCont[i]]), gl.DYNAMIC_DRAW);
+                                sphereVertexColorBuffer[ArrCont[i]].itemSize = 4;
+                                sphereVertexColorBuffer[ArrCont[i]].numItems = ColorTotal[ArrCont[i]].length / 4;
                                 gl.bindBuffer(gl.ARRAY_BUFFER, null);
 
                             }
