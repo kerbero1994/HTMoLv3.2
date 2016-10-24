@@ -1184,7 +1184,7 @@ function initBufBndSkele(Prendidos)
     gl.bindBuffer(gl.ARRAY_BUFFER, colSkeleVerBuf);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(coloresSkele), gl.DYNAMIC_DRAW);
     colSkeleVerBuf.itemSize=4;
-    colSkeleVerBuf.numItems=colores.length/4;
+    colSkeleVerBuf.numItems=coloresSkele.length/4;
 
     lineSkeleNorBuf = gl.createBuffer(); 
     gl.bindBuffer(gl.ARRAY_BUFFER, lineSkeleNorBuf);
