@@ -478,6 +478,9 @@ function Main()
         buttonOp = document.getElementById( "Bonds" );
         buttonOp.onclick=R_B();
 
+        buttonOp = document.getElementById( "Skeleton" );
+        buttonOp.onclick=R_Skele();
+
         
                 
         if(typeof(URLS) != "undefined")

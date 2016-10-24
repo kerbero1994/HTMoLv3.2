@@ -17,6 +17,13 @@ function R_B() {
     }
 }
 
+function R_Skele() {
+    return function(event) {
+        CambiarRepresentacion("Skeleton");
+    }
+}
+
+
 function SetView(mol, name){
     return function(event) {
          var newRotationMatrix = mat4.create();

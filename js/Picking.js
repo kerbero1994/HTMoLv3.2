@@ -42,7 +42,12 @@ function handleMouseDown(event)
             if ((pixelsUp[0] == pixelsDown[0] && pixelsUp[1] == pixelsDown[1] && pixelsUp[2] == pixelsDown[2]) || (pixelsLeft[0] == pixelsRight[0] && pixelsLeft[1] == pixelsRight[1] && pixelsLeft[2] == pixelsRight[2])) {
 
 
-               var atom = GetAtom(pixels);
+                var atom = GetAtom(pixels);
+                if (AtomosSeleccionados.length==molecule.LstAtoms.length) 
+                {
+                    AtomosSeleccionados=[];
+                }
+
                 if (atom.State == 'Active') 
                 {
                     ////////////////////////////////////////////////////////////////////////////////////////

@@ -837,8 +837,31 @@ Copyright (C) 2014  Alvarez Rivera Leonardo,Becerra Toledo Francisco Javier, Veg
                     gl.drawArrays(gl.LINES, 0, lineVertexPositionBuffer.numItems);
                     gl.bindBuffer(gl.ARRAY_BUFFER, null);
                     
-
                 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+                //////////////////////////////////////////////////////////////////lineas Skeletons
+                    gl.bindBuffer(gl.ARRAY_BUFFER, colSkeleVerBuf);
+                    gl.vertexAttribPointer(currentProgram.textureCoordAttribute, colSkeleVerBuf.itemSize, gl.FLOAT, false, 0, 0);
+                    gl.bindBuffer(gl.ARRAY_BUFFER, null);
+
+                    gl.bindBuffer(gl.ARRAY_BUFFER, ColSkeleDifBuf);
+                    gl.vertexAttribPointer(currentProgram.ColorDif, ColSkeleDifBuf.itemSize, gl.FLOAT, false, 0, 0);
+                    gl.bindBuffer(gl.ARRAY_BUFFER, null);
+                    
+                    gl.bindBuffer(gl.ARRAY_BUFFER, ChainSkeleBufBnd);
+                    gl.vertexAttribPointer(currentProgram.Opcion, ChainSkeleBufBnd.itemSize, gl.FLOAT, false, 0, 0);
+                    gl.bindBuffer(gl.ARRAY_BUFFER, null);
+
+                    gl.bindBuffer(gl.ARRAY_BUFFER, lineSkeleNorBuf);
+                    gl.vertexAttribPointer(currentProgram.vertexNormalAttribute, 3, gl.FLOAT, false, 0, 0);
+                    gl.bindBuffer(gl.ARRAY_BUFFER, null);
+                    setMatrixUniforms();
+                    
+                    gl.bindBuffer(gl.ARRAY_BUFFER, lineSkeleVerPosBuf);
+                    gl.vertexAttribPointer(currentProgram.vertexPositionAttribute, 3, gl.FLOAT, false, 0, 0);                   
+                    gl.drawArrays(gl.LINES, 0, lineSkeleVerPosBuf.numItems);
+                    gl.bindBuffer(gl.ARRAY_BUFFER, null);
+                    
                 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         
         }
