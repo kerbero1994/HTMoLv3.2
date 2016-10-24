@@ -433,6 +433,7 @@ function CambiarRepresentacion(Repre) //Representacion es en lo que se va a camb
                         ColorTotal[atom.BloqueSolid-1][mul + j + 3] = 0; //para apagar el color con el alpha
                         j=j+4;
                     }
+                    atom.State='Inactive';
                     var agregar=true;
                     for(var j=0; j < ArrCont2.length; j++)
                     {
@@ -488,6 +489,7 @@ function CambiarRepresentacion(Repre) //Representacion es en lo que se va a camb
                             ColorTotal[atom.BloqueSolid-1][mul + j + 3] = 0; //para apagar el color con el alpha
                             j=j+4;
                         }
+                        atom.State='Inactive';
                         var agregar=true;
                         for(var j=0; j < ArrCont2.length; j++)
                         {
@@ -566,6 +568,7 @@ function CambiarRepresentacion(Repre) //Representacion es en lo que se va a camb
                         ColorTotal[atom.BloqueSolid-1][mul + j + 3] = 0; //para apagar el color con el alpha
                         j=j+4;
                     }
+                    atom.State='Inactive';
                     var agregar=true;
                     for(var j=0; j < ArrCont2.length; j++)
                     {
@@ -637,6 +640,7 @@ function CambiarRepresentacion(Repre) //Representacion es en lo que se va a camb
                             ColorTotal[atom.BloqueSolid-1][mul + j + 3] = 0; //para apagar el color con el alpha
                             j=j+4;
                         }
+                        atom.State='Inactive';
                         var agregar=true;
                         for(var j=0; j < ArrCont2.length; j++)
                         {

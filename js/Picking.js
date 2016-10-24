@@ -127,30 +127,34 @@ function handleMouseDown(event)
                             {
                                 var atomTemp=AtomosSeleccionados[i];
 
-                                var mul=( atomTemp.PositionBSolid - 1 ) * nColor;
-                                for (var z = 0; z < nColor;) 
+                                if (atomTemp.State=='Active') 
                                 {
-                                        ColorTotal[atomTemp.BloqueSolid-1][mul + z]   = atomTemp.ColorRGB[0];
-                                        ColorTotal[atomTemp.BloqueSolid-1][mul + z + 1]=atomTemp.ColorRGB[1];
-                                        ColorTotal[atomTemp.BloqueSolid-1][mul + z + 2]=atomTemp.ColorRGB[2];
-                                        ColorTotal[atomTemp.BloqueSolid-1][mul + z + 3]=atomTemp.ColorRGB[3];
-                                        z = z + 4;
-                                }
-                                atomTemp.Seleccionado=false;
-
-                                var agregar=true;
-                                for(var j=0; j < ArrCont.length; j++)
-                                {
-                                    if ((atomTemp.BloqueSolid-1)==ArrCont[j]) 
+                                    var mul=( atomTemp.PositionBSolid - 1 ) * nColor;
+                                    for (var z = 0; z < nColor;) 
                                     {
-                                        agregar=false;
-                                        break;
+                                            ColorTotal[atomTemp.BloqueSolid-1][mul + z]   = atomTemp.ColorRGB[0];
+                                            ColorTotal[atomTemp.BloqueSolid-1][mul + z + 1]=atomTemp.ColorRGB[1];
+                                            ColorTotal[atomTemp.BloqueSolid-1][mul + z + 2]=atomTemp.ColorRGB[2];
+                                            ColorTotal[atomTemp.BloqueSolid-1][mul + z + 3]=atomTemp.ColorRGB[3];
+                                            z = z + 4;
+                                    }
+                                    atomTemp.Seleccionado=false;
+
+                                    var agregar=true;
+                                    for(var j=0; j < ArrCont.length; j++)
+                                    {
+                                        if ((atomTemp.BloqueSolid-1)==ArrCont[j]) 
+                                        {
+                                            agregar=false;
+                                            break;
+                                        }
+                                    }
+                                    if (agregar==true) 
+                                    {
+                                        ArrCont.push(atomTemp.BloqueSolid-1);
                                     }
                                 }
-                                if (agregar==true) 
-                                {
-                                    ArrCont.push(atomTemp.BloqueSolid-1);
-                                }      
+                                
                             }
 
                             for(var i=0; i < ArrCont.length; i++)
@@ -177,30 +181,34 @@ function handleMouseDown(event)
                             {
                                 var atomTemp=AtomosSeleccionados[i];
 
-                                var mul=( atomTemp.PositionBSolid - 1 ) * nColor;
-                                for (var z = 0; z < nColor;) 
+                                if (atomTemp.State=='Active') 
                                 {
-                                        ColorTotal[atomTemp.BloqueSolid-1][mul + z]   = atomTemp.ColorRGB[0];
-                                        ColorTotal[atomTemp.BloqueSolid-1][mul + z + 1]=atomTemp.ColorRGB[1];
-                                        ColorTotal[atomTemp.BloqueSolid-1][mul + z + 2]=atomTemp.ColorRGB[2];
-                                        ColorTotal[atomTemp.BloqueSolid-1][mul + z + 3]=atomTemp.ColorRGB[3];
-                                        z = z + 4;
-                                }
-                                atomTemp.Seleccionado=false;
-
-                                var agregar=true;
-                                for(var j=0; j < ArrCont.length; j++)
-                                {
-                                    if ((atomTemp.BloqueSolid-1)==ArrCont[j]) 
+                                    var mul=( atomTemp.PositionBSolid - 1 ) * nColor;
+                                    for (var z = 0; z < nColor;) 
                                     {
-                                        agregar=false;
-                                        break;
+                                            ColorTotal[atomTemp.BloqueSolid-1][mul + z]   = atomTemp.ColorRGB[0];
+                                            ColorTotal[atomTemp.BloqueSolid-1][mul + z + 1]=atomTemp.ColorRGB[1];
+                                            ColorTotal[atomTemp.BloqueSolid-1][mul + z + 2]=atomTemp.ColorRGB[2];
+                                            ColorTotal[atomTemp.BloqueSolid-1][mul + z + 3]=atomTemp.ColorRGB[3];
+                                            z = z + 4;
                                     }
+                                    atomTemp.Seleccionado=false;
+
+                                    var agregar=true;
+                                    for(var j=0; j < ArrCont.length; j++)
+                                    {
+                                        if ((atomTemp.BloqueSolid-1)==ArrCont[j]) 
+                                        {
+                                            agregar=false;
+                                            break;
+                                        }
+                                    }
+                                    if (agregar==true) 
+                                    {
+                                        ArrCont.push(atomTemp.BloqueSolid-1);
+                                    }   
                                 }
-                                if (agregar==true) 
-                                {
-                                    ArrCont.push(atomTemp.BloqueSolid-1);
-                                }     
+                                
 
                             }
 
