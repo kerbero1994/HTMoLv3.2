@@ -262,11 +262,10 @@ function CambiarRepresentacion(Repre) //Representacion es en lo que se va a camb
         var ArrCont2=[];
         var BuffLineCol=false;
         var BuffLineSkeleCol=false;
-
+      
         for(var i=0; i<AtomosSeleccionados.length; i++) //////////se va a procesar cáda átomo individual ya que son selecciones parciales
         {
             var atom = AtomosSeleccionados[i];
-
             if (atom.Representation=='SB')    ////-------------------------------------------------------
             {
                 if (Repre=='SB') 

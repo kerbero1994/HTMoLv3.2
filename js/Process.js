@@ -275,8 +275,7 @@ function Process()
 				    contSkele++;
 		      	}
 		      	///////////////////////////////////////////////////////////////////////////////////////////////////////////
-		        
-		        atom.Representation="SB";
+		        		        
 		        this.Model.CenterX+=atom.X;
 		        this.Model.CenterY+=atom.Y;
 		        this.Model.CenterZ+=atom.Z;

@@ -53,8 +53,7 @@ function initBuffersSpheresSB()
             LstBSphe[0].push(molecule.LstAtoms[apuntador]);
             //-----------------------------------------------------------------------------------------
               
-
-
+            molecule.LstAtoms[apuntador].Representation="SB";
             for (var z=0; z<verArray.length;) 
             {                            
                 vertexPositionData[0].push(verArray[z]   + molecule.LstAtoms[apuntador].X -Cx);
@@ -181,7 +180,7 @@ function initBuffersSpheresSB()
 
                     molecule.LstAtoms[apuntador].BloqueSolid=i+1;         
                     molecule.LstAtoms[apuntador].PositionBSolid=j+1;     //Preguntarle al doc si siempre aprecen en órden continuo
-                    
+                    molecule.LstAtoms[apuntador].Representation="SB";
                     LstBSphe[i].push(molecule.LstAtoms[apuntador]);
                     //-----------------------------------------------------------------------------------------
 
@@ -288,7 +287,8 @@ function initBuffersSpheresSB()
                     //-----------------------------------------------------------------------------------------------------------
                     
                     molecule.LstAtoms[apuntador].BloqueSolid=i+1;         
-                    molecule.LstAtoms[apuntador].PositionBSolid=j+1;   
+                    molecule.LstAtoms[apuntador].PositionBSolid=j+1;  
+                    molecule.LstAtoms[apuntador].Representation="SB"; 
                     
                     LstBSphe[i].push(molecule.LstAtoms[apuntador]);
                     //-----------------------------------------------------------------------------------------
