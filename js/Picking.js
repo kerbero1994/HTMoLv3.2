@@ -121,7 +121,6 @@ function handleMouseDown(event)
                         if (atom.Seleccionado == true) 
                         {
                             var ArrCont=[];
-                            //alert("ya estaba seleccionado")
                             /////////////////////////////////////////////////
                             for(var i=0; i < AtomosSeleccionados.length; i++ )
                             {
