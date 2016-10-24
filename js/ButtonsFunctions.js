@@ -188,9 +188,6 @@ function ProcesarCadena(index, button) {
             for (var i = 0; i < molecule.LstChain[index].LstAminoAcid.length; i++) {
                 for (var j = 0; j < molecule.LstChain[index].LstAminoAcid[i].LstAtoms.length; j++) {
                     var at = molecule.LstChain[index].LstAminoAcid[i].LstAtoms[j];
-                    //voy a checar cada uno para ver si está en wire o en solid
-                    //alert(ColorTotal[at.BloqueSolid-1]);
-                    //alert(at.NameAtom);
                     at.State = 'Active';
                    
                 }
