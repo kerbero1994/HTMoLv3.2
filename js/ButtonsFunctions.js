@@ -103,7 +103,7 @@ function ByColor(mol, color) {
     }
 }
 
-function ProcesarSeleccion() 
+function ProcesarSeleccion() //poner a color seleccionado, pregunta: va a estar habilitado para bonds?
 {
     console.time("procesarSeleccion");
     var ArrCont=[];
@@ -229,229 +229,256 @@ function ProcesarCadena(index, button) {
 
 function CambiarRepresentacion(Repre) //Representacion es en lo que se va a cambiar
 {
-    if (Repre == 'Cpk') 
+    if (AtomosSeleccionados.length==molecule.LstAtoms.length) 
     {
-        var primero=true;
-        var ArrCont=[];
-        for (var o in AtomosSeleccionados) //son los objetos seleccionados 
+        if (Repre=='Cpk') 
         {
-            //primero encontrar con el átomo "o" la posición en el bloque y en el array, y hacerle un splice ahí
-            //
-            var ato = AtomosSeleccionados[o];
-
-            var mul=( ato.PositionBSolid - 1 ) * nVertices;
-
-            if (ato.NameAtom == 'H') 
-            {
-                //alert("H");
-                //ingresar los nuevos vértices                
-                for (var z = 0; z < nVertices;) //vertices para esfera de 16 latitudes y longitudes
-                {
-                    vertexPositionData[ato.BloqueSolid - 1][mul + z]     = verArrayH[z] + ato.X - Cx; //estoy quitando y al mismo tiempo agregando, por lo que se queda
-                    vertexPositionData[ato.BloqueSolid - 1][mul + z + 1] = verArrayH[z + 1] + ato.Y - Cy; //la misma longitud en cada operación
-                    vertexPositionData[ato.BloqueSolid - 1][mul + z + 2] = verArrayH[z + 2] + ato.Z - Cz;
-
-                    z = z + 3;
-                }
-
-            } 
-            else if (ato.NameAtom == 'C') 
-            {
-                //alert("C");
-                for (var z = 0; z < nVertices;) {
-                    vertexPositionData[ato.BloqueSolid - 1][mul + z] = verArrayC_PB_TI_CA[z] + ato.X - Cx;
-                    vertexPositionData[ato.BloqueSolid - 1][mul + z + 1] = verArrayC_PB_TI_CA[z + 1] + ato.Y - Cy;
-                    vertexPositionData[ato.BloqueSolid - 1][mul + z + 2] = verArrayC_PB_TI_CA[z + 2] + ato.Z - Cz;
-
-                    z = z + 3;
-                }
-
-                //alert("saleC"); 
-            } 
-            else if (ato.NameAtom == 'PB') 
-            {
-                //alert("PB");
-                //ingresar los nuevos vértices
-                for (var z = 0; z < nVertices;) {
-                    vertexPositionData[ato.BloqueSolid - 1][mul + z] = verArrayC_PB_TI_CA[z] + ato.X - Cx;
-                    vertexPositionData[ato.BloqueSolid - 1][mul + z + 1] = verArrayC_PB_TI_CA[z + 1] + ato.Y - Cy;
-                    vertexPositionData[ato.BloqueSolid - 1][mul + z + 2] = verArrayC_PB_TI_CA[z + 2] + ato.Z - Cz;
-
-                    z = z + 3;
-                }
-
-            } else if (ato.NameAtom == 'TI') {
-                //alert("TI");
-                //ingresar los nuevos vértices
-                for (var z = 0; z < nVertices;) {
-                    vertexPositionData[ato.BloqueSolid - 1][mul + z] = verArrayC_PB_TI_CA[z] + ato.X - Cx;
-                    vertexPositionData[ato.BloqueSolid - 1][mul + z + 1] = verArrayC_PB_TI_CA[z + 1] + ato.Y - Cy;
-                    vertexPositionData[ato.BloqueSolid - 1][mul + z + 2] = verArrayC_PB_TI_CA[z + 2] + ato.Z - Cz;
-
-                    z = z + 3;
-                }
-
-            } else if (ato.NameAtom == 'CA') {
-                //alert("CA");
-                //ingresar los nuevos vértices
-                for (var z = 0; z < nVertices;) {
-                    vertexPositionData[ato.BloqueSolid - 1][mul + z] = verArrayC_PB_TI_CA[z] + ato.X - Cx;
-                    vertexPositionData[ato.BloqueSolid - 1][mul + z + 1] = verArrayC_PB_TI_CA[z + 1] + ato.Y - Cy;
-                    vertexPositionData[ato.BloqueSolid - 1][mul + z + 2] = verArrayC_PB_TI_CA[z + 2] + ato.Z - Cz;
-
-                    z = z + 3;
-                }
-
-            } else if (ato.NameAtom == 'N') {
-                //alert("N");
-                //ingresar los nuevos vértices
-                for (var z = 0; z < nVertices;) //vertices para esfera de 16 latitudes y longitudes
-                {
-                    vertexPositionData[ato.BloqueSolid - 1][mul + z] = verArrayN[z] + ato.X - Cx;
-                    vertexPositionData[ato.BloqueSolid - 1][mul + z + 1] = verArrayN[z + 1] + ato.Y - Cy;
-                    vertexPositionData[ato.BloqueSolid - 1][mul + z + 2] = verArrayN[z + 2] + ato.Z - Cz;
-
-                    z = z + 3;
-                }
-
-            } else if (ato.NameAtom == 'O') {
-                //alert("O");
-                //ingresar los nuevos vértices
-                for (var z = 0; z < nVertices;) //vertices para esfera de 16 latitudes y longitudes
-                {
-                    vertexPositionData[ato.BloqueSolid - 1][mul + z] = verArrayO[z] + ato.X - Cx;
-                    vertexPositionData[ato.BloqueSolid - 1][mul + z + 1] = verArrayO[z + 1] + ato.Y - Cy;
-                    vertexPositionData[ato.BloqueSolid - 1][mul + z + 2] = verArrayO[z + 2] + ato.Z - Cz;
-
-                    z = z + 3;
-                }
-
-                //alert("ssss");  
-
-            } else if (ato.NameAtom == 'S') {
-                //alert("S");
-                //ingresar los nuevos vértices
-                for (var z = 0; z < nVertices;) //vertices para esfera de 16 latitudes y longitudes
-                {
-                    vertexPositionData[ato.BloqueSolid - 1][mul + z] = verArrayS[z] + ato.X - Cx;
-                    vertexPositionData[ato.BloqueSolid - 1][mul + z + 1] = verArrayS[z + 1] + ato.Y - Cy;
-                    vertexPositionData[ato.BloqueSolid - 1][mul + z + 2] = verArrayS[z + 2] + ato.Z - Cz;
-
-                    z = z + 3;
-                }
-
-            } else if (ato.NameAtom == 'P') {
-                //alert("P");
-                //ingresar los nuevos vértices
-                for (var z = 0; z < nVertices;) //vertices para esfera de 16 latitudes y longitudes
-                {
-                    vertexPositionData[ato.BloqueSolid - 1][mul + z] = verArrayP[z] + ato.X - Cx;
-                    vertexPositionData[ato.BloqueSolid - 1][mul + z + 1] = verArrayP[z + 1] + ato.Y - Cy;
-                    vertexPositionData[ato.BloqueSolid - 1][mul + z + 2] = verArrayP[z + 2] + ato.Z - Cz;
-
-                    z = z + 3;
-                }
-
-            } else /////////// DEFAULT
-            {
-                //alert("entra aqui");
-                //ingresar los nuevos vértices
-                for (var z = 0; z < nVertices;) //vertices para esfera de 16 latitudes y longitudes
-                {
-                    vertexPositionData[ato.BloqueSolid - 1][mul + z] = verArrayDefault[z] + ato.X - Cx;
-                    vertexPositionData[ato.BloqueSolid - 1][mul + z + 1] = verArrayDefault[z + 1] + ato.Y - Cy;
-                    vertexPositionData[ato.BloqueSolid - 1][mul + z + 2] = verArrayDefault[z + 2] + ato.Z - Cz;
-
-                    z = z + 3;
-                }
-            }
-            ato.Representation = "CPK";
-          
-
-            var agregar=true;
-            for(var i=0; i < ArrCont.length; i++)
-            {
-                if ((ato.BloqueSolid-1)==ArrCont[i]) 
-                {
-                    agregar=false;
-                    break;
-                }
-            }
-            if (agregar==true) 
-            {
-                ArrCont.push(ato.BloqueSolid-1);
-            }                    
+            InitBufCPK();
+        }
+        else if (Repre == 'SB') 
+        {
+            InitBufSB();
+        }
+        else if (Repre == 'B') 
+        {
+            InitBufBonds();
+        }
+        else if (Repre == 'Skeleton') 
+        {
+            InitBufSkeleton();
         }
 
-
-        for(var i=0; i < ArrCont.length; i++)
-        {
-            gl.bindBuffer(gl.ARRAY_BUFFER, sphereVertexPositionBuffer[ArrCont[i]]);
-            gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertexPositionData[ArrCont[i]]), gl.DYNAMIC_DRAW);
-            sphereVertexPositionBuffer[ArrCont[i]].itemSize = 3;
-            sphereVertexPositionBuffer[ArrCont[i]].numItems = vertexPositionData[ArrCont[i]].length / 3;
-            gl.bindBuffer(gl.ARRAY_BUFFER, null);
-
-        }
-            
-
-
-    } 
-    else if (Repre == 'SB') 
-    {
-        //alert(88);
-        var ArrCont=[];
-        for (var o in AtomosSeleccionados) //son los objetos seleccionados 
-        {
-            //primero encontrar con el átomo "o" la posición en el bloque y en el array, y hacerle un splice ahí
-            //
-            var ato = AtomosSeleccionados[o];
-
-            var mul=( ato.PositionBSolid - 1 ) * nVertices;
-
-            for (var z = 0; z < nVertices;) //vertices para esfera de 16 latitudes y longitudes
-            {
-                vertexPositionData[ato.BloqueSolid - 1][mul + z] = verArray[z] + ato.X - Cx;
-                vertexPositionData[ato.BloqueSolid - 1][mul + z + 1] = verArray[z + 1] + ato.Y - Cy;
-                vertexPositionData[ato.BloqueSolid - 1][mul + z + 2] = verArray[z + 2] + ato.Z - Cz;
-
-                z = z + 3;
-            }
-
-            ato.Representation = "SB";
-
-            var agregar=true;
-            for(var i=0; i < ArrCont.length; i++)
-            {
-                if ((ato.BloqueSolid-1)==ArrCont[i]) 
-                {
-                    agregar=false;
-                    break;
-                }
-            }
-            if (agregar==true) 
-            {
-                ArrCont.push(ato.BloqueSolid-1);
-            }                        
-        }
-
-        for(var i=0; i < ArrCont.length; i++)
-        {
-            gl.bindBuffer(gl.ARRAY_BUFFER, sphereVertexPositionBuffer[ArrCont[i]]);
-            gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertexPositionData[ArrCont[i]]), gl.DYNAMIC_DRAW);
-            sphereVertexPositionBuffer[ArrCont[i]].itemSize = 3;
-            sphereVertexPositionBuffer[ArrCont[i]].numItems = vertexPositionData[ArrCont[i]].length / 3;
-            gl.bindBuffer(gl.ARRAY_BUFFER, null);
-
-        }
-
-
-
-    } else if (Repre == 'B') {
-
-
-
-    } else {
 
     }
+
+    else
+    {
+        if (Repre == 'Cpk') 
+        {
+            var ArrCont=[];
+            for (var o in AtomosSeleccionados) //son los objetos seleccionados 
+            {
+                //primero encontrar con el átomo "o" la posición en el bloque y en el array, y hacerle un splice ahí
+                //
+                var ato = AtomosSeleccionados[o];
+
+                var mul=( ato.PositionBSolid - 1 ) * nVertices;
+
+                if (ato.NameAtom == 'H') 
+                {
+                    //alert("H");
+                    //ingresar los nuevos vértices                
+                    for (var z = 0; z < nVertices;) //vertices para esfera de 16 latitudes y longitudes
+                    {
+                        vertexPositionData[ato.BloqueSolid - 1][mul + z]     = verArrayH[z] + ato.X - Cx; //estoy quitando y al mismo tiempo agregando, por lo que se queda
+                        vertexPositionData[ato.BloqueSolid - 1][mul + z + 1] = verArrayH[z + 1] + ato.Y - Cy; //la misma longitud en cada operación
+                        vertexPositionData[ato.BloqueSolid - 1][mul + z + 2] = verArrayH[z + 2] + ato.Z - Cz;
+
+                        z = z + 3;
+                    }
+
+                } 
+                else if (ato.NameAtom == 'C') 
+                {
+                    //alert("C");
+                    for (var z = 0; z < nVertices;) {
+                        vertexPositionData[ato.BloqueSolid - 1][mul + z] = verArrayC_PB_TI_CA[z] + ato.X - Cx;
+                        vertexPositionData[ato.BloqueSolid - 1][mul + z + 1] = verArrayC_PB_TI_CA[z + 1] + ato.Y - Cy;
+                        vertexPositionData[ato.BloqueSolid - 1][mul + z + 2] = verArrayC_PB_TI_CA[z + 2] + ato.Z - Cz;
+
+                        z = z + 3;
+                    }
+
+                    //alert("saleC"); 
+                } 
+                else if (ato.NameAtom == 'PB') 
+                {
+                    //alert("PB");
+                    //ingresar los nuevos vértices
+                    for (var z = 0; z < nVertices;) {
+                        vertexPositionData[ato.BloqueSolid - 1][mul + z] = verArrayC_PB_TI_CA[z] + ato.X - Cx;
+                        vertexPositionData[ato.BloqueSolid - 1][mul + z + 1] = verArrayC_PB_TI_CA[z + 1] + ato.Y - Cy;
+                        vertexPositionData[ato.BloqueSolid - 1][mul + z + 2] = verArrayC_PB_TI_CA[z + 2] + ato.Z - Cz;
+
+                        z = z + 3;
+                    }
+
+                } else if (ato.NameAtom == 'TI') {
+                    //alert("TI");
+                    //ingresar los nuevos vértices
+                    for (var z = 0; z < nVertices;) {
+                        vertexPositionData[ato.BloqueSolid - 1][mul + z] = verArrayC_PB_TI_CA[z] + ato.X - Cx;
+                        vertexPositionData[ato.BloqueSolid - 1][mul + z + 1] = verArrayC_PB_TI_CA[z + 1] + ato.Y - Cy;
+                        vertexPositionData[ato.BloqueSolid - 1][mul + z + 2] = verArrayC_PB_TI_CA[z + 2] + ato.Z - Cz;
+
+                        z = z + 3;
+                    }
+
+                } else if (ato.NameAtom == 'CA') {
+                    //alert("CA");
+                    //ingresar los nuevos vértices
+                    for (var z = 0; z < nVertices;) {
+                        vertexPositionData[ato.BloqueSolid - 1][mul + z] = verArrayC_PB_TI_CA[z] + ato.X - Cx;
+                        vertexPositionData[ato.BloqueSolid - 1][mul + z + 1] = verArrayC_PB_TI_CA[z + 1] + ato.Y - Cy;
+                        vertexPositionData[ato.BloqueSolid - 1][mul + z + 2] = verArrayC_PB_TI_CA[z + 2] + ato.Z - Cz;
+
+                        z = z + 3;
+                    }
+
+                } else if (ato.NameAtom == 'N') {
+                    //alert("N");
+                    //ingresar los nuevos vértices
+                    for (var z = 0; z < nVertices;) //vertices para esfera de 16 latitudes y longitudes
+                    {
+                        vertexPositionData[ato.BloqueSolid - 1][mul + z] = verArrayN[z] + ato.X - Cx;
+                        vertexPositionData[ato.BloqueSolid - 1][mul + z + 1] = verArrayN[z + 1] + ato.Y - Cy;
+                        vertexPositionData[ato.BloqueSolid - 1][mul + z + 2] = verArrayN[z + 2] + ato.Z - Cz;
+
+                        z = z + 3;
+                    }
+
+                } else if (ato.NameAtom == 'O') {
+                    //alert("O");
+                    //ingresar los nuevos vértices
+                    for (var z = 0; z < nVertices;) //vertices para esfera de 16 latitudes y longitudes
+                    {
+                        vertexPositionData[ato.BloqueSolid - 1][mul + z] = verArrayO[z] + ato.X - Cx;
+                        vertexPositionData[ato.BloqueSolid - 1][mul + z + 1] = verArrayO[z + 1] + ato.Y - Cy;
+                        vertexPositionData[ato.BloqueSolid - 1][mul + z + 2] = verArrayO[z + 2] + ato.Z - Cz;
+
+                        z = z + 3;
+                    }
+
+                    //alert("ssss");  
+
+                } else if (ato.NameAtom == 'S') {
+                    //alert("S");
+                    //ingresar los nuevos vértices
+                    for (var z = 0; z < nVertices;) //vertices para esfera de 16 latitudes y longitudes
+                    {
+                        vertexPositionData[ato.BloqueSolid - 1][mul + z] = verArrayS[z] + ato.X - Cx;
+                        vertexPositionData[ato.BloqueSolid - 1][mul + z + 1] = verArrayS[z + 1] + ato.Y - Cy;
+                        vertexPositionData[ato.BloqueSolid - 1][mul + z + 2] = verArrayS[z + 2] + ato.Z - Cz;
+
+                        z = z + 3;
+                    }
+
+                } else if (ato.NameAtom == 'P') {
+                    //alert("P");
+                    //ingresar los nuevos vértices
+                    for (var z = 0; z < nVertices;) //vertices para esfera de 16 latitudes y longitudes
+                    {
+                        vertexPositionData[ato.BloqueSolid - 1][mul + z] = verArrayP[z] + ato.X - Cx;
+                        vertexPositionData[ato.BloqueSolid - 1][mul + z + 1] = verArrayP[z + 1] + ato.Y - Cy;
+                        vertexPositionData[ato.BloqueSolid - 1][mul + z + 2] = verArrayP[z + 2] + ato.Z - Cz;
+
+                        z = z + 3;
+                    }
+
+                } else /////////// DEFAULT
+                {
+                    //alert("entra aqui");
+                    //ingresar los nuevos vértices
+                    for (var z = 0; z < nVertices;) //vertices para esfera de 16 latitudes y longitudes
+                    {
+                        vertexPositionData[ato.BloqueSolid - 1][mul + z] = verArrayDefault[z] + ato.X - Cx;
+                        vertexPositionData[ato.BloqueSolid - 1][mul + z + 1] = verArrayDefault[z + 1] + ato.Y - Cy;
+                        vertexPositionData[ato.BloqueSolid - 1][mul + z + 2] = verArrayDefault[z + 2] + ato.Z - Cz;
+
+                        z = z + 3;
+                    }
+                }
+                ato.Representation = "CPK";
+              
+
+                var agregar=true;
+                for(var i=0; i < ArrCont.length; i++)
+                {
+                    if ((ato.BloqueSolid-1)==ArrCont[i]) 
+                    {
+                        agregar=false;
+                        break;
+                    }
+                }
+                if (agregar==true) 
+                {
+                    ArrCont.push(ato.BloqueSolid-1);
+                }                    
+            }
+
+
+            for(var i=0; i < ArrCont.length; i++)
+            {
+                gl.bindBuffer(gl.ARRAY_BUFFER, sphereVertexPositionBuffer[ArrCont[i]]);
+                gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertexPositionData[ArrCont[i]]), gl.DYNAMIC_DRAW);
+                sphereVertexPositionBuffer[ArrCont[i]].itemSize = 3;
+                sphereVertexPositionBuffer[ArrCont[i]].numItems = vertexPositionData[ArrCont[i]].length / 3;
+                gl.bindBuffer(gl.ARRAY_BUFFER, null);
+
+            }
+                
+
+
+        } 
+        else if (Repre == 'SB') 
+        {
+            //alert(88);
+            var ArrCont=[];
+            for (var o in AtomosSeleccionados) //son los objetos seleccionados 
+            {
+                //primero encontrar con el átomo "o" la posición en el bloque y en el array, y hacerle un splice ahí
+                //
+                var ato = AtomosSeleccionados[o];
+
+                var mul=( ato.PositionBSolid - 1 ) * nVertices;
+
+                for (var z = 0; z < nVertices;) //vertices para esfera de 16 latitudes y longitudes
+                {
+                    vertexPositionData[ato.BloqueSolid - 1][mul + z] = verArray[z] + ato.X - Cx;
+                    vertexPositionData[ato.BloqueSolid - 1][mul + z + 1] = verArray[z + 1] + ato.Y - Cy;
+                    vertexPositionData[ato.BloqueSolid - 1][mul + z + 2] = verArray[z + 2] + ato.Z - Cz;
+
+                    z = z + 3;
+                }
+
+                ato.Representation = "SB";
+
+                var agregar=true;
+                for(var i=0; i < ArrCont.length; i++)
+                {
+                    if ((ato.BloqueSolid-1)==ArrCont[i]) 
+                    {
+                        agregar=false;
+                        break;
+                    }
+                }
+                if (agregar==true) 
+                {
+                    ArrCont.push(ato.BloqueSolid-1);
+                }                        
+            }
+
+            for(var i=0; i < ArrCont.length; i++)
+            {
+                gl.bindBuffer(gl.ARRAY_BUFFER, sphereVertexPositionBuffer[ArrCont[i]]);
+                gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertexPositionData[ArrCont[i]]), gl.DYNAMIC_DRAW);
+                sphereVertexPositionBuffer[ArrCont[i]].itemSize = 3;
+                sphereVertexPositionBuffer[ArrCont[i]].numItems = vertexPositionData[ArrCont[i]].length / 3;
+                gl.bindBuffer(gl.ARRAY_BUFFER, null);
+
+            }
+
+
+
+        } else if (Repre == 'B') {
+
+
+
+        } else {
+
+        }
+
+    }
+
+    
 }

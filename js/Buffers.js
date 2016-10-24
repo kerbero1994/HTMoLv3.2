@@ -1,69 +1,58 @@
 var AtomArray=[];
 
+function cleanMemory()
+{
+    LstBSphe=[]; 
+    NBSphe=0;
+
+    //Limpieza de las esferas
+    vertexPositionData = [[]];
+    ColorTotal = [[]];
+    indexData = [[]];
+    normalDataN = [[]];
+    ChainIndex=[[]];
+    ////////////////////////
+
+    //limpieza de los enlaces
+    verticesLineas = [];    
+    colores=[];
+    colorBndDif =[];
+    linesNormals=[]; 
+    ChainIndexBnd=[];
+
+    //limpieza de los enlaces Skeleton
+    verLineSkele = [];    
+    coloresSkele=[];
+    colorSkeleBndDif =[]; 
+    lineSkeleNor=[]; 
+    ChainSkeleIndexBnd=[]; 
+}
 
 function initBuffersSpheresSB() 
-{
-                
-    //AtomosSeleccionados=molecule.LstAtoms;
+{                
     
     var NoAtomos = molecule.LstAtoms.length;
     NoBloques = Math.ceil(NoAtomos/NoPaso);
     var Restantes = NoAtomos - ((NoBloques-1) * NoPaso);
-
-    var RGB_Diffuse = [,,];  //para asignarle un único valor de color difuso a cada átomo para distinguirlo de los demás en la selección
-    //la que no se toma sería [0][0][0]  entonces comenzaría con [1][0][0]  y terminaría en [255][255][254]
-    var R=0;
-    var G=0;
-    var B=0;
-
-    var Scala=0.003921568627451;
-
-    var ultimo=0;
-
-    indexData = [[]];
     
+    var ultimo=0;     
     
     var apuntador = 0;
 
-
     if (NoBloques==1) 
-    {
+    {      
 
-        //para limpiarlos
-        vertexPositionData[0]=[];
-        normalDataN[0]=[];
-        vertexPositionDataD[0]=[];
-        normalDataND[0]=[];
-        ColorTotalDiffuse[0]=[];
-        ColorTotal[0]=[];
-        indexData[0]=[];
-
-        ChainIndex[0]=[];
-
-        LstBS[0]=new Array();
+        LstBSphe[0]=new Array();
         for(var i=0; i<NoAtomos; i++)
         {
             //-----------------------------------------------------------------------------------------
-            //Asignación del color difuso a cáda átomo
-            R=R+1;
-            if (R==255) 
-            {
-                R=0;
-                G=G+1;
-                if (G==255) 
-                {
-                    G=0;
-                    B=B+1;
-                }
-            }
-            molecule.LstAtoms[apuntador].ColorRGBDiffuse=[R*Scala,G*Scala,B*Scala];
+            
             molecule.LstAtoms[apuntador].BloqueSolid=1;
             molecule.LstAtoms[apuntador].PositionBSolid=i+1;
             
-            LstBS[0].push(molecule.LstAtoms[apuntador]);
+            LstBSphe[0].push(molecule.LstAtoms[apuntador]);
             //-----------------------------------------------------------------------------------------
-            //en esta parte se asigna el color al átom
-            AsignaColor(molecule.LstAtoms[apuntador]);   
+              
 
 
             for (var z=0; z<verArray.length;) 
@@ -181,38 +170,21 @@ function initBuffersSpheresSB()
             indexData[i]=new Array();
             ColorTotalDiffuse[i]=new Array();
           
-            LstBS[i]=new Array();
+            LstBSphe[i]=new Array();
 
             ChainIndex[i]=new Array();
 
             if (i==NoBloques-1) //esto es que llegó al último
             {
                 for(var j=0; j<Restantes; j++)
-                {
-
-                    //-------------------------------------------------------------------------------------------------
-                    //Asignación del color difuso a cáda átomo
-                    R=R+1;
-                    if (R==255) 
-                    {
-                        R=0;
-                        G=G+1;
-                        if (G==255) 
-                        {
-                            G=0;
-                            B=B+1;
-                        }
-                    }
-                    molecule.LstAtoms[apuntador].ColorRGBDiffuse= [R*Scala,G*Scala,B*Scala];
+                {                  
 
                     molecule.LstAtoms[apuntador].BloqueSolid=i+1;         
                     molecule.LstAtoms[apuntador].PositionBSolid=j+1;     //Preguntarle al doc si siempre aprecen en órden continuo
                     
-                    LstBS[i].push(molecule.LstAtoms[apuntador]);
+                    LstBSphe[i].push(molecule.LstAtoms[apuntador]);
                     //-----------------------------------------------------------------------------------------
 
-                    //en esta parte se asigna el color al átom
-                    AsignaColor(molecule.LstAtoms[apuntador]);
                     for (var z=0; z<verArray.length;) 
                     {                            
                         vertexPositionData[i].push(verArray[z]   + molecule.LstAtoms[apuntador].X -Cx);
@@ -314,29 +286,13 @@ function initBuffersSpheresSB()
                 {
 
                     //-----------------------------------------------------------------------------------------------------------
-
-                    //Asignación del color difuso a cáda átomo
-                    R=R+1;
-                    if (R==255) 
-                    {
-                        R=0;
-                        G=G+1;
-                        if (G==255) 
-                        {
-                            G=0;
-                            B=B+1;
-                        }
-                    }
-
-                    molecule.LstAtoms[apuntador].ColorRGBDiffuse=[R*Scala,G*Scala,B*Scala];
-                    molecule.LstAtoms[apuntador].BloqueSolid=i+1;         
-                    molecule.LstAtoms[apuntador].PositionBSolid=j+1;     //Preguntarle al doc si siempre aprecen en órden continuo
                     
-                    LstBS[i].push(molecule.LstAtoms[apuntador]);
+                    molecule.LstAtoms[apuntador].BloqueSolid=i+1;         
+                    molecule.LstAtoms[apuntador].PositionBSolid=j+1;   
+                    
+                    LstBSphe[i].push(molecule.LstAtoms[apuntador]);
                     //-----------------------------------------------------------------------------------------
 
-                    //en esta parte se asigna el color al átom
-                    AsignaColor(molecule.LstAtoms[apuntador]);
                     for (var z=0; z<verArray.length;) 
                     {
                         vertexPositionData[i].push(verArray[z]   + molecule.LstAtoms[apuntador].X -Cx);
@@ -439,71 +395,33 @@ function initBuffersSpheresSB()
             }
         }
     }
-
-    NBS=NoBloques;
-        
+    NBSphe=NoBloques;        
 
 }
 
 function initBuffersSpheresCPK() {
 
-    //AtomosSeleccionados=molecule.LstAtoms;
-
     var NoAtomos = molecule.LstAtoms.length;
     NoBloques = Math.ceil(NoAtomos / NoPaso);
     var Restantes = NoAtomos - ((NoBloques - 1) * NoPaso);
-
-    var RGB_Diffuse = [, , ]; //para asignarle un único valor de color difuso a cada átomo para distinguirlo de los demás en la selección
-    //la que no se toma sería [0][0][0]  entonces comenzaría con [1][0][0]  y terminaría en [255][255][254]
-    var R = 0;
-    var G = 0;
-    var B = 0;
-
-    var Scala = 0.003921568627451;
-
+    
     var ultimo = 0;
-
-    indexData = [[]];
-
 
     var apuntador = 0;
 
 
     if (NoBloques == 1) {
 
-        //para limpiarlos
-        vertexPositionData[0] = [];
-        normalDataN[0] = [];
-        vertexPositionDataD[0] = [];
-        normalDataND[0] = [];
-        ColorTotalDiffuse[0] = [];
-        ColorTotal[0] = [];
-        indexData[0] = [];
-
-        ChainIndex[0] = [];
-
-        LstBS[0] = new Array();
+        LstBSphe[0] = new Array();
         for (var i = 0; i < NoAtomos; i++) {
             //-----------------------------------------------------------------------------------------
-            //Asignación del color difuso a cáda átomo
-            R = R + 1;
-            if (R == 255) {
-                R = 0;
-                G = G + 1;
-                if (G == 255) {
-                    G = 0;
-                    B = B + 1;
-                }
-            }
-            molecule.LstAtoms[apuntador].ColorRGBDiffuse = [R * Scala, G * Scala, B * Scala];
+            
             molecule.LstAtoms[apuntador].BloqueSolid = 1;
             molecule.LstAtoms[apuntador].PositionBSolid = i + 1;
             molecule.LstAtoms[apuntador].Representation = "CPK";
 
-            LstBS[0].push(molecule.LstAtoms[apuntador]);
-            //-----------------------------------------------------------------------------------------
-            //en esta parte se asigna el color al átom
-            AsignaColor(molecule.LstAtoms[apuntador]);
+            LstBSphe[0].push(molecule.LstAtoms[apuntador]);
+            //-----------------------------------------------------------------------------------------           
 
             if (molecule.LstAtoms[apuntador].NameAtom == 'H') {
                 for (var z = 0; z < verArray.length;) {
@@ -694,11 +612,8 @@ function initBuffersSpheresCPK() {
             ColorTotal[i] = new Array();
             indexData[i] = new Array();
             ColorTotalDiffuse[i] = new Array();
-
-            vertexPositionDataD[i] = new Array();
-            normalDataND[i] = new Array();
-            indexDataD[i] = new Array();
-            LstBS[i] = new Array();
+            
+            LstBSphe[i] = new Array();
 
             ChainIndex[i] = new Array();
 
@@ -707,23 +622,12 @@ function initBuffersSpheresCPK() {
                 for (var j = 0; j < Restantes; j++) {
 
                     //-------------------------------------------------------------------------------------------------
-                    //Asignación del color difuso a cáda átomo
-                    R = R + 1;
-                    if (R == 255) {
-                        R = 0;
-                        G = G + 1;
-                        if (G == 255) {
-                            G = 0;
-                            B = B + 1;
-                        }
-                    }
-                    molecule.LstAtoms[apuntador].ColorRGBDiffuse = [R * Scala, G * Scala, B * Scala];
-
+                   
                     molecule.LstAtoms[apuntador].BloqueSolid = i + 1;
                     molecule.LstAtoms[apuntador].PositionBSolid = j + 1; 
                     molecule.LstAtoms[apuntador].Representation = "CPK";
 
-                    LstBS[i].push(molecule.LstAtoms[apuntador]);
+                    LstBSphe[i].push(molecule.LstAtoms[apuntador]);
                     //-----------------------------------------------------------------------------------------
 
                     //en esta parte se asigna el color al átom
@@ -909,27 +813,13 @@ function initBuffersSpheresCPK() {
 
                     //-----------------------------------------------------------------------------------------------------------
 
-                    //Asignación del color difuso a cáda átomo
-                    R = R + 1;
-                    if (R == 255) {
-                        R = 0;
-                        G = G + 1;
-                        if (G == 255) {
-                            G = 0;
-                            B = B + 1;
-                        }
-                    }
-
-                    molecule.LstAtoms[apuntador].ColorRGBDiffuse = [R * Scala, G * Scala, B * Scala];
                     molecule.LstAtoms[apuntador].BloqueSolid = i + 1;
                     molecule.LstAtoms[apuntador].PositionBSolid = j + 1; 
                     molecule.LstAtoms[apuntador].Representation = "CPK";
 
-                    LstBS[i].push(molecule.LstAtoms[apuntador]);
+                    LstBSphe[i].push(molecule.LstAtoms[apuntador]);
                     //-----------------------------------------------------------------------------------------
 
-                    //en esta parte se asigna el color al átom
-                    AsignaColor(molecule.LstAtoms[apuntador]);
                     if (molecule.LstAtoms[apuntador].NameAtom == 'H') {
                         for (var z = 0; z < verArray.length;) {
                             vertexPositionData[i].push(verArrayH[z] + molecule.LstAtoms[apuntador].X - Cx);
@@ -1111,23 +1001,19 @@ function initBuffersSpheresCPK() {
         }
     }
 
-    NBS = NoBloques;
+    NBSphe = NoBloques;
 }
 
-function initBuffersBonds() 
+function initBuffersBonds(Prendidos) 
 {
     ///////////////////////////////////////////////////////// LINEAS DE ENLACES //////////////////////////////////////////////
-    verticesLineas=[];
-    ChainIndexBnd=[];
-    colores=[];
-    colorBndDif=[];
-    linesNormals=[];
-
+    
     lineVertexPositionBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, lineVertexPositionBuffer);    
     for(var t in molecule.LstBonds)
     {
         var o = molecule.LstBonds[t];
+        o.BPosition=t+1; //es para ubicar esta línea en el arreglo y saber en qué posición se encuentra
         verticesLineas.push(o.LstAtoms[0].X -Cx);
         verticesLineas.push(o.LstAtoms[0].Y -Cy);
         verticesLineas.push(o.LstAtoms[0].Z -Cz);
@@ -1140,14 +1026,30 @@ function initBuffersBonds()
         linesNormals.push(o.LstAtoms[1].X -Cx);
         linesNormals.push(o.LstAtoms[1].Y -Cy);
         linesNormals.push(o.LstAtoms[1].Z -Cz); 
-        colores.push(1);
-        colores.push(1);
-        colores.push(1);
-        colores.push(1);
-        colores.push(1);
-        colores.push(1);
-        colores.push(1);
-        colores.push(1);
+       
+        if (Prendidos) 
+        {
+            colores.push(1);
+            colores.push(1);
+            colores.push(1);
+            colores.push(1); //el color alpha
+            colores.push(1);
+            colores.push(1);
+            colores.push(1);
+            colores.push(1); //
+        }
+        else
+        {
+            colores.push(1);
+            colores.push(1);
+            colores.push(1);
+            colores.push(0); //el color alpha
+            colores.push(1);
+            colores.push(1);
+            colores.push(1);
+            colores.push(0); //
+        }
+        
         /////////////////////////
         if ( o.LstAtoms[0].idChain ==  o.LstAtoms[1].idChain  ) 
         {
@@ -1179,7 +1081,6 @@ function initBuffersBonds()
     
     colorVertexBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, colorVertexBuffer);      
-
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colores), gl.DYNAMIC_DRAW);
     colorVertexBuffer.itemSize=4;
     colorVertexBuffer.numItems=colores.length/4;
@@ -1204,3 +1105,103 @@ function initBuffersBonds()
 
 }
 
+function initBufBndSkele(Prendidos) 
+{
+    /////////////////////////////////////////// LINEAS DE ENLACES SKELETON//////////////////////////////////////////////
+    
+    lineSkeleVerPosBuf = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, lineSkeleVerPosBuf);    
+    for(var t in molecule.LstBondsSkeleton)
+    {
+        var o = molecule.LstBondsSkeleton[t];
+        o.BPosition=t+1; //es para ubicar esta línea en el arreglo y saber en qué posición se encuentra
+        verLineSkele.push(o.LstAtoms[0].X -Cx);
+        verLineSkele.push(o.LstAtoms[0].Y -Cy);
+        verLineSkele.push(o.LstAtoms[0].Z -Cz);
+        verLineSkele.push(o.LstAtoms[1].X -Cx);
+        verLineSkele.push(o.LstAtoms[1].Y -Cy);
+        verLineSkele.push(o.LstAtoms[1].Z -Cz);  
+        lineSkeleNor.push(o.LstAtoms[0].X -Cx);
+        lineSkeleNor.push(o.LstAtoms[0].Y -Cy);
+        lineSkeleNor.push(o.LstAtoms[0].Z -Cz);
+        lineSkeleNor.push(o.LstAtoms[1].X -Cx);
+        lineSkeleNor.push(o.LstAtoms[1].Y -Cy);
+        lineSkeleNor.push(o.LstAtoms[1].Z -Cz); 
+       
+        if (Prendidos) 
+        {
+            coloresSkele.push(1);
+            coloresSkele.push(1);
+            coloresSkele.push(1);
+            coloresSkele.push(1); //el color alpha
+            coloresSkele.push(1);
+            coloresSkele.push(1);
+            coloresSkele.push(1);
+            coloresSkele.push(1); //
+        }
+        else
+        {
+            coloresSkele.push(1);
+            coloresSkele.push(1);
+            coloresSkele.push(1);
+            coloresSkele.push(0); //el color alpha
+            coloresSkele.push(1);
+            coloresSkele.push(1);
+            coloresSkele.push(1);
+            coloresSkele.push(0); //
+        }
+        
+        /////////////////////////
+        if ( o.LstAtoms[0].idChain ==  o.LstAtoms[1].idChain  ) 
+        {
+            ChainSkeleIndexBnd.push( o.LstAtoms[0].idChain );
+            ChainSkeleIndexBnd.push( o.LstAtoms[0].idChain );
+            ChainSkeleIndexBnd.push( o.LstAtoms[0].idChain );
+            ChainSkeleIndexBnd.push( o.LstAtoms[0].idChain );
+        }
+        else
+        {
+            ChainSkeleIndexBnd.push( 0.5 );
+            ChainSkeleIndexBnd.push( 0.5 );
+            ChainSkeleIndexBnd.push( 0.5 );
+            ChainSkeleIndexBnd.push( 0.5 );
+        }
+        colorSkeleBndDif.push(0);
+        colorSkeleBndDif.push(0);
+        colorSkeleBndDif.push(0);
+        colorSkeleBndDif.push(0);
+        colorSkeleBndDif.push(0);
+        colorSkeleBndDif.push(0);
+        colorSkeleBndDif.push(0);
+        colorSkeleBndDif.push(0);
+
+    }
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(verLineSkele), gl.DYNAMIC_DRAW);
+    lineSkeleVerPosBuf.itemSize = 3;
+    lineSkeleVerPosBuf.numItems = verLineSkele.length/3;
+    
+    colSkeleVerBuf = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, colSkeleVerBuf);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(coloresSkele), gl.DYNAMIC_DRAW);
+    colSkeleVerBuf.itemSize=4;
+    colSkeleVerBuf.numItems=colores.length/4;
+
+    lineSkeleNorBuf = gl.createBuffer(); 
+    gl.bindBuffer(gl.ARRAY_BUFFER, lineSkeleNorBuf);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(lineSkeleNor), gl.DYNAMIC_DRAW);
+    lineSkeleNorBuf.itemSize=3;
+    lineSkeleNorBuf.numItems=lineSkeleNor.length/3;
+
+    ChainSkeleBufBnd = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, ChainSkeleBufBnd); 
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(ChainSkeleIndexBnd), gl.DYNAMIC_DRAW);
+    ChainSkeleBufBnd.itemSize=2;
+    ChainSkeleBufBnd.numItems=ChainSkeleIndexBnd.length/2;   
+    
+    ColSkeleDifBuf = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, ColSkeleDifBuf);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colorSkeleBndDif), gl.DYNAMIC_DRAW);
+    ColSkeleDifBuf.itemSize=4;
+    ColSkeleDifBuf.numItems=colorSkeleBndDif.length/4;   
+
+}

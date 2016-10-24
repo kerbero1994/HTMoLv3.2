@@ -121,27 +121,24 @@ function Main()
 
     }
     this.CleanScene=function()
-    {
-        var button=document.getElementById("playpause");
+    {       
+        cleanMemory();
+        //se limpian los botones de la dinámica
+        var button=document.getElementById("playpause");        
+        var reg=document.getElementById("Rew");
+        var forw=document.getElementById("Forw");
         button.style.display="none";
+        reg.style.display="none";
+        forw.style.display="none";
+        //////////////////////////
+
         var newRotationMatrix = mat4.create();
         mat4.identity(newRotationMatrix);
         mat4.rotate(newRotationMatrix, degToRad(0), [0, 1, 0]); //vista frontal
         mat4.identity(RotationMatrix);
         mat4.multiply(newRotationMatrix, RotationMatrix, RotationMatrix);
-        //tengo que limpiar los arreglos de los bloques wire
-        for(var i=0; i<NBW; i++)
-        {
-            wirePositionData[i]=[];
-            wireColorTotal[i]=[];
-            ChainIndexW[i]=[];
-            wireindexData[i]=[];
-            wirenormalDataN[i]=[];
-            LstBW[i]=[];
 
-        }
         hayseleccionado=false;
-        NBW=0;
 
         ArrayIndx=[0];
         var u_Array = gl.getUniformLocation(program, 'uIntArray');
@@ -161,16 +158,15 @@ function Main()
         initCamera();
         if (RepresentacionInicial=='SpheresBonds') 
         {
-            initBuffersSpheresSB();
-            initBuffersBonds();
+            InitBufSB();
         }
         else if(RepresentacionInicial=='Bonds')
         {
-            initBuffersBonds();
+            InitBufBonds();
         }
         else if(RepresentacionInicial=='CPK')
         {
-            initBuffersSpheresCPK();   
+            InitBufCPK();   
         }
 
         main.Buttons();
@@ -520,30 +516,7 @@ function Main()
             main.MakeModel(url);            
         }
 
-        main.Buttons();
-      /*
-        for(var i in URLS)
-        {       
-            var button = document.getElementById( URLS[i].name ); 
-            button.onclick=this.Model(URLS[i].url);
-        }
-        
-        var o=0;
-        
-        if(typeof(URLS) != "undefined")
-        { 
-            for(var i in URLS)
-            {
-                if (o==0) 
-                {
-                    main.DeleteModel();
-                    main.MakeModel(URLS[i].url);
-                }
-                o++;
-            }
-        }*/
-
-        //main.Obj3D.Rendering(webgl); 
+        main.Buttons();     
 
     }
 

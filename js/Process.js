@@ -39,6 +39,8 @@ function Bond()
    this.LstAtoms=[];
    this.id=0;
    this.State=null; ////////////////////////////////////////////////////////////////////////
+
+   this.BPosition=null; //es para saber en qué posición del arreglo se encuentra esta línea
 }
 
 function BondSkeleton()
@@ -101,7 +103,7 @@ function Atom(number,x,y,z,state,element,nameatom)
     this.Representation=null;
 
     this.LstidLinea=[];
-    this.idLineaSkeleton;
+    this.LstidLineaSke=[];
 
     this.GetLstidLinea=function()
     {
@@ -182,6 +184,14 @@ function Process()
 	    var ChainCont=1;
 	    contBonds=0;
 	    contBS=0;
+
+	    var RGB_Diffuse = [,,];  //para asignarle un único valor de color difuso a cada átomo para distinguirlo de los demás en la selección
+	    //la que no se toma sería [0][0][0]  entonces comenzaría con [1][0][0]  y terminaría en [255][255][254]
+	    var R=0;
+	    var G=0;
+	    var B=0;
+
+    	var Scala=0.003921568627451;
 	      
 	    for(var i=0; i<lines.length; ++i)
 	    {
@@ -258,8 +268,8 @@ function Process()
 				    chain.LstSkeleton.push(atom);
 				    if (contSkele>0) {
 				    	bondS = this.AddBondSkeleton(bondS,atomtmp2,atom);
-				    	atomtmp2.idLineaSkeleton=contBS-1; //checar el skeleton, ya que debería tener una o dos líneas cada átomo
-		       			atom.idLineaSkeleton=contBS-1;
+				    	atomtmp2.LstidLineaSke.push(contBS-1); //checar 
+		       			atom.LstidLineaSke.push(contBS-1);
 				    	atomtmp2=atom;
 				    }
 				    contSkele++;
@@ -278,6 +288,23 @@ function Process()
 			   	id++;	
 			   	atom.id=id;
 			   	atom.idChain=ChainCont;
+
+			   	//Asignación del color difuso a cáda átomo
+	            R=R+1;
+	            if (R==255) 
+	            {
+	                R=0;
+	                G=G+1;
+	                if (G==255) 
+	                {
+	                    G=0;
+	                    B=B+1;
+	                }
+	            }
+	            atom.ColorRGBDiffuse=[R*Scala,G*Scala,B*Scala];
+
+	            //en esta parte se asigna el color al átom
+            	AsignaColor(atom); 
 		    }
 		    
 	    }
