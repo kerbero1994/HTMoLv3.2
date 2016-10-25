@@ -469,9 +469,6 @@ Copyright (C) 2014  Alvarez Rivera Leonardo,Becerra Toledo Francisco Javier, Veg
                 //-----------------------------------------------------------------------------------------------------
                 }
 
-                ///////////////////////////////////////// COLORES REALES ///////////////////////////////////////////////
-
-                //sphereVertexPositionBuffer[0] = gl.createBuffer();
                 gl.bindBuffer(gl.ARRAY_BUFFER, sphereVertexPositionBuffer[0]);
                 gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertexPositionData[0]), gl.DYNAMIC_DRAW);
                 sphereVertexPositionBuffer[0].itemSize = 3;
@@ -525,10 +522,6 @@ Copyright (C) 2014  Alvarez Rivera Leonardo,Becerra Toledo Francisco Javier, Veg
                                                    
                                     z=z+3;
                                     }  
-                                    ///////////////////////////
-                                    ///////////cambiar también los difusos
-
-
                                      
                                 }
                                 else
@@ -596,10 +589,6 @@ Copyright (C) 2014  Alvarez Rivera Leonardo,Becerra Toledo Francisco Javier, Veg
                                                    
                                     z=z+3;
                                     }  
-                                    ///////////////////////////
-                                    ///////////cambiar también los difusos
-
-
                                      
                                 }
                                 else
@@ -649,7 +638,7 @@ Copyright (C) 2014  Alvarez Rivera Leonardo,Becerra Toledo Francisco Javier, Veg
             verticesLineas = [];
             for (var i=0; i<molecule.LstBonds.length;i++)
             {
-                var atm1 = molecule.LstBonds[i].LstAtoms[0];  //checar lo de la continuidad de los PDB cómo aparecen los átomos
+                var atm1 = molecule.LstBonds[i].LstAtoms[0]; 
                 var atm2 = molecule.LstBonds[i].LstAtoms[1];
                
                 var temp1 = molecule.LstAtoms.length*pos;
@@ -662,7 +651,7 @@ Copyright (C) 2014  Alvarez Rivera Leonardo,Becerra Toledo Francisco Javier, Veg
                 if ( temp1 <= coordsX.length )  //ESTÁ DENTRO DEL BUFFER1
                 {
                     //alert(temp1);
-                    //alert(atm1.NumberAtom);                                                       ///////////////////////////??????????? idAtom
+                    //alert(atm1.NumberAtom);                                                       
                     //alert(parseInt(temp1) + parseInt(atm1.NumberAtom));
                     //alert(coordsX[parseInt(temp1) + parseInt(atm1.NumberAtom)]);
                     verticesLineas.push(coordsX[parseInt(temp1) + parseInt(atm1.id) -1] -Cx); /////////////////////////////77
@@ -698,6 +687,60 @@ Copyright (C) 2014  Alvarez Rivera Leonardo,Becerra Toledo Francisco Javier, Veg
             gl.bindBuffer(gl.ARRAY_BUFFER, null);
 
 
+            //----------------------------------------  PARTE DE LOS ENLACES SKELETON  ------------------------------------------------
+            //alert(verticesLineas);
+            verLineSkele = [];
+            for (var i=0; i<molecule.LstBondsSkeleton.length;i++)
+            {
+                var atm1 = molecule.LstBondsSkeleton[i].LstAtoms[0]; 
+                var atm2 = molecule.LstBondsSkeleton[i].LstAtoms[1];
+               
+                var temp1 = molecule.LstAtoms.length*pos;
+                var temp2 = molecule.LstAtoms.length*pos;
+
+                //alert("entra");
+                //alert("Atm1:"+temp1 + atm1.NumberAtom);
+                //alert("Atm2:"+temp2 + atm2.NumberAtom);
+
+                if ( temp1 <= coordsX.length )  //ESTÁ DENTRO DEL BUFFER1
+                {
+                    //alert(temp1);
+                    //alert(atm1.NumberAtom);                                                       
+                    //alert(parseInt(temp1) + parseInt(atm1.NumberAtom));
+                    //alert(coordsX[parseInt(temp1) + parseInt(atm1.NumberAtom)]);
+                    verLineSkele.push(coordsX[parseInt(temp1) + parseInt(atm1.id) -1] -Cx); /////////////////////////////77
+                    verLineSkele.push(coordsY[parseInt(temp1) + parseInt(atm1.id) -1] -Cy);
+                    verLineSkele.push(coordsZ[parseInt(temp1) + parseInt(atm1.id) -1] -Cz);
+
+                }
+                else
+                {
+                    alert("no");
+
+                }
+                if ( temp2 <= coordsX.length )  //ESTÁ DENTRO DEL BUFFER1
+                {
+                    verLineSkele.push(coordsX[parseInt(temp2) + parseInt(atm2.id) -1] -Cx);
+                    verLineSkele.push(coordsY[parseInt(temp2) + parseInt(atm2.id) -1] -Cy);
+                    verLineSkele.push(coordsZ[parseInt(temp2) + parseInt(atm2.id) -1] -Cz);
+
+                }
+                else
+                {
+                    alert("no2");
+                }
+
+
+            }
+            //alert(verticesLineas);
+
+            gl.bindBuffer(gl.ARRAY_BUFFER, lineSkeleVerPosBuf);
+            gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(verLineSkele), gl.DYNAMIC_DRAW);
+            lineSkeleVerPosBuf.itemSize = 3;
+            lineSkeleVerPosBuf.numItems = verLineSkele.length/3;
+            gl.bindBuffer(gl.ARRAY_BUFFER, null);
+
+
             //console.log("sale");
          
             framecounter(numframe+1);
@@ -726,7 +769,7 @@ Copyright (C) 2014  Alvarez Rivera Leonardo,Becerra Toledo Francisco Javier, Veg
             }
        
  
-            for(var i=0; i<NBSphe; i++) //colores reales
+            for(var i=0; i<NBSphe; i++) 
             {              
                     gl.bindBuffer(gl.ARRAY_BUFFER, sphereVertexPositionBuffer[i]);
                     gl.vertexAttribPointer(currentProgram.vertexPositionAttribute, sphereVertexPositionBuffer[i].itemSize, gl.FLOAT, false, 0, 0);
@@ -776,7 +819,31 @@ Copyright (C) 2014  Alvarez Rivera Leonardo,Becerra Toledo Francisco Javier, Veg
             gl.vertexAttribPointer(currentProgram.vertexPositionAttribute, 3, gl.FLOAT, false, 0, 0);            
             gl.drawArrays(gl.LINES, 0, lineVertexPositionBuffer.numItems);
             gl.bindBuffer(gl.ARRAY_BUFFER, null);
-            
+
+             //////////////////////////////////////////////////////////////////lineas Skeletons
+                    gl.bindBuffer(gl.ARRAY_BUFFER, colSkeleVerBuf);
+                    gl.vertexAttribPointer(currentProgram.textureCoordAttribute, colSkeleVerBuf.itemSize, gl.FLOAT, false, 0, 0);
+                    gl.bindBuffer(gl.ARRAY_BUFFER, null);
+
+                    gl.bindBuffer(gl.ARRAY_BUFFER, ColSkeleDifBuf);
+                    gl.vertexAttribPointer(currentProgram.ColorDif, ColSkeleDifBuf.itemSize, gl.FLOAT, false, 0, 0);
+                    gl.bindBuffer(gl.ARRAY_BUFFER, null);
+                    
+                    gl.bindBuffer(gl.ARRAY_BUFFER, ChainSkeleBufBnd);
+                    gl.vertexAttribPointer(currentProgram.Opcion, ChainSkeleBufBnd.itemSize, gl.FLOAT, false, 0, 0);
+                    gl.bindBuffer(gl.ARRAY_BUFFER, null);
+
+                    gl.bindBuffer(gl.ARRAY_BUFFER, lineSkeleNorBuf);
+                    gl.vertexAttribPointer(currentProgram.vertexNormalAttribute, 3, gl.FLOAT, false, 0, 0);
+                    gl.bindBuffer(gl.ARRAY_BUFFER, null);
+                    setMatrixUniforms();
+                    
+                    gl.bindBuffer(gl.ARRAY_BUFFER, lineSkeleVerPosBuf);
+                    gl.vertexAttribPointer(currentProgram.vertexPositionAttribute, 3, gl.FLOAT, false, 0, 0);                   
+                    gl.drawArrays(gl.LINES, 0, lineSkeleVerPosBuf.numItems);
+                    gl.bindBuffer(gl.ARRAY_BUFFER, null);
+                    
+                ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////            
 
         }
 
