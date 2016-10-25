@@ -1013,7 +1013,7 @@ function initBuffersBonds(Prendidos)
     for(var t in molecule.LstBonds)
     {
         var o = molecule.LstBonds[t];
-        o.BPosition=t+1; //es para ubicar esta línea en el arreglo y saber en qué posición se encuentra
+        o.BPosition=t; //es para ubicar esta línea en el arreglo y saber en qué posición se encuentra
         verticesLineas.push(o.LstAtoms[0].X -Cx);
         verticesLineas.push(o.LstAtoms[0].Y -Cy);
         verticesLineas.push(o.LstAtoms[0].Z -Cz);
@@ -1114,7 +1114,7 @@ function initBufBndSkele(Prendidos)
     for(var t in molecule.LstBondsSkeleton)
     {
         var o = molecule.LstBondsSkeleton[t];
-        o.BPosition=t+1; //es para ubicar esta línea en el arreglo y saber en qué posición se encuentra
+        o.BPosition=t; //es para ubicar esta línea en el arreglo y saber en qué posición se encuentra
         verLineSkele.push(o.LstAtoms[0].X -Cx);
         verLineSkele.push(o.LstAtoms[0].Y -Cy);
         verLineSkele.push(o.LstAtoms[0].Z -Cz);

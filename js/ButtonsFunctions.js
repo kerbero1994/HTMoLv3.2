@@ -416,10 +416,10 @@ function CambiarRepresentacion(Repre) //Representacion es en lo que se va a camb
                     }      
 
                     //para cada línea en la lista de este átomo apagarla poniendo en 0 su alpha
-                    for(var z=0; z< atom.LstidLinea.length;)
+                    for(var z=0; z< atom.LstLinea.length;)
                     {
                         //cada línea va a tener un id que va a ser conforme se vaya agregando al bloque de enlaces
-                        var line= atom.LstidLinea[z];
+                        var line= atom.LstLinea[z];
                         var mul=line.BPosition * 8; //es 8 ya que cada línea contiene 2 vértices, cada vértice 4 dígitos para el color
                         colores[mul + 3 ] = 0;
                         colores[mul + 7 ] = 0;
@@ -458,24 +458,23 @@ function CambiarRepresentacion(Repre) //Representacion es en lo que se va a camb
 
                 else if(Repre=='Skeleton')
                 {
-                    for(var z=0; z< atom.LstidLinea.length;)
+                    for(var z=0; z< atom.LstLinea.length;)
                     {
                         //cada línea va a tener un id que va a ser conforme se vaya agregando al bloque de enlaces
-                        var line= atom.LstidLinea[z];
+                        var line= atom.LstLinea[z];
                         var mul=line.BPosition * 8;
                         colores[mul + 3 ] = 0;
                         colores[mul + 7 ] = 0;
                         z=z+1;
                     }
                     BuffLineCol=true;
-
                     if (atom.NameAtom=='CA') 
                     {
                         //para cada líneaSkeleton en la lista del átomo (es 1 o dos líneas) checar en qué estado se encuentran sus átomos extremos
                         //si los dos estan en repre Skeleton entonces prenderla
-                        for(var j=0; j<atom.LstidLineaSke.length; j++)
+                        for(var j=0; j<atom.LstLineaSke.length; j++)
                         {
-                            var line= atom.LstidLineaSke[j]; //la linea skeleton
+                            var line= atom.LstLineaSke[j]; //la linea skeleton
                             if ((line.LstAtoms[0].Representation=='Skeleton') && (line.LstAtoms[1].Representation=='Skeleton' )) 
                             {
                                 var mul=line.BPosition * 8;
@@ -489,7 +488,7 @@ function CambiarRepresentacion(Repre) //Representacion es en lo que se va a camb
                     else
                     {
                         //apagar el átomo con el colorTotal poniendo el alpha en 0
-                        var mul= (atom.BloqueSolid - 1) * nColor;
+                        var mul= (atom.PositionBSolid - 1) * nColor;
                         for(var j=0; j<nColor;)
                         {
                             ColorTotal[atom.BloqueSolid-1][mul + j + 3] = 0; //para apagar el color con el alpha
@@ -555,13 +554,16 @@ function CambiarRepresentacion(Repre) //Representacion es en lo que se va a camb
                     }     
 
 
-                    for(var z=0; z< atom.LstidLinea.length;) //para cáda línea prenderla o inicializarla                        //////////////////////////
+                    for(var z=0; z< atom.LstLinea.length;) //para cáda línea prenderla si sus extremos están en SB
                     {
-                        var line= atom.LstidLinea[z];
-                        var mul=line.BPosition * 8;
-                        colores[mul + 3 ] = 0;
-                        colores[mul + 7 ] = 0;
-                        z=z+1;
+                        var line= atom.LstLinea[z];
+                        if ((line.LstAtoms[0].Representation=='SB') && (line.LstAtoms[1].Representation=='SB' )) 
+                        {
+                            var mul=line.BPosition * 8;
+                            colores[mul + 3 ] = 1;
+                            colores[mul + 7 ] = 1;
+                            z=z+1;
+                        }                        
                     }
                     BuffLineCol=true;           
 
@@ -589,10 +591,10 @@ function CambiarRepresentacion(Repre) //Representacion es en lo que se va a camb
                         ArrCont2.push(atom.BloqueSolid - 1);
                     }     
 
-                    for(var z=0; z< atom.LstidLinea.length;) 
+                    for(var z=0; z< atom.LstLinea.length;) 
                     {
                         //cada línea va a tener un id que va a ser conforme se vaya agregando al bloque de enlaces
-                        var line= atom.LstidLinea[z];
+                        var line= atom.LstLinea[z];
                         var mul=line.BPosition * 8;
                         colores[mul + 3 ] = 0;
                         colores[mul + 7 ] = 0;
@@ -628,9 +630,9 @@ function CambiarRepresentacion(Repre) //Representacion es en lo que se va a camb
                             ArrCont1.push(atom.BloqueSolid - 1);
                         }     
 
-                        for(var z=0; z< atom.LstidLinea.length;) //para cáda línea prenderla
+                        for(var z=0; z< atom.LstLinea.length;) //para cáda línea prenderla
                         {
-                            var line= atom.LstidLinea[z];
+                            var line= atom.LstLinea[z];
                             var mul=line.BPosition * 8;
                             colores[mul + 3 ] = 0;
                             colores[mul + 7 ] = 0;

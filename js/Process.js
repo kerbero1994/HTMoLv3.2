@@ -102,8 +102,8 @@ function Atom(number,x,y,z,state,element,nameatom)
     this.Seleccionado=false; //
     this.Representation=null;
 
-    this.LstidLinea=[];
-    this.LstidLineaSke=[];
+    this.LstLinea=[];
+    this.LstLineaSke=[];
 
     this.GetLstidLinea=function()
     {
@@ -268,8 +268,8 @@ function Process()
 				    chain.LstSkeleton.push(atom);
 				    if (contSkele>0) {
 				    	bondS = this.AddBondSkeleton(bondS,atomtmp2,atom);
-				    	atomtmp2.LstidLineaSke.push(contBS-1); //checar 
-		       			atom.LstidLineaSke.push(contBS-1);
+				    	atomtmp2.LstLineaSke.push(bondS); 
+		       			atom.LstLineaSke.push(bondS);
 				    	atomtmp2=atom;
 				    }
 				    contSkele++;
@@ -329,8 +329,8 @@ function Process()
 			bond.LstAtoms.push(union);
 			bond.id=contBonds;
 			bond.State='Active';
-			atom.LstidLinea.push(contBonds);
-			union.LstidLinea.push(contBonds);
+			atom.LstLinea.push(bond);
+			union.LstLinea.push(bond);
 
 			this.Model.LstBonds.push(bond);
 
@@ -351,8 +351,6 @@ function Process()
 			bond.LstAtoms.push(atom);
 			bond.LstAtoms.push(union);
 			bond.id=contBS;
-			atom.LstidLinea.push(contBS);
-			union.LstidLinea.push(contBS);
 			this.Model.LstBondsSkeleton.push(bond);
 			contBS++;
 		    }
