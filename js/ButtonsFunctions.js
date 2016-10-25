@@ -268,6 +268,7 @@ function CambiarRepresentacion(Repre) //Representacion es en lo que se va a camb
             var atom = AtomosSeleccionados[i];
             if (atom.Representation=='SB')    ////-------------------------------------------------------
             {
+                atom.Representation=Repre;
                 if (Repre=='SB') 
                 {
                     //No hacer nada ya que esa es la misma representación
@@ -519,11 +520,11 @@ function CambiarRepresentacion(Repre) //Representacion es en lo que se va a camb
 
                 }
 
-
             }
 
             else if (atom.Representation=='CPK')                ////-------------------------------------------------------
             {
+                atom.Representation=Repre;
                 if (Repre=='CPK') 
                 {
                     //No hacer nada ya que esa es la misma representación           
@@ -678,14 +679,15 @@ function CambiarRepresentacion(Repre) //Representacion es en lo que se va a camb
             else if (atom.Representation=='Bonds')              ////-------------------------------------------------------
                                                         ///preguntar si se va a poder hacer el cambio a otra representación
             {
+                atom.Representation=Repre;
                 if (Repre=='Bonds') 
                 {
-                    //No hacer nada ya que esa es la misma representación           
+                    //No hacer nada ya que esa es la misma representación 
+
                 }
                 else if(Repre=='SB')
                 {
                     //checar si está inicializado el átomo en el bloque de esferas, sino inicializarlo
-
 
 
                 }
@@ -710,17 +712,78 @@ function CambiarRepresentacion(Repre) //Representacion es en lo que se va a camb
             else if (atom.Representation=='Skeleton')               ////-------------------------------------------------------
                                                         ///preguntar si se va a poder hacer el cambio a otra representación
             {
+                atom.Representation=Repre;
+                if (atom.NameAtom=='CA') 
+                {
+                    if (Repre=='Skeleton') 
+                    {
+                        //No hacer nada ya que esa es la misma representación           
+                    }
+                    else if(Repre=='SB')
+                    {
+                        for(var z=0; z< atom.LstLinea.length;) //para cáda línea prenderla si sus extremos están en SB
+                        {
+                            var line= atom.LstLinea[z];
+                            if ((line.LstAtoms[0].Representation=='SB') && (line.LstAtoms[1].Representation=='SB' )) 
+                            {
+                                var mul=line.BPosition * 8;
+                                colores[mul + 3 ] = 1;
+                                colores[mul + 7 ] = 1;                                
+                            }
+                            z=z+1;                        
+                        }
+                        BuffLineCol=true;    
 
+                    }
+                    else if(Repre=='CPK')
+                    {
+                        var mul = (atom.PositionBSolid - 1) * nVertices;
+                        for (var z = 0; z < nVertices;) {
+                            vertexPositionData[atom.BloqueSolid - 1][mul + z] = verArrayC_PB_TI_CA[z] + atom.X - Cx;
+                            vertexPositionData[atom.BloqueSolid - 1][mul + z + 1] = verArrayC_PB_TI_CA[z + 1] + atom.Y - Cy;
+                            vertexPositionData[atom.BloqueSolid - 1][mul + z + 2] = verArrayC_PB_TI_CA[z + 2] + atom.Z - Cz;
+
+                            z = z + 3;
+                        }
+
+                        var agregar=true;
+                        for(var j=0; j < ArrCont1.length; j++)
+                        {
+                            if ((atom.BloqueSolid - 1)==ArrCont1[j]) 
+                            {
+                                agregar=false;
+                                break;
+                            }
+                        }
+                        if (agregar==true) 
+                        {
+                            ArrCont1.push(atom.BloqueSolid - 1);
+                        }      
+
+                    }
+                    else if(Repre=='Bonds')
+                    {
+                        //prender las líneas que tenga este átomo
+
+
+                    }
+                    else //spline
+                    {
+                        //parte de Julio
+
+                    }
+
+                }
+                
             }
 
             else /// el Spline parte de Julio
             {
-
+                atom.Representation=Repre;
 
 
             }
-
-            atom.Representation=Repre;
+           
 
         }
         /////////////////////////////////////////////////////////////////////////////////////////7
