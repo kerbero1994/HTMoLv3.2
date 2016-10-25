@@ -562,9 +562,9 @@ function CambiarRepresentacion(Repre) //Representacion es en lo que se va a camb
                         {
                             var mul=line.BPosition * 8;
                             colores[mul + 3 ] = 1;
-                            colores[mul + 7 ] = 1;
-                            z=z+1;
-                        }                        
+                            colores[mul + 7 ] = 1;                            
+                        }
+                        z=z+1;                        
                     }
                     BuffLineCol=true;           
 
