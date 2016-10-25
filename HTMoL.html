@@ -648,7 +648,7 @@ Copyright (C) 2014  Alvarez Rivera Leonardo,Becerra Toledo Francisco Javier, Veg
                 //alert("Atm1:"+temp1 + atm1.NumberAtom);
                 //alert("Atm2:"+temp2 + atm2.NumberAtom);
 
-                if ( temp1 <= coordsX.length )  //ESTÁ DENTRO DEL BUFFER1
+                if ( temp1 <= coordsX.length )  //ESTÁ DENTRO DEL BUFFER1       
                 {
                     //alert(temp1);
                     //alert(atm1.NumberAtom);                                                       
@@ -678,7 +678,6 @@ Copyright (C) 2014  Alvarez Rivera Leonardo,Becerra Toledo Francisco Javier, Veg
 
 
             }
-            //alert(verticesLineas);
 
             gl.bindBuffer(gl.ARRAY_BUFFER, lineVertexPositionBuffer);
             gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(verticesLineas), gl.DYNAMIC_DRAW);
@@ -686,8 +685,7 @@ Copyright (C) 2014  Alvarez Rivera Leonardo,Becerra Toledo Francisco Javier, Veg
             lineVertexPositionBuffer.numItems = verticesLineas.length/3;
             gl.bindBuffer(gl.ARRAY_BUFFER, null);
 
-
-            //----------------------------------------  PARTE DE LOS ENLACES SKELETON  ------------------------------------------------
+            //----------------------------------------  PARTE DE LOS ENLACES SKELETON------------------------------------------------
             //alert(verticesLineas);
             verLineSkele = [];
             for (var i=0; i<molecule.LstBondsSkeleton.length;i++)
@@ -702,7 +700,7 @@ Copyright (C) 2014  Alvarez Rivera Leonardo,Becerra Toledo Francisco Javier, Veg
                 //alert("Atm1:"+temp1 + atm1.NumberAtom);
                 //alert("Atm2:"+temp2 + atm2.NumberAtom);
 
-                if ( temp1 <= coordsX.length )  //ESTÁ DENTRO DEL BUFFER1
+                if ( temp1 <= coordsX.length )  //ESTÁ DENTRO DEL BUFFER1       
                 {
                     //alert(temp1);
                     //alert(atm1.NumberAtom);                                                       
@@ -732,7 +730,6 @@ Copyright (C) 2014  Alvarez Rivera Leonardo,Becerra Toledo Francisco Javier, Veg
 
 
             }
-            //alert(verticesLineas);
 
             gl.bindBuffer(gl.ARRAY_BUFFER, lineSkeleVerPosBuf);
             gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(verLineSkele), gl.DYNAMIC_DRAW);
@@ -741,7 +738,8 @@ Copyright (C) 2014  Alvarez Rivera Leonardo,Becerra Toledo Francisco Javier, Veg
             gl.bindBuffer(gl.ARRAY_BUFFER, null);
 
 
-            //console.log("sale");
+           
+
          
             framecounter(numframe+1);
 
@@ -806,6 +804,10 @@ Copyright (C) 2014  Alvarez Rivera Leonardo,Becerra Toledo Francisco Javier, Veg
             gl.vertexAttribPointer(currentProgram.textureCoordAttribute, colorVertexBuffer.itemSize, gl.FLOAT, false, 0, 0);
             gl.bindBuffer(gl.ARRAY_BUFFER, null);
 
+            gl.bindBuffer(gl.ARRAY_BUFFER, ColorDifBuffer);
+            gl.vertexAttribPointer(currentProgram.ColorDif, ColorDifBuffer.itemSize, gl.FLOAT, false, 0, 0);
+            gl.bindBuffer(gl.ARRAY_BUFFER, null);
+
             gl.bindBuffer(gl.ARRAY_BUFFER, lineNormalBuffer);
             gl.vertexAttribPointer(currentProgram.vertexNormalAttribute, 3, gl.FLOAT, false, 0, 0);
             gl.bindBuffer(gl.ARRAY_BUFFER, null);
@@ -820,7 +822,7 @@ Copyright (C) 2014  Alvarez Rivera Leonardo,Becerra Toledo Francisco Javier, Veg
             gl.drawArrays(gl.LINES, 0, lineVertexPositionBuffer.numItems);
             gl.bindBuffer(gl.ARRAY_BUFFER, null);
 
-             //////////////////////////////////////////////////////////////////lineas Skeletons
+            //////////////////////////////////////////////////////////////////lineas Skeletons
                     gl.bindBuffer(gl.ARRAY_BUFFER, colSkeleVerBuf);
                     gl.vertexAttribPointer(currentProgram.textureCoordAttribute, colSkeleVerBuf.itemSize, gl.FLOAT, false, 0, 0);
                     gl.bindBuffer(gl.ARRAY_BUFFER, null);
@@ -843,7 +845,9 @@ Copyright (C) 2014  Alvarez Rivera Leonardo,Becerra Toledo Francisco Javier, Veg
                     gl.drawArrays(gl.LINES, 0, lineSkeleVerPosBuf.numItems);
                     gl.bindBuffer(gl.ARRAY_BUFFER, null);
                     
-                ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////            
+                ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+               
 
         }
 
@@ -1130,9 +1134,6 @@ Copyright (C) 2014  Alvarez Rivera Leonardo,Becerra Toledo Francisco Javier, Veg
                 //-----------------------------------------------------------------------------------------------------
                 }
 
-                ///////////////////////////////////////// COLORES REALES ///////////////////////////////////////////////
-
-                //sphereVertexPositionBuffer[0] = gl.createBuffer();
                 gl.bindBuffer(gl.ARRAY_BUFFER, sphereVertexPositionBuffer[0]);
                 gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertexPositionData[0]), gl.DYNAMIC_DRAW);
                 sphereVertexPositionBuffer[0].itemSize = 3;
@@ -1186,10 +1187,6 @@ Copyright (C) 2014  Alvarez Rivera Leonardo,Becerra Toledo Francisco Javier, Veg
                                                    
                                     z=z+3;
                                     }  
-                                    ///////////////////////////
-                                    ///////////cambiar también los difusos
-
-
                                      
                                 }
                                 else
@@ -1257,11 +1254,6 @@ Copyright (C) 2014  Alvarez Rivera Leonardo,Becerra Toledo Francisco Javier, Veg
                                                    
                                     z=z+3;
                                     }  
-                                    ///////////////////////////
-                                    ///////////cambiar también los difusos
-
-
-                                     
                                 }
                                 else
                                 {
