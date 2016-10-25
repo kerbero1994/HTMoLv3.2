@@ -266,6 +266,31 @@ function CambiarRepresentacion(Repre) //Representacion es en lo que se va a camb
         for(var i=0; i<AtomosSeleccionados.length; i++) //////////se va a procesar cáda átomo individual ya que son selecciones parciales
         {
             var atom = AtomosSeleccionados[i];
+
+            if (pos>0)  //////////*********** checar instrucción
+            {
+                var s=molecule.LstAtoms.length * pos + atom.id;
+                //entonces toman las posiciones x y z del frame en el que se encuentra
+                if(bndbuffer==0)
+                {
+                    atmX=coordsX[s];
+                    atmY=coordsY[s];
+                    atmZ=coordsZ[s];         
+                }
+                else
+                {
+                    atmX=coordsX1[s];
+                    atmY=coordsY1[s];
+                    atmZ=coordsZ1[s]; 
+                } 
+            }
+            else
+            {
+                atmX=atom.X;
+                atmY=atom.Y;
+                atmZ=atom.Z;
+            }         
+
             if (atom.Representation=='SB')    ////-------------------------------------------------------
             {
                 atom.Representation=Repre;
@@ -283,9 +308,9 @@ function CambiarRepresentacion(Repre) //Representacion es en lo que se va a camb
                         //ingresar los nuevos vértices                
                         for (var z = 0; z < nVertices;) //vertices para esfera de 16 latitudes y longitudes
                         {
-                            vertexPositionData[atom.BloqueSolid - 1][mul + z]     = verArrayH[z] + atom.X - Cx; //estoy quitando y al mismo tiempo agregando, por lo que se queda
-                            vertexPositionData[atom.BloqueSolid - 1][mul + z + 1] = verArrayH[z + 1] + atom.Y - Cy; //la misma longitud en cada operación
-                            vertexPositionData[atom.BloqueSolid - 1][mul + z + 2] = verArrayH[z + 2] + atom.Z - Cz;
+                            vertexPositionData[atom.BloqueSolid - 1][mul + z]     = verArrayH[z] + atmX - Cx; //estoy quitando y al mismo tiempo agregando, por lo que se queda
+                            vertexPositionData[atom.BloqueSolid - 1][mul + z + 1] = verArrayH[z + 1] + atmY - Cy; //la misma longitud en cada operación
+                            vertexPositionData[atom.BloqueSolid - 1][mul + z + 2] = verArrayH[z + 2] + atmZ - Cz;
 
                             z = z + 3;
                         }
@@ -295,9 +320,9 @@ function CambiarRepresentacion(Repre) //Representacion es en lo que se va a camb
                     {
                         //alert("C");
                         for (var z = 0; z < nVertices;) {
-                            vertexPositionData[atom.BloqueSolid - 1][mul + z] = verArrayC_PB_TI_CA[z] + atom.X - Cx;
-                            vertexPositionData[atom.BloqueSolid - 1][mul + z + 1] = verArrayC_PB_TI_CA[z + 1] + atom.Y - Cy;
-                            vertexPositionData[atom.BloqueSolid - 1][mul + z + 2] = verArrayC_PB_TI_CA[z + 2] + atom.Z - Cz;
+                            vertexPositionData[atom.BloqueSolid - 1][mul + z] = verArrayC_PB_TI_CA[z] + atmX - Cx;
+                            vertexPositionData[atom.BloqueSolid - 1][mul + z + 1] = verArrayC_PB_TI_CA[z + 1] + atmY - Cy;
+                            vertexPositionData[atom.BloqueSolid - 1][mul + z + 2] = verArrayC_PB_TI_CA[z + 2] + atmZ - Cz;
 
                             z = z + 3;
                         }
@@ -309,9 +334,9 @@ function CambiarRepresentacion(Repre) //Representacion es en lo que se va a camb
                         //alert("PB");
                         //ingresar los nuevos vértices
                         for (var z = 0; z < nVertices;) {
-                            vertexPositionData[atom.BloqueSolid - 1][mul + z] = verArrayC_PB_TI_CA[z] + atom.X - Cx;
-                            vertexPositionData[atom.BloqueSolid - 1][mul + z + 1] = verArrayC_PB_TI_CA[z + 1] + atom.Y - Cy;
-                            vertexPositionData[atom.BloqueSolid - 1][mul + z + 2] = verArrayC_PB_TI_CA[z + 2] + atom.Z - Cz;
+                            vertexPositionData[atom.BloqueSolid - 1][mul + z] = verArrayC_PB_TI_CA[z] + atmX - Cx;
+                            vertexPositionData[atom.BloqueSolid - 1][mul + z + 1] = verArrayC_PB_TI_CA[z + 1] + atmY - Cy;
+                            vertexPositionData[atom.BloqueSolid - 1][mul + z + 2] = verArrayC_PB_TI_CA[z + 2] + atmZ - Cz;
 
                             z = z + 3;
                         }
@@ -320,9 +345,9 @@ function CambiarRepresentacion(Repre) //Representacion es en lo que se va a camb
                         //alert("TI");
                         //ingresar los nuevos vértices
                         for (var z = 0; z < nVertices;) {
-                            vertexPositionData[atom.BloqueSolid - 1][mul + z] = verArrayC_PB_TI_CA[z] + atom.X - Cx;
-                            vertexPositionData[atom.BloqueSolid - 1][mul + z + 1] = verArrayC_PB_TI_CA[z + 1] + atom.Y - Cy;
-                            vertexPositionData[atom.BloqueSolid - 1][mul + z + 2] = verArrayC_PB_TI_CA[z + 2] + atom.Z - Cz;
+                            vertexPositionData[atom.BloqueSolid - 1][mul + z] = verArrayC_PB_TI_CA[z] + atmX - Cx;
+                            vertexPositionData[atom.BloqueSolid - 1][mul + z + 1] = verArrayC_PB_TI_CA[z + 1] + atmY - Cy;
+                            vertexPositionData[atom.BloqueSolid - 1][mul + z + 2] = verArrayC_PB_TI_CA[z + 2] + atmZ - Cz;
 
                             z = z + 3;
                         }
@@ -331,9 +356,9 @@ function CambiarRepresentacion(Repre) //Representacion es en lo que se va a camb
                         //alert("CA");
                         //ingresar los nuevos vértices
                         for (var z = 0; z < nVertices;) {
-                            vertexPositionData[atom.BloqueSolid - 1][mul + z] = verArrayC_PB_TI_CA[z] + atom.X - Cx;
-                            vertexPositionData[atom.BloqueSolid - 1][mul + z + 1] = verArrayC_PB_TI_CA[z + 1] + atom.Y - Cy;
-                            vertexPositionData[atom.BloqueSolid - 1][mul + z + 2] = verArrayC_PB_TI_CA[z + 2] + atom.Z - Cz;
+                            vertexPositionData[atom.BloqueSolid - 1][mul + z] = verArrayC_PB_TI_CA[z] + atmX - Cx;
+                            vertexPositionData[atom.BloqueSolid - 1][mul + z + 1] = verArrayC_PB_TI_CA[z + 1] + atmY - Cy;
+                            vertexPositionData[atom.BloqueSolid - 1][mul + z + 2] = verArrayC_PB_TI_CA[z + 2] + atmZ - Cz;
 
                             z = z + 3;
                         }
@@ -343,9 +368,9 @@ function CambiarRepresentacion(Repre) //Representacion es en lo que se va a camb
                         //ingresar los nuevos vértices
                         for (var z = 0; z < nVertices;) //vertices para esfera de 16 latitudes y longitudes
                         {
-                            vertexPositionData[atom.BloqueSolid - 1][mul + z] = verArrayN[z] + atom.X - Cx;
-                            vertexPositionData[atom.BloqueSolid - 1][mul + z + 1] = verArrayN[z + 1] + atom.Y - Cy;
-                            vertexPositionData[atom.BloqueSolid - 1][mul + z + 2] = verArrayN[z + 2] + atom.Z - Cz;
+                            vertexPositionData[atom.BloqueSolid - 1][mul + z] = verArrayN[z] + atmX - Cx;
+                            vertexPositionData[atom.BloqueSolid - 1][mul + z + 1] = verArrayN[z + 1] + atmY - Cy;
+                            vertexPositionData[atom.BloqueSolid - 1][mul + z + 2] = verArrayN[z + 2] + atmZ - Cz;
 
                             z = z + 3;
                         }
@@ -355,9 +380,9 @@ function CambiarRepresentacion(Repre) //Representacion es en lo que se va a camb
                         //ingresar los nuevos vértices
                         for (var z = 0; z < nVertices;) //vertices para esfera de 16 latitudes y longitudes
                         {
-                            vertexPositionData[atom.BloqueSolid - 1][mul + z] = verArrayO[z] + atom.X - Cx;
-                            vertexPositionData[atom.BloqueSolid - 1][mul + z + 1] = verArrayO[z + 1] + atom.Y - Cy;
-                            vertexPositionData[atom.BloqueSolid - 1][mul + z + 2] = verArrayO[z + 2] + atom.Z - Cz;
+                            vertexPositionData[atom.BloqueSolid - 1][mul + z] = verArrayO[z] + atmX - Cx;
+                            vertexPositionData[atom.BloqueSolid - 1][mul + z + 1] = verArrayO[z + 1] + atmY - Cy;
+                            vertexPositionData[atom.BloqueSolid - 1][mul + z + 2] = verArrayO[z + 2] + atmZ - Cz;
 
                             z = z + 3;
                         }
@@ -369,9 +394,9 @@ function CambiarRepresentacion(Repre) //Representacion es en lo que se va a camb
                         //ingresar los nuevos vértices
                         for (var z = 0; z < nVertices;) //vertices para esfera de 16 latitudes y longitudes
                         {
-                            vertexPositionData[atom.BloqueSolid - 1][mul + z] = verArrayS[z] + atom.X - Cx;
-                            vertexPositionData[atom.BloqueSolid - 1][mul + z + 1] = verArrayS[z + 1] + atom.Y - Cy;
-                            vertexPositionData[atom.BloqueSolid - 1][mul + z + 2] = verArrayS[z + 2] + atom.Z - Cz;
+                            vertexPositionData[atom.BloqueSolid - 1][mul + z] = verArrayS[z] + atmX - Cx;
+                            vertexPositionData[atom.BloqueSolid - 1][mul + z + 1] = verArrayS[z + 1] + atmY - Cy;
+                            vertexPositionData[atom.BloqueSolid - 1][mul + z + 2] = verArrayS[z + 2] + atmZ - Cz;
 
                             z = z + 3;
                         }
@@ -381,9 +406,9 @@ function CambiarRepresentacion(Repre) //Representacion es en lo que se va a camb
                         //ingresar los nuevos vértices
                         for (var z = 0; z < nVertices;) //vertices para esfera de 16 latitudes y longitudes
                         {
-                            vertexPositionData[atom.BloqueSolid - 1][mul + z] = verArrayP[z] + atom.X - Cx;
-                            vertexPositionData[atom.BloqueSolid - 1][mul + z + 1] = verArrayP[z + 1] + atom.Y - Cy;
-                            vertexPositionData[atom.BloqueSolid - 1][mul + z + 2] = verArrayP[z + 2] + atom.Z - Cz;
+                            vertexPositionData[atom.BloqueSolid - 1][mul + z] = verArrayP[z] + atmX - Cx;
+                            vertexPositionData[atom.BloqueSolid - 1][mul + z + 1] = verArrayP[z + 1] + atmY - Cy;
+                            vertexPositionData[atom.BloqueSolid - 1][mul + z + 2] = verArrayP[z + 2] + atmZ - Cz;
 
                             z = z + 3;
                         }
@@ -395,9 +420,9 @@ function CambiarRepresentacion(Repre) //Representacion es en lo que se va a camb
                         //ingresar los nuevos vértices
                         for (var z = 0; z < nVertices;) //vertices para esfera de 16 latitudes y longitudes
                         {
-                            vertexPositionData[atom.BloqueSolid - 1][mul + z]     = verArrayDefault[z] + atom.X - Cx;
-                            vertexPositionData[atom.BloqueSolid - 1][mul + z + 1] = verArrayDefault[z + 1] + atom.Y - Cy;
-                            vertexPositionData[atom.BloqueSolid - 1][mul + z + 2] = verArrayDefault[z + 2] + atom.Z - Cz;
+                            vertexPositionData[atom.BloqueSolid - 1][mul + z]     = verArrayDefault[z] + atmX - Cx;
+                            vertexPositionData[atom.BloqueSolid - 1][mul + z + 1] = verArrayDefault[z + 1] + atmY - Cy;
+                            vertexPositionData[atom.BloqueSolid - 1][mul + z + 2] = verArrayDefault[z + 2] + atmZ - Cz;
 
                             z = z + 3;
                         }
@@ -534,9 +559,9 @@ function CambiarRepresentacion(Repre) //Representacion es en lo que se va a camb
                     var mul = (atom.PositionBSolid - 1) * nVertices;
                     for (var z = 0; z < nVertices;) 
                     {
-                        vertexPositionData[atom.BloqueSolid - 1][mul + z]     = verArray[z] + atom.X - Cx;
-                        vertexPositionData[atom.BloqueSolid - 1][mul + z + 1] = verArray[z + 1] + atom.Y - Cy;
-                        vertexPositionData[atom.BloqueSolid - 1][mul + z + 2] = verArray[z + 2] + atom.Z - Cz;
+                        vertexPositionData[atom.BloqueSolid - 1][mul + z]     = verArray[z] + atmX - Cx;
+                        vertexPositionData[atom.BloqueSolid - 1][mul + z + 1] = verArray[z + 1] + atmY - Cy;
+                        vertexPositionData[atom.BloqueSolid - 1][mul + z + 2] = verArray[z + 2] + atmZ - Cz;
 
                         z = z + 3;
                     }
@@ -611,9 +636,9 @@ function CambiarRepresentacion(Repre) //Representacion es en lo que se va a camb
                         var mul = (atom.PositionBSolid - 1) * nVertices;
                         for (var z = 0; z < nVertices;) 
                         {
-                            vertexPositionData[atom.BloqueSolid - 1][mul + z]     = verArray[z] + atom.X - Cx;
-                            vertexPositionData[atom.BloqueSolid - 1][mul + z + 1] = verArray[z + 1] + atom.Y - Cy;
-                            vertexPositionData[atom.BloqueSolid - 1][mul + z + 2] = verArray[z + 2] + atom.Z - Cz;
+                            vertexPositionData[atom.BloqueSolid - 1][mul + z]     = verArray[z] + atmX - Cx;
+                            vertexPositionData[atom.BloqueSolid - 1][mul + z + 1] = verArray[z + 1] + atmY - Cy;
+                            vertexPositionData[atom.BloqueSolid - 1][mul + z + 2] = verArray[z + 2] + atmZ - Cz;
 
                             z = z + 3;
                         }
@@ -739,9 +764,9 @@ function CambiarRepresentacion(Repre) //Representacion es en lo que se va a camb
                     {
                         var mul = (atom.PositionBSolid - 1) * nVertices;
                         for (var z = 0; z < nVertices;) {
-                            vertexPositionData[atom.BloqueSolid - 1][mul + z] = verArrayC_PB_TI_CA[z] + atom.X - Cx;
-                            vertexPositionData[atom.BloqueSolid - 1][mul + z + 1] = verArrayC_PB_TI_CA[z + 1] + atom.Y - Cy;
-                            vertexPositionData[atom.BloqueSolid - 1][mul + z + 2] = verArrayC_PB_TI_CA[z + 2] + atom.Z - Cz;
+                            vertexPositionData[atom.BloqueSolid - 1][mul + z] = verArrayC_PB_TI_CA[z] + atmX - Cx;
+                            vertexPositionData[atom.BloqueSolid - 1][mul + z + 1] = verArrayC_PB_TI_CA[z + 1] + atmY - Cy;
+                            vertexPositionData[atom.BloqueSolid - 1][mul + z + 2] = verArrayC_PB_TI_CA[z + 2] + atmZ - Cz;
 
                             z = z + 3;
                         }

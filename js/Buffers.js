@@ -30,7 +30,9 @@ function cleanMemory()
 
 function initBuffersSpheresSB() 
 {                
-    
+    var atmX= null;
+    var atmY= null;
+    var atmZ= null;
     var NoAtomos = molecule.LstAtoms.length;
     NoBloques = Math.ceil(NoAtomos/NoPaso);
     var Restantes = NoAtomos - ((NoBloques-1) * NoPaso);
@@ -52,13 +54,37 @@ function initBuffersSpheresSB()
             
             LstBSphe[0].push(molecule.LstAtoms[apuntador]);
             //-----------------------------------------------------------------------------------------
+            if (pos>0)  //////////*********** checar instrucción
+            {
+                var s=molecule.LstAtoms.length*pos+apuntador;
+                //entonces toman las posiciones x y z del frame en el que se encuentra
+                if(bndbuffer==0)
+                {
+                    atmX=coordsX[s];
+                    atmY=coordsY[s];
+                    atmZ=coordsZ[s];         
+                }
+                else
+                {
+                    atmX=coordsX1[s];
+                    atmY=coordsY1[s];
+                    atmZ=coordsZ1[s]; 
+                } 
+            }
+            else
+            {
+                atmX=molecule.LstAtoms[apuntador].X;
+                atmY=molecule.LstAtoms[apuntador].Y;
+                atmZ=molecule.LstAtoms[apuntador].Z;
+            }            
+            /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
               
             molecule.LstAtoms[apuntador].Representation="SB";
             for (var z=0; z<verArray.length;) 
             {                            
-                vertexPositionData[0].push(verArray[z]   + molecule.LstAtoms[apuntador].X -Cx);
-                vertexPositionData[0].push(verArray[z+1] + molecule.LstAtoms[apuntador].Y -Cy);
-                vertexPositionData[0].push(verArray[z+2] + molecule.LstAtoms[apuntador].Z -Cz);
+                vertexPositionData[0].push(verArray[z]   + atmX -Cx);
+                vertexPositionData[0].push(verArray[z+1] + atmY -Cy);
+                vertexPositionData[0].push(verArray[z+2] + atmZ -Cz);
                            
                 normalDataN[0].push(normalData[z]);
                 normalDataN[0].push(normalData[z+1]);
@@ -179,16 +205,40 @@ function initBuffersSpheresSB()
                 {                  
 
                     molecule.LstAtoms[apuntador].BloqueSolid=i+1;         
-                    molecule.LstAtoms[apuntador].PositionBSolid=j+1;     //Preguntarle al doc si siempre aprecen en órden continuo
+                    molecule.LstAtoms[apuntador].PositionBSolid=j+1;     
                     molecule.LstAtoms[apuntador].Representation="SB";
                     LstBSphe[i].push(molecule.LstAtoms[apuntador]);
                     //-----------------------------------------------------------------------------------------
+                    if (pos>0)  //////////*********** checar instrucción
+                    {
+                        var s=molecule.LstAtoms.length*pos+apuntador;
+                        //entonces toman las posiciones x y z del frame en el que se encuentra
+                        if(bndbuffer==0)
+                        {
+                            atmX=coordsX[s];
+                            atmY=coordsY[s];
+                            atmZ=coordsZ[s];         
+                        }
+                        else
+                        {
+                            atmX=coordsX1[s];
+                            atmY=coordsY1[s];
+                            atmZ=coordsZ1[s]; 
+                        } 
+                    }
+                    else
+                    {
+                        atmX=molecule.LstAtoms[apuntador].X;
+                        atmY=molecule.LstAtoms[apuntador].Y;
+                        atmZ=molecule.LstAtoms[apuntador].Z;
+                    }            
+                    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
                     for (var z=0; z<verArray.length;) 
                     {                            
-                        vertexPositionData[i].push(verArray[z]   + molecule.LstAtoms[apuntador].X -Cx);
-                        vertexPositionData[i].push(verArray[z+1] + molecule.LstAtoms[apuntador].Y -Cy);
-                        vertexPositionData[i].push(verArray[z+2] + molecule.LstAtoms[apuntador].Z -Cz);
+                        vertexPositionData[i].push(verArray[z]   + atmX -Cx);
+                        vertexPositionData[i].push(verArray[z+1] + atmY -Cy);
+                        vertexPositionData[i].push(verArray[z+2] + atmZ -Cz);
                           
                         normalDataN[i].push(normalData[z]);
                         normalDataN[i].push(normalData[z+1]);
@@ -292,12 +342,37 @@ function initBuffersSpheresSB()
                     
                     LstBSphe[i].push(molecule.LstAtoms[apuntador]);
                     //-----------------------------------------------------------------------------------------
+                    if (pos>0)  //////////*********** checar instrucción
+                    {
+                        var s=molecule.LstAtoms.length*pos+apuntador;
+                        //entonces toman las posiciones x y z del frame en el que se encuentra
+                        if(bndbuffer==0)
+                        {
+                            atmX=coordsX[s];
+                            atmY=coordsY[s];
+                            atmZ=coordsZ[s];         
+                        }
+                        else
+                        {
+                            atmX=coordsX1[s];
+                            atmY=coordsY1[s];
+                            atmZ=coordsZ1[s]; 
+                        } 
+                    }
+                    else
+                    {
+                        atmX=molecule.LstAtoms[apuntador].X;
+                        atmY=molecule.LstAtoms[apuntador].Y;
+                        atmZ=molecule.LstAtoms[apuntador].Z;
+                    }            
+                    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 
                     for (var z=0; z<verArray.length;) 
                     {
-                        vertexPositionData[i].push(verArray[z]   + molecule.LstAtoms[apuntador].X -Cx);
-                        vertexPositionData[i].push(verArray[z+1] + molecule.LstAtoms[apuntador].Y -Cy);
-                        vertexPositionData[i].push(verArray[z+2] + molecule.LstAtoms[apuntador].Z -Cz);
+                        vertexPositionData[i].push(verArray[z]   + atmX -Cx);
+                        vertexPositionData[i].push(verArray[z+1] + atmY -Cy);
+                        vertexPositionData[i].push(verArray[z+2] + atmZ -Cz);
 
                         normalDataN[i].push(normalData[z]);
                         normalDataN[i].push(normalData[z+1]);
@@ -399,7 +474,11 @@ function initBuffersSpheresSB()
 
 }
 
-function initBuffersSpheresCPK() {
+function initBuffersSpheresCPK() 
+{
+    var atmX= null;
+    var atmY= null;
+    var atmZ= null;
 
     var NoAtomos = molecule.LstAtoms.length;
     NoBloques = Math.ceil(NoAtomos / NoPaso);
@@ -421,13 +500,37 @@ function initBuffersSpheresCPK() {
             molecule.LstAtoms[apuntador].Representation = "CPK";
 
             LstBSphe[0].push(molecule.LstAtoms[apuntador]);
-            //-----------------------------------------------------------------------------------------           
+            //-----------------------------------------------------------------------------------------    
+            if (pos>0)  //////////*********** checar instrucción
+            {
+                var s=molecule.LstAtoms.length*pos+apuntador;
+                //entonces toman las posiciones x y z del frame en el que se encuentra
+                if(bndbuffer==0)
+                {
+                    atmX=coordsX[s];
+                    atmY=coordsY[s];
+                    atmZ=coordsZ[s];         
+                }
+                else
+                {
+                    atmX=coordsX1[s];
+                    atmY=coordsY1[s];
+                    atmZ=coordsZ1[s]; 
+                } 
+            }
+            else
+            {
+                atmX=molecule.LstAtoms[apuntador].X;
+                atmY=molecule.LstAtoms[apuntador].Y;
+                atmZ=molecule.LstAtoms[apuntador].Z;
+            }            
+            /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////     
 
             if (molecule.LstAtoms[apuntador].NameAtom == 'H') {
                 for (var z = 0; z < verArray.length;) {
-                    vertexPositionData[0].push(verArrayH[z] + molecule.LstAtoms[apuntador].X - Cx);
-                    vertexPositionData[0].push(verArrayH[z + 1] + molecule.LstAtoms[apuntador].Y - Cy);
-                    vertexPositionData[0].push(verArrayH[z + 2] + molecule.LstAtoms[apuntador].Z - Cz);
+                    vertexPositionData[0].push(verArrayH[z] + atmX - Cx);
+                    vertexPositionData[0].push(verArrayH[z + 1] + atmY - Cy);
+                    vertexPositionData[0].push(verArrayH[z + 2] + atmZ - Cz);
 
                     z = z + 3;
                 }
@@ -629,14 +732,38 @@ function initBuffersSpheresCPK() {
 
                     LstBSphe[i].push(molecule.LstAtoms[apuntador]);
                     //-----------------------------------------------------------------------------------------
+                    if (pos>0)  //////////*********** checar instrucción
+                    {
+                        var s=molecule.LstAtoms.length*pos+apuntador;
+                        //entonces toman las posiciones x y z del frame en el que se encuentra
+                        if(bndbuffer==0)
+                        {
+                            atmX=coordsX[s];
+                            atmY=coordsY[s];
+                            atmZ=coordsZ[s];         
+                        }
+                        else
+                        {
+                            atmX=coordsX1[s];
+                            atmY=coordsY1[s];
+                            atmZ=coordsZ1[s]; 
+                        } 
+                    }
+                    else
+                    {
+                        atmX=molecule.LstAtoms[apuntador].X;
+                        atmY=molecule.LstAtoms[apuntador].Y;
+                        atmZ=molecule.LstAtoms[apuntador].Z;
+                    }            
+                    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
                     //en esta parte se asigna el color al átom
                     AsignaColor(molecule.LstAtoms[apuntador]);
                     if (molecule.LstAtoms[apuntador].NameAtom == 'H') {
                         for (var z = 0; z < verArray.length;) {
-                            vertexPositionData[i].push(verArrayH[z] + molecule.LstAtoms[apuntador].X - Cx);
-                            vertexPositionData[i].push(verArrayH[z + 1] + molecule.LstAtoms[apuntador].Y - Cy);
-                            vertexPositionData[i].push(verArrayH[z + 2] + molecule.LstAtoms[apuntador].Z - Cz);
+                            vertexPositionData[i].push(verArrayH[z] + atmX - Cx);
+                            vertexPositionData[i].push(verArrayH[z + 1] + atmY - Cy);
+                            vertexPositionData[i].push(verArrayH[z + 2] + atmZ - Cz);
 
                             z = z + 3;
                         }
@@ -819,46 +946,70 @@ function initBuffersSpheresCPK() {
 
                     LstBSphe[i].push(molecule.LstAtoms[apuntador]);
                     //-----------------------------------------------------------------------------------------
+                    if (pos>0)  //////////*********** checar instrucción
+                    {
+                        var s=molecule.LstAtoms.length*pos+apuntador;
+                        //entonces toman las posiciones x y z del frame en el que se encuentra
+                        if(bndbuffer==0)
+                        {
+                            atmX=coordsX[s];
+                            atmY=coordsY[s];
+                            atmZ=coordsZ[s];         
+                        }
+                        else
+                        {
+                            atmX=coordsX1[s];
+                            atmY=coordsY1[s];
+                            atmZ=coordsZ1[s]; 
+                        } 
+                    }
+                    else
+                    {
+                        atmX=molecule.LstAtoms[apuntador].X;
+                        atmY=molecule.LstAtoms[apuntador].Y;
+                        atmZ=molecule.LstAtoms[apuntador].Z;
+                    }            
+                    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
                     if (molecule.LstAtoms[apuntador].NameAtom == 'H') {
                         for (var z = 0; z < verArray.length;) {
-                            vertexPositionData[i].push(verArrayH[z] + molecule.LstAtoms[apuntador].X - Cx);
-                            vertexPositionData[i].push(verArrayH[z + 1] + molecule.LstAtoms[apuntador].Y - Cy);
-                            vertexPositionData[i].push(verArrayH[z + 2] + molecule.LstAtoms[apuntador].Z - Cz);
+                            vertexPositionData[i].push(verArrayH[z] + atmX - Cx);
+                            vertexPositionData[i].push(verArrayH[z + 1] + atmY - Cy);
+                            vertexPositionData[i].push(verArrayH[z + 2] + atmZ - Cz);
 
                             z = z + 3;
                         }
                     } else if (molecule.LstAtoms[apuntador].NameAtom == 'C') {
                         for (var z = 0; z < verArray.length;) {
-                            vertexPositionData[i].push(verArrayC_PB_TI_CA[z] + molecule.LstAtoms[apuntador].X - Cx);
-                            vertexPositionData[i].push(verArrayC_PB_TI_CA[z + 1] + molecule.LstAtoms[apuntador].Y - Cy);
-                            vertexPositionData[i].push(verArrayC_PB_TI_CA[z + 2] + molecule.LstAtoms[apuntador].Z - Cz);
+                            vertexPositionData[i].push(verArrayC_PB_TI_CA[z] + atmX - Cx);
+                            vertexPositionData[i].push(verArrayC_PB_TI_CA[z + 1] + atmY - Cy);
+                            vertexPositionData[i].push(verArrayC_PB_TI_CA[z + 2] + atmZ - Cz);
 
                             z = z + 3;
                         }
 
                     } else if (molecule.LstAtoms[apuntador].NameAtom == 'PB') {
                         for (var z = 0; z < verArray.length;) {
-                            vertexPositionData[i].push(verArrayC_PB_TI_CA[z] + molecule.LstAtoms[apuntador].X - Cx);
-                            vertexPositionData[i].push(verArrayC_PB_TI_CA[z + 1] + molecule.LstAtoms[apuntador].Y - Cy);
-                            vertexPositionData[i].push(verArrayC_PB_TI_CA[z + 2] + molecule.LstAtoms[apuntador].Z - Cz);
+                            vertexPositionData[i].push(verArrayC_PB_TI_CA[z] + atmX - Cx);
+                            vertexPositionData[i].push(verArrayC_PB_TI_CA[z + 1] + atmY - Cy);
+                            vertexPositionData[i].push(verArrayC_PB_TI_CA[z + 2] + atmZ - Cz);
                             z = z + 3;
                         }
 
                     } else if (molecule.LstAtoms[apuntador].NameAtom == 'TI') {
                         for (var z = 0; z < verArray.length;) {
-                            vertexPositionData[i].push(verArrayC_PB_TI_CA[z] + molecule.LstAtoms[apuntador].X - Cx);
-                            vertexPositionData[i].push(verArrayC_PB_TI_CA[z + 1] + molecule.LstAtoms[apuntador].Y - Cy);
-                            vertexPositionData[i].push(verArrayC_PB_TI_CA[z + 2] + molecule.LstAtoms[apuntador].Z - Cz);
+                            vertexPositionData[i].push(verArrayC_PB_TI_CA[z] + atmX - Cx);
+                            vertexPositionData[i].push(verArrayC_PB_TI_CA[z + 1] + atmY - Cy);
+                            vertexPositionData[i].push(verArrayC_PB_TI_CA[z + 2] + atmZ - Cz);
 
                             z = z + 3;
                         }
 
                     } else if (molecule.LstAtoms[apuntador].NameAtom == 'CA') {
                         for (var z = 0; z < verArray.length;) {
-                            vertexPositionData[i].push(verArrayC_PB_TI_CA[z] + molecule.LstAtoms[apuntador].X - Cx);
-                            vertexPositionData[i].push(verArrayC_PB_TI_CA[z + 1] + molecule.LstAtoms[apuntador].Y - Cy);
-                            vertexPositionData[i].push(verArrayC_PB_TI_CA[z + 2] + molecule.LstAtoms[apuntador].Z - Cz);
+                            vertexPositionData[i].push(verArrayC_PB_TI_CA[z] + atmX - Cx);
+                            vertexPositionData[i].push(verArrayC_PB_TI_CA[z + 1] + atmY - Cy);
+                            vertexPositionData[i].push(verArrayC_PB_TI_CA[z + 2] + atmZ - Cz);
 
                             z = z + 3;
                         }
@@ -874,36 +1025,36 @@ function initBuffersSpheresCPK() {
 
                     } else if (molecule.LstAtoms[apuntador].NameAtom == 'O') {
                         for (var z = 0; z < verArray.length;) {
-                            vertexPositionData[i].push(verArrayO[z] + molecule.LstAtoms[apuntador].X - Cx);
-                            vertexPositionData[i].push(verArrayO[z + 1] + molecule.LstAtoms[apuntador].Y - Cy);
-                            vertexPositionData[i].push(verArrayO[z + 2] + molecule.LstAtoms[apuntador].Z - Cz);
+                            vertexPositionData[i].push(verArrayO[z] + atmX - Cx);
+                            vertexPositionData[i].push(verArrayO[z + 1] + atmY - Cy);
+                            vertexPositionData[i].push(verArrayO[z + 2] + atmZ - Cz);
 
                             z = z + 3;
                         }
 
                     } else if (molecule.LstAtoms[apuntador].NameAtom == 'S') {
                         for (var z = 0; z < verArray.length;) {
-                            vertexPositionData[i].push(verArrayS[z] + molecule.LstAtoms[apuntador].X - Cx);
-                            vertexPositionData[i].push(verArrayS[z + 1] + molecule.LstAtoms[apuntador].Y - Cy);
-                            vertexPositionData[i].push(verArrayS[z + 2] + molecule.LstAtoms[apuntador].Z - Cz);
+                            vertexPositionData[i].push(verArrayS[z] + atmX - Cx);
+                            vertexPositionData[i].push(verArrayS[z + 1] + atmY - Cy);
+                            vertexPositionData[i].push(verArrayS[z + 2] + atmZ - Cz);
 
                             z = z + 3;
                         }
 
                     } else if (molecule.LstAtoms[apuntador].NameAtom == 'P') {
                         for (var z = 0; z < verArray.length;) {
-                            vertexPositionData[i].push(verArrayP[z] + molecule.LstAtoms[apuntador].X - Cx);
-                            vertexPositionData[i].push(verArrayP[z + 1] + molecule.LstAtoms[apuntador].Y - Cy);
-                            vertexPositionData[i].push(verArrayP[z + 2] + molecule.LstAtoms[apuntador].Z - Cz);
+                            vertexPositionData[i].push(verArrayP[z] + atmX - Cx);
+                            vertexPositionData[i].push(verArrayP[z + 1] + atmY - Cy);
+                            vertexPositionData[i].push(verArrayP[z + 2] + atmZ - Cz);
 
                             z = z + 3;
                         }
 
                     } else {
                         for (var z = 0; z < verArray.length;) {
-                            vertexPositionData[i].push(verArrayDefault[z] + molecule.LstAtoms[apuntador].X - Cx);
-                            vertexPositionData[i].push(verArrayDefault[z + 1] + molecule.LstAtoms[apuntador].Y - Cy);
-                            vertexPositionData[i].push(verArrayDefault[z + 2] + molecule.LstAtoms[apuntador].Z - Cz);
+                            vertexPositionData[i].push(verArrayDefault[z] + atmX - Cx);
+                            vertexPositionData[i].push(verArrayDefault[z + 1] + atmY - Cy);
+                            vertexPositionData[i].push(verArrayDefault[z + 2] + atmZ - Cz);
 
                             z = z + 3;
                         }
@@ -1014,18 +1165,61 @@ function initBuffersBonds(Prendidos)
     {
         var o = molecule.LstBonds[t];
         o.BPosition=t; //es para ubicar esta línea en el arreglo y saber en qué posición se encuentra
-        verticesLineas.push(o.LstAtoms[0].X -Cx);
-        verticesLineas.push(o.LstAtoms[0].Y -Cy);
-        verticesLineas.push(o.LstAtoms[0].Z -Cz);
-        verticesLineas.push(o.LstAtoms[1].X -Cx);
-        verticesLineas.push(o.LstAtoms[1].Y -Cy);
-        verticesLineas.push(o.LstAtoms[1].Z -Cz);  
-        linesNormals.push(o.LstAtoms[0].X -Cx);
-        linesNormals.push(o.LstAtoms[0].Y -Cy);
-        linesNormals.push(o.LstAtoms[0].Z -Cz);
-        linesNormals.push(o.LstAtoms[1].X -Cx);
-        linesNormals.push(o.LstAtoms[1].Y -Cy);
-        linesNormals.push(o.LstAtoms[1].Z -Cz); 
+
+        var atm_0 = o.LstAtoms[0];
+        var atm_1 = o.LstAtoms[1];
+
+                    //-----------------------------------------------------------------------------------------
+                    if (pos>0)  //////////*********** checar instrucción
+                    {
+
+                        var s_0 = molecule.LstAtoms.length * pos + (atm_0.id-1);
+                        var s_1 = molecule.LstAtoms.length * pos + (atm_1.id-1);
+                        //entonces toman las posiciones x y z del frame en el que se encuentra
+                        if(bndbuffer==0)
+                        {
+                            atm0_X = coordsX[s_0];
+                            atm0_Y = coordsY[s_0];
+                            atm0_Z = coordsZ[s_0];
+
+                            atm1_X = coordsX[s_1];
+                            atm1_Y = coordsY[s_1];
+                            atm1_Z = coordsZ[s_1];  
+                        }
+                        else
+                        {
+                            atm0_X = coordsX1[s_0];
+                            atm0_Y = coordsY1[s_0];
+                            atm0_Z = coordsZ1[s_0];
+
+                            atm1_X = coordsX1[s_1];
+                            atm1_Y = coordsY1[s_1];
+                            atm1_Z = coordsZ1[s_1];  
+                        } 
+                    }
+                    else
+                    {
+                        atm0_X = atm_0.X;
+                        atm0_Y = atm_0.Y;
+                        atm0_Z = atm_0.Z;
+
+                        atm1_X = atm_1.X;
+                        atm1_Y = atm_1.Y;
+                        atm1_Z = atm_1.Z;
+                    }            
+
+        verticesLineas.push(atm0_X -Cx);
+        verticesLineas.push(atm0_Y -Cy);
+        verticesLineas.push(atm0_Z -Cz);
+        verticesLineas.push(atm1_X -Cx);
+        verticesLineas.push(atm1_Y -Cy);
+        verticesLineas.push(atm1_Z -Cz);  
+        linesNormals.push(atm0_X -Cx);
+        linesNormals.push(atm0_Y -Cy);
+        linesNormals.push(atm0_Z -Cz);
+        linesNormals.push(atm1_X -Cx);
+        linesNormals.push(atm1_Y -Cy);
+        linesNormals.push(atm1_Z -Cz); 
        
         if (Prendidos) 
         {
@@ -1053,10 +1247,10 @@ function initBuffersBonds(Prendidos)
         /////////////////////////
         if ( o.LstAtoms[0].idChain ==  o.LstAtoms[1].idChain  ) 
         {
-            ChainIndexBnd.push( o.LstAtoms[0].idChain );
-            ChainIndexBnd.push( o.LstAtoms[0].idChain );
-            ChainIndexBnd.push( o.LstAtoms[0].idChain );
-            ChainIndexBnd.push( o.LstAtoms[0].idChain );
+            ChainIndexBnd.push( atm_0.idChain );
+            ChainIndexBnd.push( atm_0.idChain );
+            ChainIndexBnd.push( atm_0.idChain );
+            ChainIndexBnd.push( atm_0.idChain );
         }
         else
         {
@@ -1114,19 +1308,69 @@ function initBufBndSkele(Prendidos)
     for(var t in molecule.LstBondsSkeleton)
     {
         var o = molecule.LstBondsSkeleton[t];
+
+        var atm_0 = o.LstAtoms[0];
+        var atm_1 = o.LstAtoms[1];
+
+                    //-----------------------------------------------------------------------------------------
+                    if (pos>0)  //////////*********** checar instrucción
+                    {
+
+                        var s_0 = molecule.LstAtoms.length * pos + (atm_0.id-1);
+                        var s_1 = molecule.LstAtoms.length * pos + (atm_1.id-1);
+                        //entonces toman las posiciones x y z del frame en el que se encuentra
+                        if(bndbuffer==0)
+                        {
+                            atm0_X = coordsX[s_0];
+                            atm0_Y = coordsY[s_0];
+                            atm0_Z = coordsZ[s_0];
+
+                            atm1_X = coordsX[s_1];
+                            atm1_Y = coordsY[s_1];
+                            atm1_Z = coordsZ[s_1];  
+                        }
+                        else
+                        {
+                            atm0_X = coordsX1[s_0];
+                            atm0_Y = coordsY1[s_0];
+                            atm0_Z = coordsZ1[s_0];
+
+                            atm1_X = coordsX1[s_1];
+                            atm1_Y = coordsY1[s_1];
+                            atm1_Z = coordsZ1[s_1];  
+                        } 
+                    }
+                    else
+                    {
+                        atm0_X = atm_0.X;
+                        atm0_Y = atm_0.Y;
+                        atm0_Z = atm_0.Z;
+
+                        atm1_X = atm_1.X;
+                        atm1_Y = atm_1.Y;
+                        atm1_Z = atm_1.Z;
+                    }            
+
+
+
+
+
         o.BPosition=t; //es para ubicar esta línea en el arreglo y saber en qué posición se encuentra
-        verLineSkele.push(o.LstAtoms[0].X -Cx);
-        verLineSkele.push(o.LstAtoms[0].Y -Cy);
-        verLineSkele.push(o.LstAtoms[0].Z -Cz);
-        verLineSkele.push(o.LstAtoms[1].X -Cx);
-        verLineSkele.push(o.LstAtoms[1].Y -Cy);
-        verLineSkele.push(o.LstAtoms[1].Z -Cz);  
-        lineSkeleNor.push(o.LstAtoms[0].X -Cx);
-        lineSkeleNor.push(o.LstAtoms[0].Y -Cy);
-        lineSkeleNor.push(o.LstAtoms[0].Z -Cz);
-        lineSkeleNor.push(o.LstAtoms[1].X -Cx);
-        lineSkeleNor.push(o.LstAtoms[1].Y -Cy);
-        lineSkeleNor.push(o.LstAtoms[1].Z -Cz); 
+        verLineSkele.push(atm0_X -Cx);
+        verLineSkele.push(atm0_Y -Cy);
+        verLineSkele.push(atm0_Z -Cz);
+
+        verLineSkele.push(atm1_X -Cx);
+        verLineSkele.push(atm1_Y -Cy);
+        verLineSkele.push(atm1_Z -Cz); 
+
+        lineSkeleNor.push(atm0_X -Cx);
+        lineSkeleNor.push(atm0_Y -Cy);
+        lineSkeleNor.push(atm0_Z -Cz);
+
+        lineSkeleNor.push(atm1_X -Cx);
+        lineSkeleNor.push(atm1_Y -Cy);
+        lineSkeleNor.push(atm1_Z -Cz); 
        
         if (Prendidos) 
         {
