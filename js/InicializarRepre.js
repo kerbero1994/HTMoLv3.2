@@ -2,6 +2,7 @@
 
 function InitBufSB()
 {
+    OptRep=false;//Para que no entre en Spline
     cleanMemory();
 
     initBuffersSpheresSB();
@@ -16,6 +17,7 @@ function InitBufSB()
 
 function InitBufCPK()
 {
+    OptRep=false;//Para que no entre en Spline
     cleanMemory();
 
     initBuffersSpheresCPK();
@@ -30,6 +32,7 @@ function InitBufCPK()
 
 function InitBufBonds()
 {
+    OptRep=false;//Para que no entre en Spline
     cleanMemory();
 
     initBuffersBonds(true);
@@ -42,6 +45,7 @@ function InitBufBonds()
 
 function InitBufSkeleton()
 {
+    OptRep=false;//Para que no entre en Spline
     cleanMemory();
 
     initBuffersBonds(false);
@@ -53,4 +57,17 @@ function InitBufSkeleton()
     AtomosSeleccionados=molecule.LstAtoms;
 
 }
+function InitBufSpline()
+{
+    cleanMemory();
+    OptRep=true;//Para que dibuje Spline
+    initBuffersBonds(false);
+    initBufBndSkele(false);
+    initBufferSpline();
 
+
+    //Inicializar los CA de todos los átomos de la molécula
+
+    //AtomosSeleccionados=molecule.LstAtoms;
+
+}
