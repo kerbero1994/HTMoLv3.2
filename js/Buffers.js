@@ -1469,12 +1469,39 @@ function initBufferSpline() {
     for (var t in molecule.LstBondsSkeleton) {
         var o = molecule.LstBondsSkeleton[t];
 
-        var atm_0 = o.LstAtoms[0];
+       var atm_0 = o.LstAtoms[0];
         if (PsAntA !== undefined)
-            if (PsAntA.LstAtoms[1].X != o.LstAtoms[0].X) {
-              verLineSpl[Ne].push(PsAntA.LstAtoms[1].X - Cx);
-              verLineSpl[Ne].push(PsAntA.LstAtoms[1].Y - Cy);
-              verLineSpl[Ne].push(PsAntA.LstAtoms[1].Z - Cz);
+
+            if  (PsAntA.LstAtoms[1].X != o.LstAtoms[0].X) {//Para cambiar de cadena
+              ///-----------------------------------------------------------CA ultimo de cadena
+               atm_0 = PsAntA.LstAtoms[1];
+              if (pos > 0)
+              {
+                  var s_0 = molecule.LstAtoms.length * pos + (atm_0.id - 1);
+                  if (bndbuffer == 0) {
+                      atm0_X = coordsX[s_0];
+                      atm0_Y = coordsY[s_0];
+                      atm0_Z = coordsZ[s_0];
+                  } else {
+                      atm0_X = coordsX1[s_0];
+                      atm0_Y = coordsY1[s_0];
+                      atm0_Z = coordsZ1[s_0];
+                  }
+              } else {
+                  atm0_X = atm_0.X;
+                  atm0_Y = atm_0.Y;
+                  atm0_Z = atm_0.Z;
+              }
+              verLineSpl[Ne].push(atm0_X - Cx);
+              verLineSpl[Ne].push(atm0_Y - Cy);
+              verLineSpl[Ne].push(atm0_Z - Cz);
+
+              ChainSplIndexBnd[Ne].push(o.LstAtoms[0].idChain);
+              ChainSplIndexBnd[Ne].push(o.LstAtoms[0].idChain);
+              ChainSplIndexBnd[Ne].push(o.LstAtoms[0].idChain);
+              ChainSplIndexBnd[Ne].push(o.LstAtoms[0].idChain);
+              atm_0 = o.LstAtoms[0];
+              ///---------------------------------------------
                 Ne++;
                 verLineSpl[Ne] = new Array();
                 ChainSplIndexBnd[Ne] = new Array();
@@ -1482,7 +1509,6 @@ function initBufferSpline() {
             //-----------------------------------------------------------------------------------------
         if (pos > 0)
         {
-
             var s_0 = molecule.LstAtoms.length * pos + (atm_0.id - 1);
             //entonces toman las posiciones x y z del frame en el que se encuentra
             if (bndbuffer == 0) {
@@ -1513,12 +1539,38 @@ function initBufferSpline() {
             ChainSplIndexBnd[Ne].push(o.LstAtoms[0].idChain);
         }
         PsAntA = o;
-        if (t==molecule.LstBondsSkeleton.length-1)
+        ///-----------------------------------------------------------Ultimo CA
+        if (t==molecule.LstBondsSkeleton.length-1)//Ultimo atomo de la lista.
         {
-          verLineSpl[Ne].push(o.LstAtoms[1].X - Cx);
-          verLineSpl[Ne].push(o.LstAtoms[1].Y - Cy);
-          verLineSpl[Ne].push(o.LstAtoms[1].Z - Cz);
+          atm_0 = o.LstAtoms[1];
+          if (pos > 0)
+          {
+              var s_0 = molecule.LstAtoms.length * pos + (atm_0.id - 1);
+              //entonces toman las posiciones x y z del frame en el que se encuentra
+              if (bndbuffer == 0) {
+                  atm0_X = coordsX[s_0];
+                  atm0_Y = coordsY[s_0];
+                  atm0_Z = coordsZ[s_0];
+              } else {
+                  atm0_X = coordsX1[s_0];
+                  atm0_Y = coordsY1[s_0];
+                  atm0_Z = coordsZ1[s_0];
+              }
+          } else {
+              atm0_X = atm_0.X;
+              atm0_Y = atm_0.Y;
+              atm0_Z = atm_0.Z;
+          }
+          verLineSpl[Ne].push(atm0_X - Cx);
+          verLineSpl[Ne].push(atm0_Y - Cy);
+          verLineSpl[Ne].push(atm0_Z - Cz);
+
+          ChainSplIndexBnd[Ne].push(o.LstAtoms[0].idChain);
+          ChainSplIndexBnd[Ne].push(o.LstAtoms[0].idChain);
+          ChainSplIndexBnd[Ne].push(o.LstAtoms[0].idChain);
+          ChainSplIndexBnd[Ne].push(o.LstAtoms[0].idChain);
         }
+        ///--------------------------------------------------------
     }
 
     var conect = new Array();
