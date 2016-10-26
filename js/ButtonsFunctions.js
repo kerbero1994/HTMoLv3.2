@@ -22,13 +22,18 @@ function R_Skele() {
         CambiarRepresentacion("Skeleton");
     }
 }
+function R_Spline() {
+    return function(event) {
+        CambiarRepresentacion("Spline");
+    }
+}
 
 
 function SetView(mol, name){
     return function(event) {
          var newRotationMatrix = mat4.create();
         mat4.identity(newRotationMatrix);
-        if (name.name=='F') 
+        if (name.name=='F')
         {
             mat4.rotate(newRotationMatrix, degToRad(0), [0, 1, 0]); //vista frontal
         }
@@ -113,7 +118,7 @@ function ByColor(mol, color) {
 function CenterByAtom()
 {
      return function(event) {
-        if (AtomosSeleccionados.length==1) 
+        if (AtomosSeleccionados.length==1)
         {
             var atom=AtomosSeleccionados[0];
             //center by atom.x y z
@@ -121,7 +126,7 @@ function CenterByAtom()
 
         }
         alert("CenterByAtom")
-     }  
+     }
 
 }
 
@@ -136,7 +141,7 @@ function Distance()
 function Angle()
 {
     return function(event) {
-        
+
     }
 
 }
@@ -144,7 +149,7 @@ function Angle()
 function None()
 {
     return function(event) {
-        
+
     }
 
 }
@@ -153,44 +158,44 @@ function ProcesarSeleccion() //poner a color seleccionado, pregunta: va a estar 
 {
     console.time("procesarSeleccion");
     var ArrCont=[];
-    for (var t = 0; t < AtomosSeleccionados.length; t++) 
+    for (var t = 0; t < AtomosSeleccionados.length; t++)
     {
         var atom = AtomosSeleccionados[t];
-        if (atom.Seleccionado == false) 
+        if (atom.Seleccionado == false)
         {
             //
             atom.Seleccionado = true;
             haySeleccionado = true;
             var mul=(atom.PositionBSolid-1) * nColor;
-            for (var z = 0; z < nColor;) 
+            for (var z = 0; z < nColor;)
             {
                 ColorTotal[atom.BloqueSolid-1][mul + z]   = 0;  //va a ser el color de la selección
                 ColorTotal[atom.BloqueSolid-1][mul + z + 1]=1;
                 ColorTotal[atom.BloqueSolid-1][mul + z + 2]=0;
-                ColorTotal[atom.BloqueSolid-1][mul + z + 3]=1;                                
+                ColorTotal[atom.BloqueSolid-1][mul + z + 3]=1;
                  z = z + 4;
             }
 
             var agregar=true;
             for(var i=0; i < ArrCont.length; i++)
             {
-                if ((atom.BloqueSolid-1)==ArrCont[i]) 
+                if ((atom.BloqueSolid-1)==ArrCont[i])
                 {
                     agregar=false;
                     break;
                 }
             }
-            if (agregar==true) 
+            if (agregar==true)
             {
                 ArrCont.push(atom.BloqueSolid-1);
-            }                             
+            }
 
-        } 
-        else 
+        }
+        else
         {
             //No hacer nada xq ya está seleccionado
 
-        }        
+        }
     }
 
         for(var i=0; i < ArrCont.length; i++)
@@ -198,10 +203,10 @@ function ProcesarSeleccion() //poner a color seleccionado, pregunta: va a estar 
             gl.bindBuffer(gl.ARRAY_BUFFER, sphereVertexColorBuffer[ArrCont[i]]);
             gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(ColorTotal[ArrCont[i]]), gl.DYNAMIC_DRAW);
             sphereVertexColorBuffer[ArrCont[i]].numItems = ColorTotal[ArrCont[i]].length / 4;
-            gl.bindBuffer(gl.ARRAY_BUFFER, null);   
-            
+            gl.bindBuffer(gl.ARRAY_BUFFER, null);
+
         }
-    
+
 
     console.timeEnd("procesarSeleccion");
 
@@ -235,7 +240,7 @@ function ProcesarCadena(index, button) {
                 for (var j = 0; j < molecule.LstChain[index].LstAminoAcid[i].LstAtoms.length; j++) {
                     var at = molecule.LstChain[index].LstAminoAcid[i].LstAtoms[j];
                     at.State = 'Active';
-                   
+
                 }
             }
 
@@ -259,7 +264,7 @@ function ProcesarCadena(index, button) {
                     //alert(ColorTotal[at.BloqueSolid-1]);
                     //alert(at.NameAtom);
                     at.State = 'Inactive';
-                    
+
                 }
 
             }
@@ -272,24 +277,29 @@ function ProcesarCadena(index, button) {
 
 function CambiarRepresentacion(Repre) //Representacion es en lo que se va a cambiar
 {
-    if (AtomosSeleccionados.length==molecule.LstAtoms.length) 
+    if (AtomosSeleccionados.length==molecule.LstAtoms.length)
     {
-        if (Repre=='CPK') 
+        if (Repre=='CPK')
         {
             InitBufCPK();
         }
-        else if (Repre == 'SB') 
+        else if (Repre == 'SB')
         {
             InitBufSB();
         }
-        else if (Repre == 'Bonds') 
+        else if (Repre == 'Bonds')
         {
             InitBufBonds();
         }
-        else if (Repre == 'Skeleton') 
+        else if (Repre == 'Skeleton')
         {
             InitBufSkeleton();
         }
+        else if (Repre == 'Spline')
+        {
+            InitBufSpline();
+        }
+
 
 
     }
@@ -301,7 +311,7 @@ function CambiarRepresentacion(Repre) //Representacion es en lo que se va a camb
         var ArrCont2=[];
         var BuffLineCol=false;
         var BuffLineSkeleCol=false;
-      
+
         for(var i=0; i<AtomosSeleccionados.length; i++) //////////se va a procesar cáda átomo individual ya que son selecciones parciales
         {
             var atom = AtomosSeleccionados[i];
@@ -314,26 +324,26 @@ function CambiarRepresentacion(Repre) //Representacion es en lo que se va a camb
                 {
                     atmX=coordsX[s];
                     atmY=coordsY[s];
-                    atmZ=coordsZ[s];         
+                    atmZ=coordsZ[s];
                 }
                 else
                 {
                     atmX=coordsX1[s];
                     atmY=coordsY1[s];
-                    atmZ=coordsZ1[s]; 
-                } 
+                    atmZ=coordsZ1[s];
+                }
             }
             else
             {
                 atmX=atom.X;
                 atmY=atom.Y;
                 atmZ=atom.Z;
-            }         
+            }
 
             if (atom.Representation=='SB')    ////-------------------------------------------------------
             {
                 atom.Representation=Repre;
-                if (Repre=='SB') 
+                if (Repre=='SB')
                 {
                     //No hacer nada ya que esa es la misma representación
                 }
@@ -341,10 +351,10 @@ function CambiarRepresentacion(Repre) //Representacion es en lo que se va a camb
                 {
                     var mul = (atom.PositionBSolid - 1) * nVertices;
                     //checar el radio del elemento específico
-                    if (atom.NameAtom == 'H') 
+                    if (atom.NameAtom == 'H')
                     {
                         //alert("H");
-                        //ingresar los nuevos vértices                
+                        //ingresar los nuevos vértices
                         for (var z = 0; z < nVertices;) //vertices para esfera de 16 latitudes y longitudes
                         {
                             vertexPositionData[atom.BloqueSolid - 1][mul + z]     = verArrayH[z] + atmX - Cx; //estoy quitando y al mismo tiempo agregando, por lo que se queda
@@ -354,8 +364,8 @@ function CambiarRepresentacion(Repre) //Representacion es en lo que se va a camb
                             z = z + 3;
                         }
 
-                    } 
-                    else if (atom.NameAtom == 'C') 
+                    }
+                    else if (atom.NameAtom == 'C')
                     {
                         //alert("C");
                         for (var z = 0; z < nVertices;) {
@@ -366,9 +376,9 @@ function CambiarRepresentacion(Repre) //Representacion es en lo que se va a camb
                             z = z + 3;
                         }
 
-                        //alert("saleC"); 
-                    } 
-                    else if (atom.NameAtom == 'PB') 
+                        //alert("saleC");
+                    }
+                    else if (atom.NameAtom == 'PB')
                     {
                         //alert("PB");
                         //ingresar los nuevos vértices
@@ -426,7 +436,7 @@ function CambiarRepresentacion(Repre) //Representacion es en lo que se va a camb
                             z = z + 3;
                         }
 
-                        //alert("ssss");  
+                        //alert("ssss");
 
                     } else if (atom.NameAtom == 'S') {
                         //alert("S");
@@ -452,7 +462,7 @@ function CambiarRepresentacion(Repre) //Representacion es en lo que se va a camb
                             z = z + 3;
                         }
 
-                    } 
+                    }
                     else /////////// DEFAULT
                     {
                         //alert("entra aqui");
@@ -469,16 +479,16 @@ function CambiarRepresentacion(Repre) //Representacion es en lo que se va a camb
                     var agregar=true;
                     for(var j=0; j < ArrCont1.length; j++)
                     {
-                        if ((atom.BloqueSolid - 1)==ArrCont1[j]) 
+                        if ((atom.BloqueSolid - 1)==ArrCont1[j])
                         {
                             agregar=false;
                             break;
                         }
                     }
-                    if (agregar==true) 
+                    if (agregar==true)
                     {
                         ArrCont1.push(atom.BloqueSolid - 1);
-                    }      
+                    }
 
                     //para cada línea en la lista de este átomo apagarla poniendo en 0 su alpha
                     for(var z=0; z< atom.LstLinea.length;)
@@ -489,8 +499,8 @@ function CambiarRepresentacion(Repre) //Representacion es en lo que se va a camb
                         colores[mul + 3 ] = 0;
                         colores[mul + 7 ] = 0;
                         z=z+1;
-                    }       
-                    BuffLineCol=true;  
+                    }
+                    BuffLineCol=true;
 
                 }
 
@@ -508,16 +518,16 @@ function CambiarRepresentacion(Repre) //Representacion es en lo que se va a camb
                     var agregar=true;
                     for(var j=0; j < ArrCont2.length; j++)
                     {
-                        if ((atom.BloqueSolid - 1)==ArrCont2[j]) 
+                        if ((atom.BloqueSolid - 1)==ArrCont2[j])
                         {
                             agregar=false;
                             break;
                         }
                     }
-                    if (agregar==true) 
+                    if (agregar==true)
                     {
                         ArrCont2.push(atom.BloqueSolid - 1);
-                    }     
+                    }
 
                 }
 
@@ -533,14 +543,14 @@ function CambiarRepresentacion(Repre) //Representacion es en lo que se va a camb
                         z=z+1;
                     }
                     BuffLineCol=true;
-                    if (atom.NameAtom=='CA') 
+                    if (atom.NameAtom=='CA')
                     {
                         //para cada líneaSkeleton en la lista del átomo (es 1 o dos líneas) checar en qué estado se encuentran sus átomos extremos
                         //si los dos estan en repre Skeleton entonces prenderla
                         for(var j=0; j<atom.LstLineaSke.length; j++)
                         {
                             var line= atom.LstLineaSke[j]; //la linea skeleton
-                            if ((line.LstAtoms[0].Representation=='Skeleton') && (line.LstAtoms[1].Representation=='Skeleton' )) 
+                            if ((line.LstAtoms[0].Representation=='Skeleton') && (line.LstAtoms[1].Representation=='Skeleton' ))
                             {
                                 var mul=line.BPosition * 8;
                                 coloresSkele[mul + 3 ] = 1;
@@ -563,16 +573,16 @@ function CambiarRepresentacion(Repre) //Representacion es en lo que se va a camb
                         var agregar=true;
                         for(var j=0; j < ArrCont2.length; j++)
                         {
-                            if ((atom.BloqueSolid - 1)==ArrCont2[j]) 
+                            if ((atom.BloqueSolid - 1)==ArrCont2[j])
                             {
                                 agregar=false;
                                 break;
                             }
                         }
-                        if (agregar==true) 
+                        if (agregar==true)
                         {
                             ArrCont2.push(atom.BloqueSolid - 1);
-                        }     
+                        }
 
                     }
 
@@ -589,14 +599,14 @@ function CambiarRepresentacion(Repre) //Representacion es en lo que se va a camb
             else if (atom.Representation=='CPK')                ////-------------------------------------------------------
             {
                 atom.Representation=Repre;
-                if (Repre=='CPK') 
+                if (Repre=='CPK')
                 {
-                    //No hacer nada ya que esa es la misma representación           
+                    //No hacer nada ya que esa es la misma representación
                 }
                 else if(Repre=='SB')
                 {
                     var mul = (atom.PositionBSolid - 1) * nVertices;
-                    for (var z = 0; z < nVertices;) 
+                    for (var z = 0; z < nVertices;)
                     {
                         vertexPositionData[atom.BloqueSolid - 1][mul + z]     = verArray[z] + atmX - Cx;
                         vertexPositionData[atom.BloqueSolid - 1][mul + z + 1] = verArray[z + 1] + atmY - Cy;
@@ -607,30 +617,30 @@ function CambiarRepresentacion(Repre) //Representacion es en lo que se va a camb
                     var agregar=true;
                     for(var j=0; j < ArrCont1.length; j++)
                     {
-                        if ((atom.BloqueSolid - 1)==ArrCont1[j]) 
+                        if ((atom.BloqueSolid - 1)==ArrCont1[j])
                         {
                             agregar=false;
                             break;
                         }
                     }
-                    if (agregar==true) 
+                    if (agregar==true)
                     {
                         ArrCont1.push(atom.BloqueSolid - 1);
-                    }     
+                    }
 
 
                     for(var z=0; z< atom.LstLinea.length;) //para cáda línea prenderla si sus extremos están en SB
                     {
                         var line= atom.LstLinea[z];
-                        if ((line.LstAtoms[0].Representation=='SB') && (line.LstAtoms[1].Representation=='SB' )) 
+                        if ((line.LstAtoms[0].Representation=='SB') && (line.LstAtoms[1].Representation=='SB' ))
                         {
                             var mul=line.BPosition * 8;
                             colores[mul + 3 ] = 1;
-                            colores[mul + 7 ] = 1;                            
+                            colores[mul + 7 ] = 1;
                         }
-                        z=z+1;                        
+                        z=z+1;
                     }
-                    BuffLineCol=true;           
+                    BuffLineCol=true;
 
                 }
                 else if(Repre=='Bonds')
@@ -645,18 +655,18 @@ function CambiarRepresentacion(Repre) //Representacion es en lo que se va a camb
                     var agregar=true;
                     for(var j=0; j < ArrCont2.length; j++)
                     {
-                        if ((atom.BloqueSolid - 1)==ArrCont2[j]) 
+                        if ((atom.BloqueSolid - 1)==ArrCont2[j])
                         {
                             agregar=false;
                             break;
                         }
                     }
-                    if (agregar==true) 
+                    if (agregar==true)
                     {
                         ArrCont2.push(atom.BloqueSolid - 1);
-                    }     
+                    }
 
-                    for(var z=0; z< atom.LstLinea.length;) 
+                    for(var z=0; z< atom.LstLinea.length;)
                     {
                         //cada línea va a tener un id que va a ser conforme se vaya agregando al bloque de enlaces
                         var line= atom.LstLinea[z];
@@ -665,15 +675,15 @@ function CambiarRepresentacion(Repre) //Representacion es en lo que se va a camb
                         colores[mul + 7 ] = 0;
                         z=z+1;
                     }
-                    BuffLineCol=true;          
+                    BuffLineCol=true;
 
                 }
                 else if(Repre=='Skeleton')
                 {
-                    if (atom.NameAtom=='CA') 
+                    if (atom.NameAtom=='CA')
                     {
                         var mul = (atom.PositionBSolid - 1) * nVertices;
-                        for (var z = 0; z < nVertices;) 
+                        for (var z = 0; z < nVertices;)
                         {
                             vertexPositionData[atom.BloqueSolid - 1][mul + z]     = verArray[z] + atmX - Cx;
                             vertexPositionData[atom.BloqueSolid - 1][mul + z + 1] = verArray[z + 1] + atmY - Cy;
@@ -684,16 +694,16 @@ function CambiarRepresentacion(Repre) //Representacion es en lo que se va a camb
                         var agregar=true;
                         for(var j=0; j < ArrCont1.length; j++)
                         {
-                            if ((atom.BloqueSolid - 1)==ArrCont1[j]) 
+                            if ((atom.BloqueSolid - 1)==ArrCont1[j])
                             {
                                 agregar=false;
                                 break;
                             }
                         }
-                        if (agregar==true) 
+                        if (agregar==true)
                         {
                             ArrCont1.push(atom.BloqueSolid - 1);
-                        }     
+                        }
 
                         for(var z=0; z< atom.LstLinea.length;) //para cáda línea prenderla
                         {
@@ -702,8 +712,8 @@ function CambiarRepresentacion(Repre) //Representacion es en lo que se va a camb
                             colores[mul + 3 ] = 0;
                             colores[mul + 7 ] = 0;
                             z=z+1;
-                        } 
-                        BuffLineCol=true;         
+                        }
+                        BuffLineCol=true;
                     }
                     else
                     {
@@ -717,16 +727,16 @@ function CambiarRepresentacion(Repre) //Representacion es en lo que se va a camb
                         var agregar=true;
                         for(var j=0; j < ArrCont2.length; j++)
                         {
-                            if ((atom.BloqueSolid - 1)==ArrCont2[j]) 
+                            if ((atom.BloqueSolid - 1)==ArrCont2[j])
                             {
                                 agregar=false;
                                 break;
                             }
                         }
-                        if (agregar==true) 
+                        if (agregar==true)
                         {
                             ArrCont2.push(atom.BloqueSolid - 1);
-                        }     
+                        }
                     }
 
                 }
@@ -735,7 +745,7 @@ function CambiarRepresentacion(Repre) //Representacion es en lo que se va a camb
                 {
                     ///////////parte de Julio para el Spline
 
-
+                    initBufferSpline();
                 }
 
             }
@@ -744,9 +754,9 @@ function CambiarRepresentacion(Repre) //Representacion es en lo que se va a camb
                                                         ///preguntar si se va a poder hacer el cambio a otra representación
             {
                 atom.Representation=Repre;
-                if (Repre=='Bonds') 
+                if (Repre=='Bonds')
                 {
-                    //No hacer nada ya que esa es la misma representación 
+                    //No hacer nada ya que esa es la misma representación
 
                 }
                 else if(Repre=='SB')
@@ -777,26 +787,26 @@ function CambiarRepresentacion(Repre) //Representacion es en lo que se va a camb
                                                         ///preguntar si se va a poder hacer el cambio a otra representación
             {
                 atom.Representation=Repre;
-                if (atom.NameAtom=='CA') 
+                if (atom.NameAtom=='CA')
                 {
-                    if (Repre=='Skeleton') 
+                    if (Repre=='Skeleton')
                     {
-                        //No hacer nada ya que esa es la misma representación           
+                        //No hacer nada ya que esa es la misma representación
                     }
                     else if(Repre=='SB')
                     {
                         for(var z=0; z< atom.LstLinea.length;) //para cáda línea prenderla si sus extremos están en SB
                         {
                             var line= atom.LstLinea[z];
-                            if ((line.LstAtoms[0].Representation=='SB') && (line.LstAtoms[1].Representation=='SB' )) 
+                            if ((line.LstAtoms[0].Representation=='SB') && (line.LstAtoms[1].Representation=='SB' ))
                             {
                                 var mul=line.BPosition * 8;
                                 colores[mul + 3 ] = 1;
-                                colores[mul + 7 ] = 1;                                
+                                colores[mul + 7 ] = 1;
                             }
-                            z=z+1;                        
+                            z=z+1;
                         }
-                        BuffLineCol=true;    
+                        BuffLineCol=true;
 
                     }
                     else if(Repre=='CPK')
@@ -813,16 +823,16 @@ function CambiarRepresentacion(Repre) //Representacion es en lo que se va a camb
                         var agregar=true;
                         for(var j=0; j < ArrCont1.length; j++)
                         {
-                            if ((atom.BloqueSolid - 1)==ArrCont1[j]) 
+                            if ((atom.BloqueSolid - 1)==ArrCont1[j])
                             {
                                 agregar=false;
                                 break;
                             }
                         }
-                        if (agregar==true) 
+                        if (agregar==true)
                         {
                             ArrCont1.push(atom.BloqueSolid - 1);
-                        }      
+                        }
 
                     }
                     else if(Repre=='Bonds')
@@ -834,11 +844,11 @@ function CambiarRepresentacion(Repre) //Representacion es en lo que se va a camb
                     else //spline
                     {
                         //parte de Julio
-
+                        initBufferSpline();
                     }
 
                 }
-                
+
             }
 
             else /// el Spline parte de Julio
@@ -847,7 +857,7 @@ function CambiarRepresentacion(Repre) //Representacion es en lo que se va a camb
 
 
             }
-           
+
 
         }
         /////////////////////////////////////////////////////////////////////////////////////////7
@@ -868,22 +878,22 @@ function CambiarRepresentacion(Repre) //Representacion es en lo que se va a camb
             sphereVertexColorBuffer[ArrCont2[i]].numItems = ColorTotal[ArrCont2[i]].length / 4;
             gl.bindBuffer(gl.ARRAY_BUFFER, null);
         }
-        if (BuffLineCol==true) 
+        if (BuffLineCol==true)
         {
-            gl.bindBuffer(gl.ARRAY_BUFFER, colorVertexBuffer);      
+            gl.bindBuffer(gl.ARRAY_BUFFER, colorVertexBuffer);
             gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colores), gl.DYNAMIC_DRAW);
             colorVertexBuffer.itemSize=4;
             colorVertexBuffer.numItems=colores.length/4;
         }
-        if (BuffLineSkeleCol=true) 
+        if (BuffLineSkeleCol=true)
         {
             gl.bindBuffer(gl.ARRAY_BUFFER, colSkeleVerBuf);
             gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(coloresSkele), gl.DYNAMIC_DRAW);
             colSkeleVerBuf.itemSize=4;
             colSkeleVerBuf.numItems=coloresSkele.length/4;
-        }    
+        }
 
     }
 
-    
+
 }

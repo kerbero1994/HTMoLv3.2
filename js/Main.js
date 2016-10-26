@@ -13,7 +13,7 @@ var totalframes1=0;
 var numframe=0;
 var trjbnd=false;
 var bitrate=0;
-var readstart=0; 
+var readstart=0;
 var readend=20999999;
 var requireddata=false;
 var pos=0;
@@ -33,8 +33,8 @@ function Main()
     if (typeof(Worker)=="undefined")
     {
         alert("Workers no soportados");
-    } 
-    else 
+    }
+    else
     {
         //Para modificar worker1.js y evitar caché
         var marcaTime = parseInt(Math.random() * 1000000);
@@ -42,7 +42,7 @@ function Main()
         worker1.postMessage = worker1.webkitPostMessage || worker1.postMessage;
         worker1.onerror= function(e){
             data.innerHTML=e.message;
-        } 
+        }
         worker1.addEventListener("message", manejadorEventoWorker1, false);
     }
     //----------------------------------------------------------------------------------------------------------------
@@ -51,7 +51,7 @@ function Main()
 
     //--------------------------
     molecule=this.ObjP.ReadFile(pdbInicial);
-    createBonds(this);  
+    createBonds(this);
     initCamera();
 
     //---------------------------
@@ -73,8 +73,8 @@ function Main()
 
 
     this.Buttons=function()
-    {   
-        //se cargan los botones de las Cadenas  
+    {
+        //se cargan los botones de las Cadenas
         for(var i=0; i<molecule.LstChain.length; i++)
         {
             var chain = molecule.LstChain[i];
@@ -83,7 +83,7 @@ function Main()
             button.value=chain.Name;
             button.id=chain.Name;
             button.onclick=ProcesarCadena(i,button);
-            if (button.value!="undefined") 
+            if (button.value!="undefined")
             {
                 menu.appendChild(button);
                 LstBtnsChain.push(button);
@@ -92,16 +92,16 @@ function Main()
 
         //se cargan las funciones para la selección por átomos
         for(var i=0;i < LstAtoms.length; i++) //LstAtoms se encuentra en el support.js
-        {      
-          var op=LstAtoms[i]; 
-          var an = document.getElementById(op ); 
+        {
+          var op=LstAtoms[i];
+          var an = document.getElementById(op );
           an.onclick=ByAtoms(molecule,op);
         }
 
         for(var i=0;i < LstAminoacid.length; i++)
-        {      
-          var op=LstAminoacid[i]; 
-          var an = document.getElementById(op); 
+        {
+          var op=LstAminoacid[i];
+          var an = document.getElementById(op);
           an.onclick=ByAmino(molecule,op);
         }
 
@@ -114,13 +114,13 @@ function Main()
 
         for(var i=0; i< LstColors.length; i++)
         {
-            var op=LstColors[i]; 
-            var an = document.getElementById(op); 
+            var op=LstColors[i];
+            var an = document.getElementById(op);
             an.onclick=ByColor(molecule,op);
         }
 
         //para el centrado por átom
-        var an = document.getElementById('Center'); 
+        var an = document.getElementById('Center');
         an.onclick=CenterByAtom();
 
         an = document.getElementById('Distance'); //afecta el picking
@@ -131,14 +131,14 @@ function Main()
 
         an = document.getElementById('None2'); //para borrar las anteriores, también afecta el picking
         an.onclick=None();
-        
+
 
     }
     this.CleanScene=function()
-    {       
+    {
         cleanMemory();
         //se limpian los botones de la dinámica
-        var button=document.getElementById("playpause");        
+        var button=document.getElementById("playpause");
         var reg=document.getElementById("Rew");
         var forw=document.getElementById("Forw");
         button.style.display="none";
@@ -165,18 +165,18 @@ function Main()
         gl.uniform1fv(u_Array, ArrayIndx);
         ArrayIndx.pop();
 
-        main.DeleteButtons();        
+        main.DeleteButtons();
     }
 
-        
+
     this.MakeModel=function(url)
-    {   
-        main.CleanScene();  
-        molecule=main.ObjP.ReadFile(url);   
-        
+    {
+        main.CleanScene();
+        molecule=main.ObjP.ReadFile(url);
+
         createBonds(main);
         initCamera();
-        if (RepresentacionInicial=='SpheresBonds') 
+        if (RepresentacionInicial=='SpheresBonds')
         {
             InitBufSB();
         }
@@ -186,7 +186,7 @@ function Main()
         }
         else if(RepresentacionInicial=='CPK')
         {
-            InitBufCPK();   
+            InitBufCPK();
         }
 
         main.Buttons();
@@ -194,11 +194,11 @@ function Main()
        if(molecule!=null)
        {
            data.innerHTML="Loading...";
-          
+
            if(main.ObjP.Model.Frames!=0 && main.ObjP.Model.Frames!="")
            {
-           main.filerequest();  
-           console.log(trjauto);       
+           main.filerequest();
+           console.log(trjauto);
            trjauto=true;
            autoplay=false;
            console.log(trjauto);
@@ -214,7 +214,7 @@ function Main()
     this.Parse=function(txt)
     {
         /*
-        elementos separados por coma  o un guión   
+        elementos separados por coma  o un guión
 
         aquí entra el texto para el cuál se realiza el análisis
         space   =
@@ -222,11 +222,11 @@ function Main()
         -       =
         enter   = 13
 
-        Puedo hacer un array por cada palabra separada por un space ,  ; 
-        
+        Puedo hacer un array por cada palabra separada por un space ,  ;
+
 
         obtener la primer palabra que va a ser el comando a usar
-        
+
         var firstWords = [];
         for (var i=0;i<codelines.length;i++)
         {
@@ -236,23 +236,23 @@ function Main()
         }
 
         */
-        var comando=txt.substr(0, txt.indexOf(" "));//obtengo la primer palabra que es un comando 
-        //luego voy a obtener todo lo demás 
+        var comando=txt.substr(0, txt.indexOf(" "));//obtengo la primer palabra que es un comando
+        //luego voy a obtener todo lo demás
         var lines=txt.split(" ");
         var inst=txt.replace(comando + ' ','');
 
-        if (comando=='select') 
+        if (comando=='select')
         {
             //alert("comando select");
             //obtener todo lo demás antes del ;
             //alert(inst);
-            //alert(inst.length);       
+            //alert(inst.length);
             var numAtoms=0;
             var regex = /(\d+)/g;
             //alert(inst.match(regex));
             //alert(AtomosSeleccionados.length);
 
-            if (inst=='all') 
+            if (inst=='all')
             {
                 AtomosSeleccionados=molecule.LstAtoms;
             }
@@ -268,19 +268,19 @@ function Main()
                     else
                     {
                          AtomosSeleccionados=AtomosSeleccionados.concat(molecule.LstChain[0].LstAminoAcid[script[o]-1].GetAtoms());
-                    }                   
+                    }
                 }
                 ProcesarSeleccion();
-            }   
+            }
 
-            //alert(AtomosSeleccionados.length);        
+            //alert(AtomosSeleccionados.length);
             document.getElementById("Console_output").value='selected atoms: ' + AtomosSeleccionados.length;
         }
-        else if (comando=='color') 
+        else if (comando=='color')
         {
             //alert("comando color");
             var color=inst;
-            for(var o in AtomosSeleccionados) //son los objetos seleccionados 
+            for(var o in AtomosSeleccionados) //son los objetos seleccionados
             {
                 /*
                 var ato=AtomosSeleccionados[o];
@@ -293,7 +293,7 @@ function Main()
             }
 
         }
-        else if (comando=='show') 
+        else if (comando=='show')
         {
             if (inst=='sequence') //para el show sequence
             {
@@ -303,7 +303,7 @@ function Main()
                     var chain=molecule.LstChain[o];
                     for(var v in chain.LstAminoAcid) //son los objetos seleccionados  main.oRepresentation.molecule
                     {
-                        if (v==0) 
+                        if (v==0)
                         {
                             sqnc=chain.LstAminoAcid[v].Name + chain.LstAminoAcid[v].Number;
 
@@ -311,7 +311,7 @@ function Main()
                         else
                         {
                             sqnc=sqnc + ', ' + chain.LstAminoAcid[v].Name + chain.LstAminoAcid[v].Number;
-                        }                   
+                        }
 
                     }
 
@@ -340,7 +340,7 @@ function Main()
             }
             else
             {
-                document.getElementById("Console_output").value='Unknown command';  
+                document.getElementById("Console_output").value='Unknown command';
             }
 
 
@@ -352,14 +352,14 @@ function Main()
 
     }
 
-    this.onTestChange=function(event) 
+    this.onTestChange=function(event)
     {
         var key =  event.which || event.keyCode; //se ponen los dos porque en firefox no sirve keycode
         // If the user has pressed enter
         if (key == 13) {
             event.preventDefault(); //esta línea es para que no se imprima una nueva línea con el enter
             main.Parse(document.getElementById("Console_input").value.toLowerCase());
-            document.getElementById("Console_input").value='';      
+            document.getElementById("Console_input").value='';
             //document.getElementById("Console_input").value =document.getElementById("Console_input").value + "\n*";
             return false;
         }
@@ -387,96 +387,97 @@ function Main()
                 +"          <ul class='dl-submenu'>"
                 +"              <li><a href='#'>Aminoacid</a>"
                 +"         <ul id='sub-Amin' class='dl-submenu'>"
-                +"             <li><a href='#' id='ALA'>ALA</a></li>" 
-                +"             <li><a href='#' id='ARG'>ARG</a></li>" 
-                +"             <li><a href='#' id='ASN'>ASN</a></li>" 
-                +"             <li><a href='#' id='ASP'>ASP</a></li>" 
-                +"             <li><a href='#' id='CYS'>CYS</a></li>" 
-                +"             <li><a href='#' id='GLN'>GLN</a></li>" 
-                +"             <li><a href='#' id='GLU'>GLU</a></li>" 
-                +"             <li><a href='#' id='GLY'>GLY</a></li>" 
-                +"             <li><a href='#' id='HIS'>HIS</a></li>" 
+                +"             <li><a href='#' id='ALA'>ALA</a></li>"
+                +"             <li><a href='#' id='ARG'>ARG</a></li>"
+                +"             <li><a href='#' id='ASN'>ASN</a></li>"
+                +"             <li><a href='#' id='ASP'>ASP</a></li>"
+                +"             <li><a href='#' id='CYS'>CYS</a></li>"
+                +"             <li><a href='#' id='GLN'>GLN</a></li>"
+                +"             <li><a href='#' id='GLU'>GLU</a></li>"
+                +"             <li><a href='#' id='GLY'>GLY</a></li>"
+                +"             <li><a href='#' id='HIS'>HIS</a></li>"
                 +"             <li><a href='#' id='ILE'>ILE</a></li>"
-                +"             <li><a href='#' id='LEU'>LEU</a></li>" 
-                +"             <li><a href='#' id='LYS'>LYS</a></li>" 
-                +"             <li><a href='#' id='MET'>MET</a></li>" 
-                +"             <li><a href='#' id='PHE'>PHE</a></li>" 
-                +"             <li><a href='#' id='PRO'>PRO</a></li>" 
-                +"             <li><a href='#' id='SER'>SER</a></li>" 
-                +"             <li><a href='#' id='THR'>THR</a></li>" 
-                +"             <li><a href='#' id='TRP'>TRP</a></li>" 
-                +"             <li><a href='#' id='TYR'>TYR</a></li>" 
-                +"             <li><a href='#' id='VAL'>VAL</a></li>" 
-                +"         </ul>" 
-                +"     </li>" 
-                +"     <li>" 
-                +"     <a href='#'>Atom</a>" 
-                +"     <ul id='sub-Atom' class='dl-submenu'>" 
-                +"         <li><a href='#' id='C'>C</a></li>" 
-                +"         <li><a href='#' id='H'>H</a></li>" 
-                +"         <li><a href='#' id='O'>0</a></li>" 
-                +"         <li><a href='#' id='PB'>PB</a></li>" 
-                +"         <li><a href='#' id='TI'>TI</a></li>" 
-                +"         <li><a href='#' id='N'>N</a></li>" 
-                +"         <li><a href='#' id='S'>S</a></li>" 
-                +"         <li><a href='#' id='P'>P</a></li>" 
-                +"     </ul> </li> <li> <a href='#'>Color</a>" 
-                +"     <ul id='sub-color'class='dl-submenu'>" 
-                +"         <li><a href='#' id='yellow'>Yellow</a></li>" 
-                +"         <li><a href='#' id='red'>Red</a></li>" 
-                +"         <li><a href='#' id='orange'>Orange</a></li>" 
-                +"         <li><a href='#' id='blue'>Blue</a></li>" 
-                +"         <li><a href='#' id='bluesky'>Blue Sky</a></li>" 
-                +"         <li><a href='#' id='green'>Green</a></li>" 
-                +"         <li><a href='#' id='purple'>Purple</a></li>" 
-                +"         <li><a href='#' id='pink'>Pink</a></li>" 
-                +"         <li><a href='#' id='gray'>Gray</a></li>" 
-                +"         <li><a href='#' id='brown'>Brown</a></li>" 
-                +"         <li><a href='#' id='DefaultColor'>Default</a></li>" 
-                +"     </ul> </li>" 
-                +"     <li><a href='#' id='All'>All</a></li>" 
-                +"     <li><a href='#' id='Show'>Show</a></li> </ul> </li>" 
-                +"     <li><a href='#'>Actions</a>" 
-                +"     <ul class='dl-submenu'>" 
-                +"     <li><a href='#'>View</a>" 
-                +"     <ul class='dl-submenu'>" 
-                +"     <li><a href='#' id='F'>Front</a></li>" 
-                +"     <li><a href='#' id='L'>Left</a></li>" 
-                +"     <li><a href='#' id='R'>Right</a></li>" 
-                +"     <li><a href='#' id='U'>Up</a></li>" 
-                +"     <li><a href='#' id='D'>Down</a></li>" 
-                +"     <li><a href='#' id='B'>Back</a></li> </ul> </li>" 
-                +"     <li><a href='#'>Markers</a> <ul class='dl-submenu'>" 
-                +"     <li><a href='#' id='ShowMarkers'>Show Markers</a></li>" 
-                +"     <li><a href='#' id='HideMarkers'>Hide Markers</a></li>" 
+                +"             <li><a href='#' id='LEU'>LEU</a></li>"
+                +"             <li><a href='#' id='LYS'>LYS</a></li>"
+                +"             <li><a href='#' id='MET'>MET</a></li>"
+                +"             <li><a href='#' id='PHE'>PHE</a></li>"
+                +"             <li><a href='#' id='PRO'>PRO</a></li>"
+                +"             <li><a href='#' id='SER'>SER</a></li>"
+                +"             <li><a href='#' id='THR'>THR</a></li>"
+                +"             <li><a href='#' id='TRP'>TRP</a></li>"
+                +"             <li><a href='#' id='TYR'>TYR</a></li>"
+                +"             <li><a href='#' id='VAL'>VAL</a></li>"
+                +"         </ul>"
+                +"     </li>"
+                +"     <li>"
+                +"     <a href='#'>Atom</a>"
+                +"     <ul id='sub-Atom' class='dl-submenu'>"
+                +"         <li><a href='#' id='C'>C</a></li>"
+                +"         <li><a href='#' id='H'>H</a></li>"
+                +"         <li><a href='#' id='O'>0</a></li>"
+                +"         <li><a href='#' id='PB'>PB</a></li>"
+                +"         <li><a href='#' id='TI'>TI</a></li>"
+                +"         <li><a href='#' id='N'>N</a></li>"
+                +"         <li><a href='#' id='S'>S</a></li>"
+                +"         <li><a href='#' id='P'>P</a></li>"
+                +"     </ul> </li> <li> <a href='#'>Color</a>"
+                +"     <ul id='sub-color'class='dl-submenu'>"
+                +"         <li><a href='#' id='yellow'>Yellow</a></li>"
+                +"         <li><a href='#' id='red'>Red</a></li>"
+                +"         <li><a href='#' id='orange'>Orange</a></li>"
+                +"         <li><a href='#' id='blue'>Blue</a></li>"
+                +"         <li><a href='#' id='bluesky'>Blue Sky</a></li>"
+                +"         <li><a href='#' id='green'>Green</a></li>"
+                +"         <li><a href='#' id='purple'>Purple</a></li>"
+                +"         <li><a href='#' id='pink'>Pink</a></li>"
+                +"         <li><a href='#' id='gray'>Gray</a></li>"
+                +"         <li><a href='#' id='brown'>Brown</a></li>"
+                +"         <li><a href='#' id='DefaultColor'>Default</a></li>"
+                +"     </ul> </li>"
+                +"     <li><a href='#' id='All'>All</a></li>"
+                +"     <li><a href='#' id='Show'>Show</a></li> </ul> </li>"
+                +"     <li><a href='#'>Actions</a>"
+                +"     <ul class='dl-submenu'>"
+                +"     <li><a href='#'>View</a>"
+                +"     <ul class='dl-submenu'>"
+                +"     <li><a href='#' id='F'>Front</a></li>"
+                +"     <li><a href='#' id='L'>Left</a></li>"
+                +"     <li><a href='#' id='R'>Right</a></li>"
+                +"     <li><a href='#' id='U'>Up</a></li>"
+                +"     <li><a href='#' id='D'>Down</a></li>"
+                +"     <li><a href='#' id='B'>Back</a></li> </ul> </li>"
+                +"     <li><a href='#'>Markers</a> <ul class='dl-submenu'>"
+                +"     <li><a href='#' id='ShowMarkers'>Show Markers</a></li>"
+                +"     <li><a href='#' id='HideMarkers'>Hide Markers</a></li>"
                 +"     <li><a href='#' id='DeleteMarkers'>Delete Markers</a></li>"
-                +"      </ul> </li> <li><a title='Atom Select' href='#'>A.Selected</a>" 
-                +"      <ul class='dl-submenu'>" 
-                +"      <li><a href='#' id='NameAtom'>Name Atom</a></li>" 
-                +"      <li><a href='#' id='NumberAtom'>Number Atom</a></li>" 
-                +"      <li><a href='#' id='DetailsAtom'>Details Atom</a></li>" 
+                +"      </ul> </li> <li><a title='Atom Select' href='#'>A.Selected</a>"
+                +"      <ul class='dl-submenu'>"
+                +"      <li><a href='#' id='NameAtom'>Name Atom</a></li>"
+                +"      <li><a href='#' id='NumberAtom'>Number Atom</a></li>"
+                +"      <li><a href='#' id='DetailsAtom'>Details Atom</a></li>"
                 +"      <li><a href='#' id='Center'>Center Atom</a></li>"
-                +"      <li><a href='#' id='Identify'>Identify</a></li>" 
-                +"      <li><a href='#' id='None1'>None</a></li> </ul> </li>" 
-                +"      <li><a href='#'>Measures</a> <ul class='dl-submenu'>" 
-                +"      <li><a href='#' id='Distance'>Distance</a></li>" 
-                +"      <li><a href='#' id='Angle'>Angle</a></li>" 
-                +"      <li><a href='#' id='None2'>None</a></li>" 
-                +"      <li><a href='#' id='DeleteMeasures'>Delete Measures</a></li>" 
-                +"      </ul> </li>" 
-                +"      <li><a href='#'  title='Helix and Sheet' id='ViewHS'>H & S</a></li>" 
+                +"      <li><a href='#' id='Identify'>Identify</a></li>"
+                +"      <li><a href='#' id='None1'>None</a></li> </ul> </li>"
+                +"      <li><a href='#'>Measures</a> <ul class='dl-submenu'>"
+                +"      <li><a href='#' id='Distance'>Distance</a></li>"
+                +"      <li><a href='#' id='Angle'>Angle</a></li>"
+                +"      <li><a href='#' id='None2'>None</a></li>"
+                +"      <li><a href='#' id='DeleteMeasures'>Delete Measures</a></li>"
+                +"      </ul> </li>"
+                +"      <li><a href='#'  title='Helix and Sheet' id='ViewHS'>H & S</a></li>"
                 +"      <li><a href='#' id='Axis'>Axis</a></li>"
                 +"      <li><a href='#' title='Molecule Center' id='MoleculeCenter'>M.Center</a></li>"
                 +"      </ul></li>"
-                +"      <li><a href='#'>Representations</a>" 
-                +"      <ul class='dl-submenu'>" 
-                +"      <li><a href='#' id='CPK'>CPK</a></li>" 
-                +"      <li><a href='#' id='Bonds'>Bonds</a></li>" 
-                +"      <li><a href='#' title='Spheres Bonds' id='Spheres Bonds'>S.Bonds</a></li>" 
-                +"      <li><a href='#' id='Skeleton'>Skeleton</a></li> </ul> </li> </ul> </div></div>"
+                +"      <li><a href='#'>Representations</a>"
+                +"      <ul class='dl-submenu'>"
+                +"      <li><a href='#' id='CPK'>CPK</a></li>"
+                +"      <li><a href='#' id='Bonds'>Bonds</a></li>"
+                +"      <li><a href='#' title='Spheres Bonds' id='Spheres Bonds'>S.Bonds</a></li>"
+                +"      <li><a href='#' id='Skeleton'>Skeleton</a></li>"
+                +"      <li><a href='#' id='Spline'>Spline</a></li> </ul> </li> </ul> </div></div>"
 
-        document.getElementById('WebGL-Out').innerHTML = hope; 
-        var tagjs = document.createElement("script");       
+        document.getElementById('WebGL-Out').innerHTML = hope;
+        var tagjs = document.createElement("script");
         tagjs.setAttribute("src", "fonts/optimer_regular.typeface.js");
         document.getElementsByTagName("head")[0].appendChild(tagjs);
         Container=container;
@@ -490,9 +491,9 @@ function Main()
         zoom = document.getElementById("zoom");
 
         //Botones para las representaciones
-        var buttonOp = document.getElementById( "CPK" ); 
+        var buttonOp = document.getElementById( "CPK" );
         buttonOp.onclick=R_Cpk();
-          
+
         buttonOp = document.getElementById( "Spheres Bonds" );
         buttonOp.onclick=R_SB();
 
@@ -502,45 +503,48 @@ function Main()
         buttonOp = document.getElementById( "Skeleton" );
         buttonOp.onclick=R_Skele();
 
-        
-                
-        if(typeof(URLS) != "undefined")
-        { 
-            for(var i in URLS)
-            {       
-                var button = document.getElementById( "Molecule" ); 
-                button.innerHTML+='<li><a href="#" id="new"></a></li>'; 
+        buttonOp = document.getElementById( "Spline" );
+        buttonOp.onclick=R_Spline();
 
-                button = document.getElementById("new"); 
+
+
+        if(typeof(URLS) != "undefined")
+        {
+            for(var i in URLS)
+            {
+                var button = document.getElementById( "Molecule" );
+                button.innerHTML+='<li><a href="#" id="new"></a></li>';
+
+                button = document.getElementById("new");
                 button.id=URLS[i].name;
                 button.innerHTML=URLS[i].name;
             }
-          
+
         }
         else
-        { 
+        {
             URLS = null;
         }
 
-        var button = document.getElementById( "Molecule" ); 
+        var button = document.getElementById( "Molecule" );
         button.innerHTML+='<li><a href="#" id="ByURL">By URL</a></li>';
         button.innerHTML+='<li><a href="#" id="trajauto">Auto trajectory</a></li>';
         button.innerHTML+='<li><a href="#" id="loadtraj">Load trajectory</a></li>';
-        button = document.getElementById( "ByURL" ); 
+        button = document.getElementById( "ByURL" );
         button.onclick=this.ScenebyURL();
 
-        
-        var buttontraj = document.getElementById( "loadtraj" ); 
+
+        var buttontraj = document.getElementById( "loadtraj" );
         buttontraj.onclick=this.ScenebyTrajectory();
 
-        var buttontrj = document.getElementById( "trajauto" ); 
+        var buttontrj = document.getElementById( "trajauto" );
         buttontrj.onclick=function()
         {
             url="http://127.0.0.1:25565/test/prueba.pdb";
-            main.MakeModel(url);            
+            main.MakeModel(url);
         }
 
-        main.Buttons();     
+        main.Buttons();
 
     }
 
@@ -551,7 +555,7 @@ function Main()
         main.Model(url);
         }
     }
-    
+
     this.ScenebyURL=function()
     {
         return function(event)
@@ -564,23 +568,23 @@ function Main()
                 url="http://www.rcsb.org/pdb/files/"+url+".pdb";
                 try
                 {
-                    main.MakeModel(url); 
+                    main.MakeModel(url);
                 }
                 catch(e)
                 {
                     data.innerHTML='Error: Invalid URL or Connection not available';
                 }
             }
-             
+
         }
     }
 
     this.trajreview=function()  //Esta función no se usa
-    {   
-        alert("help");  
+    {
+        alert("help");
         trjauto=true;
         bndknowframe=true;
-        $('#loadtraj').click();     
+        $('#loadtraj').click();
     }
 
     this.ScenebyTrajectory=function()
@@ -588,13 +592,13 @@ function Main()
             return function(event)
         {
             try{
-                bndfinal=false; 
+                bndfinal=false;
                 main.filerequest();
                 DinamicaActiva=true;
             }catch(e)
             {
                 data.innerHTML='Error: Invalid file or Connection not available '.concat(e);
-            }            
+            }
         }
     }
 
@@ -615,11 +619,11 @@ function Main()
         coordsX= new Float32Array();
         coordsX1=new Float32Array();
         coordsY= new Float32Array();
-        coordsY1=new Float32Array();    
+        coordsY1=new Float32Array();
         coordsZ= new Float32Array();
         coordsZ1=new Float32Array();
-        bndreview = false;      
-        bitratespeed();  
+        bndreview = false;
+        bitratespeed();
         var interval=setInterval(function(){
             if((sizeglob/molecule.GetAtoms().length)>0)
             {
@@ -636,19 +640,19 @@ function Main()
     {
         var imageAddr = "speedtest.jpg" + "?n=" + Math.random() ;
         var startTime, endTime ;
-        var downloadSize = 81877; 
-        var download = new Image() ; 
-        download.onload = function() { 
-            endTime = (new Date()).getTime() ; 
+        var downloadSize = 81877;
+        var download = new Image() ;
+        download.onload = function() {
+            endTime = (new Date()).getTime() ;
             senddataworker(startTime,endTime,downloadSize) ;
         }
-        startTime = (new Date()).getTime() ; 
+        startTime = (new Date()).getTime() ;
         download.src = imageAddr ;
     }
 
-    function senddataworker(startTime,endTime,downloadSize) 
+    function senddataworker(startTime,endTime,downloadSize)
     {
-        var duration = Math.round((endTime - startTime) / 1000) ; 
+        var duration = Math.round((endTime - startTime) / 1000) ;
         var bitsLoaded = downloadSize * 8 ;
         bitrate = Math.round(bitsLoaded / duration) ;
         if(!trjauto)                                                            //en este bloque se asigna la trayectoria
@@ -712,7 +716,7 @@ function Main()
                         coordsZ1 = new Float32Array(sizearrayp);
                     }
                     worker1.postMessage({cmd:"startfile",
-                                        fpath:fpath, 
+                                        fpath:fpath,
                                         natoms:molecule.GetAtoms().length,
                                         bitrate:bitrate,
                                         readstart: readstart,
@@ -720,7 +724,7 @@ function Main()
                 }
             }
         },2000);
-    } 
+    }
 
 }
 
