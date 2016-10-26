@@ -2,7 +2,6 @@
 
 function InitBufSB()
 {
-    cleanMemory();
 
     initBuffersSpheresSB();
 
@@ -16,7 +15,6 @@ function InitBufSB()
 
 function InitBufCPK()
 {
-    cleanMemory();
 
     initBuffersSpheresCPK();
 
@@ -30,7 +28,6 @@ function InitBufCPK()
 
 function InitBufBonds()
 {
-    cleanMemory()
 
     initBuffersBonds(true);
 
@@ -42,7 +39,6 @@ function InitBufBonds()
 
 function InitBufSkeleton()
 {
-    cleanMemory()
 
     initBuffersBonds(false);
 

@@ -119,6 +119,20 @@ function Main()
             an.onclick=ByColor(molecule,op);
         }
 
+        //para el centrado por átom
+        var an = document.getElementById('Center'); 
+        an.onclick=CenterByAtom();
+
+        an = document.getElementById('Distance'); //afecta el picking
+        an.onclick=Distance();
+
+        an = document.getElementById('Angle'); //afecta el picking
+        an.onclick=Angle();
+
+        an = document.getElementById('None2'); //para borrar las anteriores, también afecta el picking
+        an.onclick=None();
+        
+
     }
     this.CleanScene=function()
     {       
@@ -130,6 +144,12 @@ function Main()
         button.style.display="none";
         reg.style.display="none";
         forw.style.display="none";
+        DinamicaActiva=false;
+        coordsX=[[]];
+        coordsY=[[]];
+        coordsZ=[[]];
+        pos=0;
+        numframe=0;
         //////////////////////////
 
         var newRotationMatrix = mat4.create();
@@ -182,6 +202,7 @@ function Main()
            trjauto=true;
            autoplay=false;
            console.log(trjauto);
+           DinamicaActiva=true;
             }
            data.innerHTML="";
        }
@@ -569,6 +590,7 @@ function Main()
             try{
                 bndfinal=false; 
                 main.filerequest();
+                DinamicaActiva=true;
             }catch(e)
             {
                 data.innerHTML='Error: Invalid file or Connection not available '.concat(e);

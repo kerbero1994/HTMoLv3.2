@@ -54,7 +54,7 @@ function initBuffersSpheresSB()
             
             LstBSphe[0].push(molecule.LstAtoms[apuntador]);
             //-----------------------------------------------------------------------------------------
-            if (pos>0)  //////////*********** checar instrucción
+            if (DinamicaActiva)  //////////*********** checar instrucción
             {
                 var s=molecule.LstAtoms.length*pos+apuntador;
                 //entonces toman las posiciones x y z del frame en el que se encuentra
@@ -73,6 +73,7 @@ function initBuffersSpheresSB()
             }
             else
             {
+                alert("si");
                 atmX=molecule.LstAtoms[apuntador].X;
                 atmY=molecule.LstAtoms[apuntador].Y;
                 atmZ=molecule.LstAtoms[apuntador].Z;
@@ -209,7 +210,7 @@ function initBuffersSpheresSB()
                     molecule.LstAtoms[apuntador].Representation="SB";
                     LstBSphe[i].push(molecule.LstAtoms[apuntador]);
                     //-----------------------------------------------------------------------------------------
-                    if (pos>0)  //////////*********** checar instrucción
+                    if (DinamicaActiva)  //////////*********** checar instrucción
                     {
                         var s=molecule.LstAtoms.length*pos+apuntador;
                         //entonces toman las posiciones x y z del frame en el que se encuentra
@@ -342,7 +343,7 @@ function initBuffersSpheresSB()
                     
                     LstBSphe[i].push(molecule.LstAtoms[apuntador]);
                     //-----------------------------------------------------------------------------------------
-                    if (pos>0)  //////////*********** checar instrucción
+                    if (DinamicaActiva)  //////////*********** checar instrucción
                     {
                         var s=molecule.LstAtoms.length*pos+apuntador;
                         //entonces toman las posiciones x y z del frame en el que se encuentra
@@ -501,7 +502,7 @@ function initBuffersSpheresCPK()
 
             LstBSphe[0].push(molecule.LstAtoms[apuntador]);
             //-----------------------------------------------------------------------------------------    
-            if (pos>0)  //////////*********** checar instrucción
+            if (DinamicaActiva)  //////////*********** checar instrucción
             {
                 var s=molecule.LstAtoms.length*pos+apuntador;
                 //entonces toman las posiciones x y z del frame en el que se encuentra
@@ -946,7 +947,7 @@ function initBuffersSpheresCPK()
 
                     LstBSphe[i].push(molecule.LstAtoms[apuntador]);
                     //-----------------------------------------------------------------------------------------
-                    if (pos>0)  //////////*********** checar instrucción
+                    if (DinamicaActiva)  //////////*********** checar instrucción
                     {
                         var s=molecule.LstAtoms.length*pos+apuntador;
                         //entonces toman las posiciones x y z del frame en el que se encuentra
@@ -1170,7 +1171,7 @@ function initBuffersBonds(Prendidos)
         var atm_1 = o.LstAtoms[1];
 
                     //-----------------------------------------------------------------------------------------
-                    if (pos>0)  //////////*********** checar instrucción
+                    if (DinamicaActiva)  //////////*********** checar instrucción
                     {
 
                         var s_0 = molecule.LstAtoms.length * pos + (atm_0.id-1);
@@ -1313,7 +1314,7 @@ function initBufBndSkele(Prendidos)
         var atm_1 = o.LstAtoms[1];
 
                     //-----------------------------------------------------------------------------------------
-                    if (pos>0)  //////////*********** checar instrucción
+                    if (DinamicaActiva)  //////////*********** checar instrucción
                     {
 
                         var s_0 = molecule.LstAtoms.length * pos + (atm_0.id-1);

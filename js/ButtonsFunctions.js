@@ -110,6 +110,45 @@ function ByColor(mol, color) {
     }
 }
 
+function CenterByAtom()
+{
+     return function(event) {
+        if (AtomosSeleccionados.length==1) 
+        {
+            var atom=AtomosSeleccionados[0];
+            //center by atom.x y z
+
+
+        }
+        alert("CenterByAtom")
+     }  
+
+}
+
+function Distance()
+{
+    return function(event) {
+
+    }
+
+}
+
+function Angle()
+{
+    return function(event) {
+        
+    }
+
+}
+
+function None()
+{
+    return function(event) {
+        
+    }
+
+}
+
 function ProcesarSeleccion() //poner a color seleccionado, pregunta: va a estar habilitado para bonds?
 {
     console.time("procesarSeleccion");
@@ -267,9 +306,9 @@ function CambiarRepresentacion(Repre) //Representacion es en lo que se va a camb
         {
             var atom = AtomosSeleccionados[i];
 
-            if (pos>0)  //////////*********** checar instrucción
+            if (DinamicaActiva)  //////////*********** checar instrucción
             {
-                var s=molecule.LstAtoms.length * pos + atom.id;
+                var s=molecule.LstAtoms.length * pos + (atom.id-1);
                 //entonces toman las posiciones x y z del frame en el que se encuentra
                 if(bndbuffer==0)
                 {
